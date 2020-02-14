@@ -608,52 +608,52 @@ In fact, for the process described here, no memory encoding function $M$ can exa
 
 \section{Detailed Results per Language}
 
-\subsection{Median Surprisal per Memory Budget}
-
-\begin{center}
-\begin{longtable}{ccccccccccccccclll}
-\input{tables/medians_REAL_0.tex}
-\end{longtable}
-	\captionof{figure}{Medians: For each memory budget, we provide the median surprisal for real and random languages. Solid lines indicate sample medians, dashed lines indicate 95 $\%$ confidence intervals for the population median, dotted lines indicate empirical quantiles ($10\%, 20\%, \dots, 80\%, 90\%$). Green: Random baselines; blue: real language; red: maximum-likelihood grammars fit to real orderings.}\label{tab:medians}
-\end{center}
-
-\begin{center}
-\begin{longtable}{ccccccccccccccclll}
-\input{tables/medians_REAL_1.tex}
-\end{longtable}
-	\captionof{figure}{Medians (cont.)}
-\end{center}
-
-\begin{center}
-\begin{longtable}{ccccccccccccccclll}
-\input{tables/medians_REAL_2.tex}
-\end{longtable}
-	\captionof{figure}{Medians (cont.)}
-\end{center}
-
-\begin{center}
-\begin{longtable}{ccccccccccccccclll}
-\input{tables/medians_REAL_3.tex}
-\end{longtable}
-	\captionof{figure}{Medians (cont.)}
-\end{center}
-
-
-
-
-\subsection{Surprisal at Maximum Memory}
+%\subsection{Median Surprisal per Memory Budget}
+%
+%\begin{center}
+%\begin{longtable}{ccccccccccccccclll}
+%\input{tables/medians_REAL_0.tex}
+%\end{longtable}
+%	\captionof{figure}{Medians: For each memory budget, we provide the median surprisal for real and random languages. Solid lines indicate sample medians, dashed lines indicate 95 $\%$ confidence intervals for the population median, dotted lines indicate empirical quantiles ($10\%, 20\%, \dots, 80\%, 90\%$). Green: Random baselines; blue: real language; red: maximum-likelihood grammars fit to real orderings.}\label{tab:medians}
+%\end{center}
+%
+%\begin{center}
+%\begin{longtable}{ccccccccccccccclll}
+%\input{tables/medians_REAL_1.tex}
+%\end{longtable}
+%	\captionof{figure}{Medians (cont.)}
+%\end{center}
+%
+%\begin{center}
+%\begin{longtable}{ccccccccccccccclll}
+%\input{tables/medians_REAL_2.tex}
+%\end{longtable}
+%	\captionof{figure}{Medians (cont.)}
+%\end{center}
+%
+%\begin{center}
+%\begin{longtable}{ccccccccccccccclll}
+%\input{tables/medians_REAL_3.tex}
+%\end{longtable}
+%	\captionof{figure}{Medians (cont.)}
+%\end{center}
+%
 
 
-\begin{center}
-\begin{longtable}{ccccccccccccccclll}
-\input{tables/slice-hists_REAL_0.tex}
-\input{tables/slice-hists_REAL_1.tex}
-\input{tables/slice-hists_REAL_2.tex}
-\input{tables/slice-hists_REAL_3.tex}
-\end{longtable}
-	\captionof{figure}{Histograms: Surprisal, at maximum memory.}\label{tab:slice-hists-real}
-\end{center}
-
+%
+%\subsection{Surprisal at Maximum Memory}
+%
+%
+%\begin{center}
+%\begin{longtable}{ccccccccccccccclll}
+%\input{tables/slice-hists_REAL_0.tex}
+%\input{tables/slice-hists_REAL_1.tex}
+%\input{tables/slice-hists_REAL_2.tex}
+%\input{tables/slice-hists_REAL_3.tex}
+%\end{longtable}
+%	\captionof{figure}{Histograms: Surprisal, at maximum memory.}\label{tab:slice-hists-real}
+%\end{center}
+%
 
 %\begin{table}
 %\begin{tabular}{cccccccccccccccccc}
@@ -690,64 +690,64 @@ In fact, for the process described here, no memory encoding function $M$ can exa
 
 
 
-
-
-\subsection{Samples Drawn (Experiment 3)}
-
-
-
-\begin{center}
-\begin{tabular}{l|ll||l|llllllllllllll}
-	Language & Base. & MLE & Language & Base. & MLE \\ \hline
-\input{tables/samplesNumber_ground.tex}
-\end{tabular}
-	\captionof{figure}{Experiment 3: Samples drawn per language according to the precision-dependent stopping criterion.}\label{tab:samples}
-\end{center}
-
-
-
-\subsection{Medians (Experiment 3)}
-
-\begin{center}
-\begin{longtable}{ccccccccccccccclll}
-\input{tables/medians_0.tex}
-\input{tables/medians_1.tex}
-\input{tables/medians_2.tex}
-\input{tables/medians_3.tex}
-\end{longtable}
-	\captionof{figure}{Experiment 3. Medians: For each memory budget, we provide the median surprisal for real and random languages. Solid lines indicate sample medians, dashed lines indicate 95 $\%$ confidence intervals for the population median. Green: Random baselines; blue: real language; red: maximum-likelihood grammars fit to real orderings.}\label{tab:medians}
-\end{center}
-
-
-
-
-
-\begin{center}
-\begin{longtable}{ccccccccccccccccll}
-\input{tables/medianDiff_0.tex}
-\input{tables/medianDiff_1.tex}
-\input{tables/medianDiff_2.tex}
-\input{tables/medianDiff_3.tex}
-\end{longtable}
-	\captionof{figure}{Median Differences between Real and Baseline: For each memory budget, we provide the difference in median surprisal between real languages and random baselines; for real orders (blue) and maximum likelihood grammars (red). Lower values indicate lower surprisal compared to baselines. Solid lines indicate sample means. Dashed lines indicate 95 $\%$ confidence intervals.}\label{tab:median_diffs}
-\end{center}
-
-
-
-
-
-
-
-\begin{center}
-\begin{longtable}{cccccccccccccccccc}
-\input{tables/quantiles_noAssumption_0.tex}
-\input{tables/quantiles_noAssumption_1.tex}
-\input{tables/quantiles_noAssumption_2.tex}
-\end{longtable}
-	\captionof{figure}{Quantiles: At a given memory budget, what percentage of the baselines results in higher listener surprisal than the real language? Solid curves represent sample means, dashed lines represent 95 \% confidence bounds; dotted lines represent 99.9 \% confidence bounds. At five evenly spaced memory levels, we provide a p-value for the null hypothesis that the actual population mean is $0.5$ or less. Confidence bounds and p-values are obtained using an exact nonparametric method (see text).}\label{tab:quantiles}
-\end{center}
-
-
+%
+%
+%\subsection{Samples Drawn (Experiment 3)}
+%
+%
+%
+%\begin{center}
+%\begin{tabular}{l|ll||l|llllllllllllll}
+%	Language & Base. & MLE & Language & Base. & MLE \\ \hline
+%\input{tables/samplesNumber_ground.tex}
+%\end{tabular}
+%	\captionof{figure}{Experiment 3: Samples drawn per language according to the precision-dependent stopping criterion.}\label{tab:samples}
+%\end{center}
+%
+%
+%
+%\subsection{Medians (Experiment 3)}
+%
+%\begin{center}
+%\begin{longtable}{ccccccccccccccclll}
+%\input{tables/medians_0.tex}
+%\input{tables/medians_1.tex}
+%\input{tables/medians_2.tex}
+%\input{tables/medians_3.tex}
+%\end{longtable}
+%	\captionof{figure}{Experiment 3. Medians: For each memory budget, we provide the median surprisal for real and random languages. Solid lines indicate sample medians, dashed lines indicate 95 $\%$ confidence intervals for the population median. Green: Random baselines; blue: real language; red: maximum-likelihood grammars fit to real orderings.}\label{tab:medians}
+%\end{center}
+%
+%
+%
+%
+%
+%\begin{center}
+%\begin{longtable}{ccccccccccccccccll}
+%\input{tables/medianDiff_0.tex}
+%\input{tables/medianDiff_1.tex}
+%\input{tables/medianDiff_2.tex}
+%\input{tables/medianDiff_3.tex}
+%\end{longtable}
+%	\captionof{figure}{Median Differences between Real and Baseline: For each memory budget, we provide the difference in median surprisal between real languages and random baselines; for real orders (blue) and maximum likelihood grammars (red). Lower values indicate lower surprisal compared to baselines. Solid lines indicate sample means. Dashed lines indicate 95 $\%$ confidence intervals.}\label{tab:median_diffs}
+%\end{center}
+%
+%
+%
+%
+%
+%
+%
+%\begin{center}
+%\begin{longtable}{cccccccccccccccccc}
+%\input{tables/quantiles_noAssumption_0.tex}
+%\input{tables/quantiles_noAssumption_1.tex}
+%\input{tables/quantiles_noAssumption_2.tex}
+%\end{longtable}
+%	\captionof{figure}{Quantiles: At a given memory budget, what percentage of the baselines results in higher listener surprisal than the real language? Solid curves represent sample means, dashed lines represent 95 \% confidence bounds; dotted lines represent 99.9 \% confidence bounds. At five evenly spaced memory levels, we provide a p-value for the null hypothesis that the actual population mean is $0.5$ or less. Confidence bounds and p-values are obtained using an exact nonparametric method (see text).}\label{tab:quantiles}
+%\end{center}
+%
+%
 
 
 
