@@ -785,6 +785,13 @@ In fact, for the process described here, no memory encoding function $M$ can exa
 
 
 
+\begin{center}
+\includegraphics[width=0.5\textwidth]{results-table-pcfg.pdf}
+\captionof{figure}{PCFG estimator}\label{fig:resu-pcfg}
+\end{center}
+
+
+
 \section{Optimization}
 We cannot optimize for AUC using the method of (CITE), because we cannot construct an unbiased gradient estimator
 $AUC \propto \sum_{t} (\sum_{s \leq t} I_s) tI_t = \sum_{s \leq t}  tI_t I_s = I_1^2 + 2 I_1 I_2 + 2 I_2^2 + \dots$
