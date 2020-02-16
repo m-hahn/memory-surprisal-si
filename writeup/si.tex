@@ -783,7 +783,18 @@ In fact, for the process described here, no memory encoding function $M$ can exa
 %
 %-- Chinese treebank \citep{xue-chinese-2013}
 
+\section{CKY Models}
+\subsection{Deriving PCFGs from Dependency Corpora}
+1. binarization
 
+2. defining nonterminals
+
+mention approaches in the literature
+\subsection{Estimating $I_t$ with Chart Parsing}
+algorithm, cite Goodman's thesis
+\subsection{Results}
+Limitations: Absolute numbers aren't comparable with other models because there are many OOVs (they are necessary because the number of non- and preterminals has to be kept low).
+Also, the amount of exploited predictive information $\sum_t I_t$ is much lower than in the other models. Agrees with the observation that PCFG independence assumptions are inadequate, and that chart parsers have not historically reached good perplexities (parsers with good perplexities such as Roark Parser and RNNGs do not make these independence assumptions, but also do not allow efficient exact chart parsing).
 
 \begin{center}
 \includegraphics[width=0.5\textwidth]{results-table-pcfg.pdf}
