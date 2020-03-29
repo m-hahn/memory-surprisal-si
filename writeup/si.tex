@@ -108,7 +108,8 @@ We make the assumption that this process is \emph{stationary}.
 Formally, this means that the conditional distribution $P(w_t|w_{<t})$ does not depend on $t$, it only depends on the (semi-infinite) context sequence $w_{<t}$.
 Informally, this says that the process has no `internal clock', and that the statistical rules of the language do not change at the timescale we are interested in.
 In reality, the statistical rules of language do change: They change as language changes over generations, and they also change between different situations -- e.g., depending on the interlocutor at a given point in time.
-Given that we are interested in memory needs in the processing of \emph{individual sentences}, at a timescale of seconds or minutes, stationarity seems to be a reasonable assumption to make.
+However, we are interested in memory needs in the processing of \emph{individual sentences}, at a timescale of seconds or minutes.
+At this level, the statistical regularities of language do not change, making stationarity a reasonable modeling assumption.
 
 
 %
@@ -197,7 +198,7 @@ Then this listener will incur surprisal at least
 %The average number of bits required to encode this state is $\operatorname{H}[m_t]$, which by assumption is at most $\sum_{t=1}^T t I_t$.
 %As the listener's predictions are made on the basis of her memory state, her average surprisal is at least $\operatorname{H}[w_t | m_t]$.
 \begin{proof}
-The difference between the listener's surprisal and optimal surprisal is $\operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}]$.\footnote{A listener whose predictions are not optimal given $m_t$ can only incur even higher surprisal.}
+The difference between the listener's average surprisal $S_M$ and optimal surprisal $S_\infty$ is $S_M - S_\infty = \operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}]$.\footnote{A listener whose predictions are not optimal given $m_t$ can only incur even higher surprisal.}
 By the assumption of stationarity, we can, for any positive integer $T$, rewrite this expression as
 \begin{equation}\label{eq:byStation}
 \operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}] =  \frac{1}{T} \sum_{t'=1}^{T} \left(\operatorname{H}[w_{t'} | m_{t'}] - \operatorname{H}[w_{t'} | w_{<t'}]\right) 
@@ -233,15 +234,19 @@ The first term $I[w_{1\dots T}, w_{\leq 0}]$ can be rewritten in terms of $I_t$:
 I[w_{1\dots T}, w_{\leq 0}] &= \sum_{i=1}^T \sum_{j=-1}^{-\infty} I[w_i, w_j | w_{j+1}...w_{i-1}] = \sum_{t=1}^T t I_t + T \sum_{t > T} I_t
 \end{align}
 Therefore
-\begin{align*}
+\begin{align}\label{eq:surp-diff-expanded}
 \operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}]& \geq \frac{1}{T} \left(\sum_{t=1}^T t I_t + T \sum_{t > T} I_t - I[w_{1\dots T}, m_1]\right) 
-\end{align*}
-$I[w_{1\dots T}|m_1]$ is at most $\operatorname{H}[m_1]$, which is at most $\sum_{t=1}^T t I_t$ by assumption. Thus, the expression above is bounded by
+\end{align}
+The term $I[w_{1\dots T}|m_1]$ is at most $\operatorname{H}[m_1]$, which is at most $\sum_{t=1}^T t I_t$ by assumption. Thus,  (\ref{eq:surp-diff-expanded}) implies the following:
 \begin{align*}
 \operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}]& \geq \frac{1}{T} \left(\sum_{t=1}^T t I_t + T \sum_{t > T} I_t - \sum_{t=1}^T t I_t\right) \\
 &= \sum_{t > T} I_t
 \end{align*}
-Rearranging shows that the listener's surprisal is at least $\operatorname{H}[w_t|m_t] \geq \operatorname{H}[w_t | w_{<t}] + \sum_{t > T} I_t$, as claimed.
+Rearranging yields
+\begin{align}
+\operatorname{H}[w_t|m_t] \geq \operatorname{H}[w_t | w_{<t}] + \sum_{t > T} I_t
+\end{align}
+as claimed.
 \end{proof}
 
 
@@ -253,14 +258,16 @@ Rearranging shows that the listener's surprisal is at least $\operatorname{H}[w_
 
 We have been assuming that $m_t$ is a deterministic function of $x_t$ and $m_{t-1}$.
 Here, we show that this assumption can be relaxed to stochastic encoding functions.
+That is, we show that our result holds if
+$m_t$ is not a deterministic function of $w_{t-1}$ and $m_{t-1}$, but includes randomness in processing.
 
-We relax condition (X) to the following requirement, for all values of $m_1, (w_{t})_{t \in \mathbb{Z}}, m_0$:
+To formalize that setting, we relax Comprehension Postulate 1 to the following requirement, for all values of $m_1, (w_{t})_{t \in \mathbb{Z}}, m_0$:
 \begin{equation}\label{eq:listener-markov-nondeterministic}
 p(m_1| (w_{t})_{t \in \mathbb{Z}}, m_0)   = p(m_1 | m_0, w_1)
 \end{equation}
 This says that $m_1$ contains no information about the utterances beyond what is contained in $m_0$ and $w_1$.	
 
-The one place in the proof where (X) plays a role is the proof of the inequality:
+The one place in the proof where Comprehension Postulate 1 plays a role is the proof of the inequality:
 \begin{equation}
 	H[w_t | m_t] \geq H[w_t|w_{1 \dots t-1}, m_1]
 \end{equation}
@@ -542,11 +549,21 @@ To prove this, we note:
 The first step follows from the definition of $Y$. The second step follows from the fact that $X_t$, and thus also $Y_t$, is stationary, and thus adding $t$ to each index in the expression does not change the resulting value. The third step uses the fact that mutual information is symmetric.
 
 
-\section{Example where window model is not optimal}
+\section{Examples with Analytical Calculations}
 
-\subsection{Example I}
+Here, we provide examples of the theorem in settings where analytical calculations are possible.
+
+
+\subsection{Example I: Tight Bounds in Artificial Language}
+
+Here we provide explicit calculations for the artificial language simulation, showing that the bounds provided by the theorem are tight in this case.
+
+TODO
+
+\subsection{Example II: Window-Based Model not Optimal}
 
 Here we provide an example of a stochastic process where a window-based memory encoding is not optimal, but the bound provided by our theorem still holds.
+This is an example where the bound provided by the theorem is loose: while it bounds the memory-surprisal tradeoff of all possible listeners, the bound is `optimistic', meaning that no mathematically possible memory encoding function $M$ can exactly achieve the bound.
 
 Let $k$ be some positive integer.
 Consider a process
@@ -583,9 +600,37 @@ Since $y_{t+1} = v_{t-2k+1}$, this model achieves a surprisal reduction of $H[v_
 This result does not contradict our theorem because the theorem only provides \emph{bounds} across models, which are not necessarily achieved by a given window-based model.
 In fact, for the process described here, no memory encoding function $M$ can exactly achieve the theoretical bound described by the theorem.
 
-\subsection{Example II}
+\subsection{Example III: Tight Bound for Retrieval Model}
 
-\textbf{TODO} we could also provide an example where our bound is relatively tight for the retrieval-based model even though it is very loose for the capacity model.
+Here, we provide an example where our bound is tight for the retrieval-based model even though it is quite loose for the capacity model.
+That means, while no memory encoding function can exactly achieve the bound in the capacity-bounded setting, there are memory encoding functions that exactly achieve the bound in the retrieval-based setting.
+
+Let $k$ be a positive integer.
+Consider a process $x_{t+1} = (y_{t+1}, z_{t+1}, u_{t+1}, v_{t+1})$ where
+\begin{enumerate}
+    \item $y_{t+1}$ consists of $2k$ random bits.
+    \item $z_{t+1}$ is a draw from $Bernoulli(\frac{1}{4k})$.
+    \item $u_{t+1}$ consists of $2k$ random bits if $z_t = 0$ and is equal to $y_{t-2k+1}$ else.
+    \item $v_{t+1} := z_t$ 
+\end{enumerate}
+Predicting observations $x_{t+1}$ optimally requires storing $y_{t-2k+1}, \dots, y_{t}$ and $z_t$.
+This amounts to $(2k+1)\cdot 2k + H_2[1/4k]$ bits of memory in the capacity-based model.
+However, $I[u_{t+1}, y_{t-2k+1}|z_{t+1}] \leq 1/k$ (TODO).
+Therefore, the theorem bounds the memory cost only by $HM \geq \sum_{t=1}^\infty t I_t = 1$.
+The bound provided by the theorem is therefore loose in this case.
+
+However, it is tight for the retrieval-based model:
+We use $s_t$ to store $y_{t-2k+1}, \dots, y_{t}$, and we use the working memory $m_{t+1}$ to store $z_t$.
+Then, if $z_t = 1$, we retrieve $r_t = g(x_{t-1}, m_{t-1}, s_{t-1}) := y_{t-2k+1}$.
+The cost of storing $z_t$ is $H_2[1/4k]$, and the cost of retrieving $r_t$ is $\frac{1}{4k} \cdot 2k$.
+
+
+
+In total, $H[m_t] = H_2[1/4k]$ and $H[r_t] = 1/k$.
+
+Taking, in the theorem, $T=1$ and $S\rightarrow\infty$, we obtain $H[m_t] \geq H_2[1/4k]$ and $H[r_t] \geq 1/k$.
+Thus, the bound is tight for both working memory and retrieval costs.
+
 
 \section{Corpus Size per Language}
 
