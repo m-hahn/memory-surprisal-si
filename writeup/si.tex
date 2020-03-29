@@ -800,6 +800,10 @@ In fact, for the process described here, no memory encoding function $M$ can exa
 LSTMs and n-gram models are linear sequence models that might incorporate biases towards linear order as opposed to hierarchical structure.
 Here we use chart parsing to show that the results also hold when estimating $I_t$ using a model that is based on hierarchical structure and incorporates no bias towards linear closeness.
 
+We use PCFGs.
+PCFG surprisal is often computed in psycholinguistic research using approximate incremental parsers, but these might themselves incorporate some biases towards linear closeness.
+We instead opt for exact inference for PCFGs using exact chart parsing.
+
 \subsection{Deriving PCFGs from Dependency Corpora}
 
 
@@ -840,8 +844,7 @@ P[\#, X_1, \dots, X_t] := \sum_N \sum_{Y_{1\dots N}} P(\#, X_1, \dots, X_t, Y_{1
 \end{equation}
 (here, $\#$ denotes the beginning/end of a sentence), that is, the probability mass assigned to all sentences starting with the given prefix $X_1, \dots, X_t$.
 
-However, simultaneously summing over possible left \emph{and} right continuations is more challenging.
-(CITE) describe a method for calculating infix probabilities, but that method computes something subtly different from the quantity required here, and it is also computationally costly.
+However, simultaneously summing over possible left \emph{and} right continuations is more challenging.\footnote{(CITE) describe a method for calculating infix probabilities, but that method computes something subtly different from the quantity required here, and it is also computationally costly.}
 We approach this by restricting the summation on the left to prefixes of a fixed length:
 \begin{equation}
     \sum_{Y_1\dots Y_N} P(\#, Y_1 \dots Y_N, X_1, \dots, X_t)
