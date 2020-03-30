@@ -3,7 +3,27 @@ cp -r ~/memory-surprisal/writeup/tables .
 #cp ~/memory-surprisal/writeup/ngrams/figures/* ngrams/figures/
 cp control-ngrams.tex ~/memory-surprisal/writeup/
 cp ~/memory-surprisal/writeup/../code/analyze_ngrams/visualize/figures/*MEDIANS_only* ../code/analyze_ngrams/visualize/figures/
-cp si.tex ~/memory-surprisal/writeup/
+#cp si.tex ~/memory-surprisal/writeup/
 cp ~/memory-surprisal/writeup/literature.bib .
 cp ~/memory-surprisal/writeup/results-table-pcfg.pdf .
+
+
+
+cp ~/memory-surprisal/code/toy/figures/decay.pdf figures/
+cp ~/memory-surprisal/code/toy/figures/memory.pdf figures/
+cp ~/memory-surprisal/code/toy/figures/add-surp.pdf figures/
+cp ~/memory-surprisal/code/toy/figures/lower-mem.pdf figures/
+cp ~/memory-surprisal/code/toy/figures/listener-tradeoff.pdf figures/
+cp ~/memory-surprisal/code/toy/figures/toy-mis.pdf figures/
+cp ~/memory-surprisal/code/toy/figures/toy-t-mis.pdf figures/
+cp ~/memory-surprisal/code/toy/figures/toy-mem-surp.pdf figures/
+cp ~/memory-surprisal/code/visualize_neural/figures/surprisal-branching-entropy-REAL.pdf figures/
+cp ~/memory-surprisal/code/visualize_neural/figures/full-GROUND-listener-surprisal-memory-HIST_z_byMem_onlyWordForms_boundedVocab.pdf figures/
+cp ~/memory-surprisal/code/order-freedom/infostruc/analysis/visualize_neural/figures/Czech-PDT-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf figures/
+cp ~/memory-surprisal/writeup/quantiles-table.pdf .
+cp ~/memory-surprisal/writeup/auc-table.pdf .
+cp ~/memory-surprisal/writeup/it-table.pdf .
+cp ~/memory-surprisal/code/ngram-control/create_models_ngrams/morph/Japanese/tradeoffs/figures/* figures/
+cp ~/memory-surprisal/code/ngram-control/create_models_ngrams/morph/Sesotho/tradeoffs/figures/* figures/
+
 
