@@ -100,8 +100,6 @@ We first make explicit how we formalize language processing for proving the theo
 We represent language as a stochastic process of words $\dots w_{-2} w_{-1} w_0 w_{1} w_{2} \dots$, extending indefinitely both into the past and into the future.
 The symbols $w_i$ belong to a common set, representing the words of the language.\footnote{Could also be phonemes, sentences, or any other kind of unit.}
 
-%We model the sequence as a probabilistic sequence; that is, given a context $w_{<t}$, the next word is distributed according to a distribution $p(w_t|w_{<t})$.
-
 The assumption of infinite length is for mathematical convenience and does not affect the substance of our results:
 As we restrict our attention to the processing of individual sentences, which have finite length, we will actually not make use of long-range and infinite contexts.
 
@@ -112,57 +110,30 @@ In reality, the statistical rules of language do change: They change as language
 However, we are interested in memory needs in the processing of \emph{individual sentences}, at a timescale of seconds or minutes.
 At this level, the statistical regularities of language do not change, making stationarity a reasonable modeling assumption.
 
-
-%
-%
-%
-%\begin{figure}
-%\includegraphics[width=0.45\textwidth]{figures/markov-condition.png}
-%	\caption{Illustration of (\ref{eq:listener-markov}). As the utterance unfolds, the listener maintains a memory state. After receiving word $w_t$, the listener computes their new memory state $m_t$ based on the previous memory state $m_{t-1}$ and the new word $w_t$.}\label{fig:listener-markov}
-%\end{figure}
-%
+As we are interested in processing at the level of words or sentences, we do not model statistical dependencies between successive sentences.
+That is, we model the process $\dots w_{-2} w_{-1} w_0 w_{1} w_{2} \dots$ as consisting of a sequence of independent samples from the distribution over sentences, separated with a start-of-sentence symbol.
 
 \paragraph{Ingredient 2: Postulates about Processing}
 The second ingredient consists of the three postulates described in the main paper.
-%We now analyze memory from the perspective of the listener, who needs to maintain information about the past to predict the future.
-%As the speaker's utterance unfolds, the listener maintains a memory state $m_t$.
+We repeat these here for reference:
+\begin{enumerate}
+    \item Comprehension Postulate 1 (Incremental memory). At time $t$, the listener has an incremental \key{memory state} $m_t$ that contains her stored information about previous words. The memory state is given by a \key{memory encoding function} $M$ such that $m_t = M(w_{t-1}, m_{t-1})$.
+    \item Comprehension Postulate 2 (Incremental prediction). The listener has a subjective probability distribution at time $t$ over the next word $w_t$ as a function of the memory state $m_t$. This probability distribution is denoted $P(w_t|m_t)$.
+    \item Comprehension Postulate 3 (Linking hypothesis). Processing a word $w_t$ incurs difficulty proportional to the \key{surprisal} of $w_t$ given the memory state $m_t$:
+    \begin{equation}
+    \label{eq:lossy-surp}
+    \text{Difficulty} \propto -\log P(w_t | m_t).
+\end{equation}
+\end{enumerate}
+
+
+We add another mathematical assumption to take care of a technical subtlety: Since $(w_t)_{t \in \mathbb{Z}}$ extends infinitely into the past, our postulates permit situations where, while $(w_t)_{t \in \mathbb{Z}}$ has no `internal clock', the sequence of memory states $(m_t)_{t \in \mathbb{Z}}$ does.
+This would correspond to a setting where the listener's memory state keeps track of some absolute notion of time (e.g., counting whether $t$ is even or odd) even though the statistical regularities of the input $(w_t)_{t \in \mathbb{Z}}$ are independent of time.
+We avoid such situations by making the assumption that $(w_t, m_t)_{t \in \mathbb{Z}}$, viewed as a stochastic process, is stationary.
+
 There are no further assumptions about the memory architecture and the nature of its computations.
-%We only make a basic assumption about the flow of information (Figure~\ref{fig:listener-markov}):
-%At a given point in time, the listener's memory state $m_t$ is determined by the last word $w_t$, and the prior memory state $m_{t-1}$:
-%\begin{equation}
-%	m_t = M(m_{t-1}, w_t)
-%\end{equation}
-%As a consequence, $m_t$ contains no information about the process beyond what is contained in the last word observed $w_{t-1}$ and in the memory state before that word was observed $m_{t-1}$.
-%%This is formalized as a statement about conditional probabilities:
-%%\begin{equation}\label{eq:listener-markov}
-%%p(m_1| (w_{t})_{t \in \mathbb{Z}}, m_0)   = p(m_1 | m_0, w_1)
-%%\end{equation}
-%%This says that $m_1$ contains no information about the utterances beyond what is contained in $m_0$ and $w_1$.	
-%As a consequence, the listener has no knowledge of the speaker's state beyond the information provided in their prior communication.
-%This is a simplification, as the listener could obtain information about the speaker from other sources, such as their common environment (weather, ...).
-%\mhahn{For the study of memory in sentence processing, this seems fair. Discuss this more.}
 
-%
-%First, we assume that the listener's internal state cannot depend on the future beyond its dependency on the past.
-%Formally: 
-%\begin{equation}\label{eq:listener-markov-1}
-%m_t \bot w_{>t} | w_{\leq t}
-%\end{equation}
-%This means that the listener has no access to the speaker's state beyond what the speaker has already uttered.
-%
-%Second, we assume that $m_t$ contains no information about the past beyond what is contained in $w_{t-1}$ and $m_{t-1}$:
-%\begin{equation}\label{eq:listener-markov-2}
-%m_t \bot w_{<t} | w_{t-1}, m_{t-1}
-%\end{equation}
-%This means that any information about the past in $m_t$ has to be contained in $m_{t-1}$ -- formalizing the idea that a listener can only remember aspects of the past by keeping them in memory, and that memories of the past cannot `spontaneously' form later in the future.
 
-%The listener can trade off memory and future surprisal:
-%A listener who chooses to store less memory will exerience higher surprisal in the future.
-%A listener can achieve minimal surprisal -- that is, the lowest average surprisal that any model could achieve by predicting the future from the past -- if and only if $m_t$ contains all predictive information about the future that is contained in the past.
-
-%We now describe the memory-surprisal tradeoff. will describe this tradeoff, and show that listener memory is linked to locality in a way similar to speaker memory.
-%Consider a listener who uses $J$ bits of memory on average.
-%What can we say about the listener's surprisal?
 
 \subsection{Proof of the Theorem}
 
@@ -255,7 +226,7 @@ as claimed.
 
 
 
-\subsection{For nondeterministic encoding functions}
+\subsection{Nondeterministic Encoding Functions}
 
 We have been assuming that $m_t$ is a deterministic function of $x_t$ and $m_{t-1}$.
 Here, we show that this assumption can be relaxed to stochastic encoding functions.
@@ -297,7 +268,7 @@ H[w_t | m_t] \geq H[w_t| w_{t-1}, m_{t-1}] \geq H[w_t| w_{t-2, t-1}, m_{t-2}] \g
 \end{proof}
 
 
-\subsection{Locality in a model with Memory Retrieval}
+\subsection{Memory-Surprisal Tradeoff in a Model with Memory Retrieval}
 
 Here we show that our information-theoretic analysis is compatible with models placing the main bottleneck in the difficulty of retrieval \citep{mcelree2000sentence,lewis-activation-based-2005,nicenboim2018models,vasishth2019computational}.
 We extend our model of memory in incremental prediction to capture key aspects of the models described by \citet{lewis-activation-based-2005,nicenboim2018models,vasishth2019computational}.
@@ -538,7 +509,7 @@ $H[G|Produced] - H[G|Language]$
 
 
 
-\section{Proof of Left-Right Invariance}
+\subsection{Proof of Left-Right Invariance}
 
 Here we show that the bound provided by our theorem is invariant under reversal of the process.
 That is: Given a process $(X_t)_{t \in \mathbb{Z}}$, we define its reverse process $(Y_t)_{t \in \mathbb{Z}}$ by $Y_t := X_t$.
