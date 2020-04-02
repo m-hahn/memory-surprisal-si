@@ -134,7 +134,7 @@ There are no further assumptions about the memory architecture and the nature of
 
 
 
-\subsection{Proof of the Theorem}
+\subsection{Proof of the Theorem}\label{sec:proof}
 
 We restate the theorem:
 
@@ -278,7 +278,6 @@ This large memory store is accessed via \emph{cue-based retrieval}: a query is c
 
 \paragraph{Formal Model}
 We extend our information-theoretic analysis by considering a model that maintains both a small working memory $m_t$ -- corresponding to the buffers and the control state -- and an unlimited short-term memory $s_t$.
-Predictions are made based on working memory $m_t$, incurring surprisal $H[w_t|m_t]$.
 When processing a word $x_t$, there is some amount of communication between $m_t$ and $s_t$, corresponding to retrieval operations.
 We model this using a variable $r_t$ representing the information that is retrieved from $s_t$.
 In our formalization, $r_t$ reflects the totality of all retrieval operations that are made during the processing of $x_{t-1}$; they happen after $x_{t-1}$ has been observed but before $x_t$ has.
@@ -293,10 +292,15 @@ The retrieval operation is jointly determined by working memory, short-term memo
 \end{equation}
 Finally, the short-term memory can incorporate any -- possibly all -- information from the last word and the working memory:
 \begin{equation}
-	s_t = h(x_{t-1}, m_{t-1}, s_{t-1}) 
+	s_t = h(x_{t}, m_{t}, s_{t-1}) 
 \end{equation}
 While $s_t$ is unconstrained, there are constraints on the capacity of working memory $\operatorname{H}[m_t]$ and the amount of retrieved information $\operatorname{H}[r_t]$.
 Placing a bound on $\operatorname{H}[m_t]$ reflects the fact that the buffers can only hold a small and fixed number of chunks \citep{lewis-activation-based-2005}.
+
+Predictions are made based on working memory $m_t$ and retrieved information $r_{t+1}$ (but not the short-term memory $s_t$), incurring average surprisal
+\begin{equation}
+    S := H[x_{t+1}|m_t, r_{t+1}]
+\end{equation}
 
 
 \paragraph{Cost of Retrieval}
@@ -339,36 +343,41 @@ Let $0 < S \leq T$ be positive integers such that the average working memory cos
 	\end{equation} %(per word).
 	Then the surprisal cost is lower-bounded as
 	\begin{equation}
-		\operatorname{H}[w_t|m_t] \geq \operatorname{H}[w_t|x_{<t}] + \sum_{t>S} I_t
+		\operatorname{H}[w_t|m_{t-1}, r_t] \geq \operatorname{H}[w_t|x_{<t}] + \sum_{t>S} I_t
 	\end{equation}
 \end{thm}
 
 \begin{proof}
-The proof is a generalization of the proof above.
-	For any positive integer $t$, $m_t$ is determined by $w_{1\dots t}, m_0, r_0, \dots, r_t$.
+The proof is a generalization of the proof in Section~\ref{sec:proof}.
+	For any positive integer $t$, the memory state $m_t$ is determined by $w_{1\dots t}, m_0, r_0, \dots, r_t$.
 	Therefore, the Data Processing Inequality entails:
 	\begin{equation}
-		\operatorname{H}[w_t|m_t] \geq \operatorname{H}[w_t|w_{1\dots t}, m_0, r_0, \dots, r_t]
+		\operatorname{H}[w_t|m_{t-1}, r_t] \geq \operatorname{H}[w_t|w_{1\dots t}, m_0, r_0, \dots, r_t]
 	\end{equation}
 	As in~(\ref{eq:plugged}), this leads to
 \begin{align}
-\operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}]& \geq \frac{1}{T} \sum_{t=1}^T ( \operatorname{H}[w_t|w_{1\dots t}, m_0, r_0, \dots, r_t] - \operatorname{H}[w_t | w_{1\dots t-1}, w_{\leq 0}]  )    \\
+\operatorname{H}[w_t | m_{t-1}, r_t] - \operatorname{H}[w_t | w_{<t}]& \geq \frac{1}{T} \sum_{t=1}^T ( \operatorname{H}[w_t|w_{1\dots t}, m_0, r_0, \dots, r_t] - \operatorname{H}[w_t | w_{1\dots t-1}, w_{\leq 0}]  )    \\
 & \geq \frac{1}{T} \left(\operatorname{H}[w_{1\dots T} | m_0, r_0, \dots, r_T] - \operatorname{H}[w_{1\dots T} | w_{\leq 0}]\right)  \\
 	& = \frac{1}{T} \left(I[w_{1\dots T}, w_{\leq 0}] - I[w_{1\dots T}, (m_0, r_0, \dots, r_T)]\right) 
 \end{align}
 	Now, using the calculation from (\ref{eq:i-expanded}), this can be rewritten as:
 	\begin{align*}
-\operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}]= & \frac{1}{T}\left(\sum_{t=1}^T t I_t + T \sum_{t>T} I_t - I[X_1\dots X_T, (M_0, R_1, ..., R_T)]\right) \\
-		= & \frac{1}{T}\left(\sum_{t=1}^T t I_t + T \sum_{t>T} I_t - I[X_{1\dots T}, M_0] - \sum_{t=1}^T I[X_{1\dots T}, R_t|M_0, r_{1\dots t-1}]\right) \\
+\operatorname{H}[w_t | m_{t-1}, r_t] - \operatorname{H}[w_t | w_{<t}]= & \frac{1}{T}\left(\sum_{t=1}^T t I_t + T \sum_{t>T} I_t - I[x_1\dots x_T, (m_0, r_1, ..., r_T)]\right) \\
+		= & \frac{1}{T}\left(\sum_{t=1}^T t I_t + T \sum_{t>T} I_t - I[x_{1\dots T}, m_0] - \sum_{t=1}^T I[x_{1\dots T}, r_t|m_0, r_{1\dots t-1}]\right) \\
 	\end{align*}
-	Due to the inequalities $I[X_{1\dots T}, M_0] \leq \operatorname{H}[M_0]$ and $\operatorname{I}[X_{1\dots T}, R_t|M_0, r_{1\dots t-1}] \leq \operatorname{H}[R_t]$, this can be bounded as
+	Due to the inequalities
 	\begin{align}
-\operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}]		\geq & \frac{1}{T}\left(\sum_{t=1}^T t I_t  + T \sum_{t>T} I_t-H[M_0] - \sum_{t=1}^T H[R_t]\right) \\
+	    \operatorname{I}[x_{1\dots T}, m_0] &\leq \operatorname{H}[m_0] \leq \sum_{t=1}^T t I_t\\
+	    \operatorname{I}[x_{1\dots T}, r_t|m_0, r_{1\dots t-1}] &\leq \operatorname{H}[r_t] \leq \sum_{t=T+1}^S I_t
+	\end{align}
+	this can be bounded as
+	\begin{align}
+\operatorname{H}[w_t | m_{t-1}, r_t] - \operatorname{H}[w_t | w_{<t}]		\geq & \frac{1}{T}\left(\sum_{t=1}^T t I_t  + T \sum_{t>T} I_t-H[m_0] - \sum_{t=1}^T H[r_t]\right)
 	\end{align}
 	Finally, this reduces as
 	\begin{align}
-	\operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}]		\geq &  \frac{1}{T}(T \sum_{t>T} I_t - T\cdot H[R_t]) \\
-	= & \sum_{t>T} I_t- H[R_t]  \\
+	\operatorname{H}[w_t | m_{t-1}, r_t] - \operatorname{H}[w_t | w_{<t}]		\geq &  \frac{1}{T}(T \sum_{t>T} I_t - T\cdot H[r_t]) \\
+	= & \sum_{t>T} I_t- H[r_t]  \\
 		\geq & \sum_{t>T} I_t - \sum_{t=T+1}^S I_t \\
 		= &  \sum_{t>S} I_t
 \end{align}
