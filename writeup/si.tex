@@ -821,9 +821,9 @@ For each corpus, we used Bayesian optimization using the Expected Improvement ac
 We optimized the hyperparameters to minimize average surprisal~(\ref{eq:train}) on the held-out partition resulting at the end of parameter estimation, on languages generated from random word order grammars.
 This biases the hyperparameters towards modeling counterfactual grammars better, biasing them \emph{against} our hypothesis that real orders result in better memory-surprisal tradeoffs than counterfactual orders.
 
-Due to reasons of computational efficiency, neural language models can only process a bounded number of distinct words in a single language (CITE).
-For each corpus, we limited the number of distinct processed words to the $N=10,000$ most common words in the training corpus, a common choice for neural language models (CITE).
-Following (CITE), we represented other words by their part-of-speech tags as annotated in the corpora.
+Due to reasons of computational efficiency, neural language models can only process a bounded number of distinct words in a single language \citep{Mikolov2010RecurrentNN}.
+For each corpus, we limited the number of distinct processed words to the $N=10,000$ most common words in the training corpus, a common choice for neural language models.
+We represented other words by their part-of-speech tags as annotated in the corpora.
 This applied to 37 languages, affecting an average of 11~\% of words in these languages.
 We believe that this modeling limitation does not affect our results for the following reasons.
 First, this affects the same words in real and counterfactually ordered sentences.
@@ -842,8 +842,6 @@ After estimating the parameter vector $\theta$, we compute the following differe
 and we take the average over these.
 We cut $T$ off at 20, as this is the length of the sequences processed by the model.
 
-%We then used linear interpolation to interpolate the surprisal value for memory values in between these values. (TODO make a figure).\mhahn{mention linear interpolation already when explaining how to get tradeoff from theorem}
-%This is justified theoretically (TODO maybe discuss when introducing the theorem).
 
 We estimate the unigram entropy $H[w_0]$ by averaging over all models.
 
@@ -851,6 +849,13 @@ For each language, we collected data from the actual orderings and from several 
 We collect multiple samples for the actual orderings to control for variation due to the random initialization of the neural network.
 For each of the random grammars, we collect one sample.
 Data is collected according to a precision-based stopping criterion described in Section (REF).
+
+
+%We then used linear interpolation to interpolate the surprisal value for memory values in between these values. (TODO make a figure).\mhahn{mention linear interpolation already when explaining how to get tradeoff from theorem}
+%This is justified theoretically (TODO maybe discuss when introducing the theorem).
+
+
+
 
 \subsubsection{Number of Samples, Precision-Based Stopping Criterion}
 Training neural language models is computationally costly.
@@ -931,8 +936,8 @@ In particular, this might bias these models towards modeling relations between e
 Here we use chart parsing to show that the results also hold when estimating $I_t$ using a model that is based on hierarchical structure and incorporates no bias towards linear closeness.
 
 We use probabilistic context-free grammars (PCFG), a common formalism for representing probability distributions based on syntactic structure.
-PCFG surprisal is often computed in psycholinguistic research using approximate incremental parsers (CITE Roark, ...), but these might themselves incorporate some biases towards linear closeness due to the use of techniques such as beam-search and pruning.
-We instead opt for exact inference for PCFGs using exact chart parsing, which computes exact probabilities and surprisals for a given PCFG (CITE).
+PCFG surprisal is often computed in psycholinguistic research using approximate incremental parsers \cite{DBLP:journals/coling/Roark01,DBLP:journals/coling/DembergKK13,DBLP:journals/topics/SchijndelES13}, but these might themselves incorporate some biases towards linear closeness due to the use of techniques such as beam-search and pruning.
+We instead opt for exact inference for PCFGs using exact chart parsing, which computes exact probabilities and surprisals for a given PCFG.
 
 \subsubsection{Deriving PCFGs from Dependency Corpora}
 
@@ -955,7 +960,7 @@ We reduced the number of nonterminals as follows:
 
 Words occurring less than 3 times in the dataset were replaced by OOV.
 
-An alternative method to reduce the number of nonterminals is to use merge-and-split (CITE), but that method would have taken too long to run on all the 54 corpora.
+An alternative method to reduce the number of nonterminals is to use merge-and-split \citep{DBLP:conf/aaai/PetrovK07}, but that method would have taken too long to run on all the 54 corpora.
 
 We chose the threshold parameters for (1)-(3) separately for each language by sampling 15 configurations, and choosing the one that minimized estimated surprisal (see below) on a sampled baseline grammar, while resulting in at most 700 nonterminals and preterminals.
 
@@ -965,14 +970,14 @@ An alternative estimation method avoiding the binarization step would be to use 
 
 Calculating $I_t$ requires estimating entropies $H[X_1, \dots, X_t]$, and thus probabilities $P(X_1, \dots, X_t)$.
 This is challenging because it requires marginalization over possible positions in a sequence.
-The standard parsing algorithm for binary PCFGs is the CKY algorithm (CITE); however, the standard form of this algorithm only computes the surprisal for entire sentences.
+The standard parsing algorithm for binary PCFGs is the CKY algorithm; however, the standard form of this algorithm only computes the surprisal for entire sentences.
 There is a known extension of the CKY algorithm that calculates \emph{prefix} probabilities (CITE):
 \begin{equation}
 P[\#, X_1, \dots, X_t] := \sum_N \sum_{Y_{1\dots N}} P(\#, X_1, \dots, X_t, Y_{1\dots N}, \#)
 \end{equation}
 (here, $\#$ denotes the beginning/end of a sentence), that is, the probability mass assigned to all sentences starting with the given prefix $X_1, \dots, X_t$.
 
-However, simultaneously summing over possible left \emph{and} right continuations is more challenging.\footnote{(CITE) describe a method for calculating infix probabilities, but that method computes something subtly different from the quantity required here, and it is also computationally costly.}
+However, simultaneously summing over possible left \emph{and} right continuations is more challenging.\footnote{\citet{DBLP:conf/emnlp/NederhofS11} describe a method for calculating infix probabilities, but that method computes something subtly different from the quantity required here, and it is also computationally costly.}
 We approach this by restricting the summation on the left to prefixes of a fixed length:
 \begin{equation}
     \sum_{Y_1\dots Y_N} P(\#, Y_1 \dots Y_N, X_1, \dots, X_t)
@@ -986,7 +991,7 @@ Empirically, we found that the values already became essentially stationary at $
 
 For computational efficiency, we estimated $I_t$ for $t=1, \dots 5$, finding $I_t$ to be very close to zero for higher $t$.
 We ran the algorithm on all contiguous sequences of length $T=5$.
-Following (CITE), we took advantage of GPU parallelization for implementation of the CKY algorithm, processing 1,000 sequences in parallel.
+Following \cite{DBLP:conf/acl/KimDR19}, we took advantage of GPU parallelization for implementation of the CKY algorithm, processing 1,000 sequences in parallel.
 
 
 \subsubsection{Results}
@@ -1427,7 +1432,7 @@ It corresponds to the lemmas \textit{reru}, \textit{rareru}, \textit{eru}, \text
 In the main paper, we quantified prediction on the level of morphemes.
 We also repeated the experiments with prediction quantified on the level of phonemes.
 
-For Japanese, we transliterated verb forms into syllabic Hiragana with the tagger Kytea (CITE), and then phonemized these syllabic representations.
+For Japanese, we transliterated verb forms into syllabic Hiragana with the tagger Kytea \citep{DBLP:conf/lrec/NeubigM10,DBLP:conf/acl/NeubigNM11}, and then phonemized these syllabic representations.
 
 
 For Sesotho, we use the phonological transcription provided in the Demuth corpus.
