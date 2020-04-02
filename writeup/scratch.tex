@@ -1,0 +1,150 @@
+
+
+
+\section{Some theoretical thoughts (scratch area)}
+\subsection{Learnability bounds}
+
+\paragraph{Upper bounds via n-gram models:}
+Want to show that, if we know a process has stronger locality, there is a learning algorithm with lower sample complexity.
+
+\begin{thm}
+The class of processes with fixed bounds on $H_0$ on $EE$ can be learned up to KL loss $2\epsilon$ with ... samples with prob ...
+\end{thm}
+
+We want to learn a process to average KL distance $2\epsilon$.
+Assume excess entropy is $\leq I$, then only need to learn $N := I/\epsilon$-gram-model for KL loss $\epsilon$.
+
+(Or, to get a better bound, take $N$ so that $\sum_{t=N}^\infty I_t < \epsilon$.).
+
+So $N = \sum_{t=1}^\infty t I_t/\epsilon$.
+How many samples are needed to learn this up to $\epsilon$? Probably that will scale with the block entropy, which is $N H_0 + \sum_{t=1}^N t I_t$, with $H_0$ the unigram entropy.
+So the sample complexity would seem to scale with
+$$\exp\left(H_0 \sum_{t=1}^\infty t I_t/\epsilon + \sum_{t=1}^{\sum_{t=1}^\infty t I_t/\epsilon} t I_t\right)$$
+
+
+Want to learn $P(Y|X)$ up to $\mathbb{E}_x D_{KL}(P(y|x)||\hat P(y|x)) \leq \epsilon$.
+How many i.i.d. samples from $(X,Y)$ do we need?
+
+Assume the distribution of $Z$ has `low' entropy.
+How many i.i.d. samples do we need to get a good estimate of $P(Z)$?
+Something scaling with $\exp(H(Z))$?
+
+Convergence
+
+references:
+
+\url{https://arxiv.org/pdf/1904.02291.pdf} leads to:
+
+$$Pr(D_{KL}(\hat P(z)||P(z)) \geq \epsilon) \leq e^{-n\epsilon} \left(\frac{e\epsilon n}{|V|-1}\right)^{|V|-1}$$
+if $V$ is the set of values of $Z$, when $\epsilon > \frac{|V|-1}{n}$.
+
+
+Is it possible to get something similar but with $|V|$ replaced with $H[X]+|V_Y|$?
+
+\begin{thm}(must be something standard)
+Let $X$ be an RV. Then $1-\epsilon$ of its probability mass is concentrated on at most
+???
+values.
+\end{thm}
+
+\begin{proof}
+Assume no way of covering $1-\epsilon$ probability mass takes less than $K$ values.
+That is (ordering $p_i$ by magnitude downwards):
+$$\sum_{i=1}^K p_i \leq 1-\epsilon$$
+
+Want to show that $H[X]$ cannot be too small.
+
+First, note
+
+$(1-\epsilon) - (K-1) \frac{1-\epsilon}{|V|-K} \geq p_1 \geq \dots \geq p_K \geq \frac{1-\epsilon}{|V|-K}$
+
+or (reformulating slightly)
+
+$(1-\epsilon) (1 - (K-1) \frac{1}{|V|-K}) \geq p_1 \geq \dots \geq p_K \geq \frac{1-\epsilon}{|V|-K}$
+
+$H[X] \geq \sum_{i=1}^K \frac{1-\epsilon}{|V|-K} \log \frac{1}{(1-\epsilon) (1 -  \frac{K-1}{|V|-K})} = K \frac{1-\epsilon}{|V|-K} \log \frac{1}{(1-\epsilon) (1 -  \frac{K-1}{|V|-K})} = K \frac{1-\epsilon}{|V|-K} \log \frac{1}{(1-\epsilon) \frac{|V|-K-K+1}{|V|-K})} = K \frac{1-\epsilon}{|V|-K} \log \frac{{|V|-K}}{(1-\epsilon) (|V|-2K+1)}$
+
+
+And so
+
+
+$H[X] \geq  K \frac{1-\epsilon}{|V|-K} \log \frac{{|V|-K}}{(1-\epsilon) (|V|-2K+1)} =  (1-\epsilon) \frac{K}{|V|-K} \log \frac{{|V|-K}}{(1-\epsilon) (|V|-2K+1)} $
+If $K << |V|$, this is close to zero.
+
+-----
+
+So
+$H[X] \geq K \frac{1-\epsilon}{|V|-K} \log \frac{{|V|-K}}{(1-\epsilon) (|V|-K)} = \frac{K}{|V|-K} (1-\epsilon) \log \frac{1}{(1-\epsilon)}$
+
+So
+
+$\frac{K}{|V|-K} \leq H[X] \frac{1}{(1-\epsilon) \log \frac{1}{(1-\epsilon)}}$
+
+However, this bound does not seem very useful, as it never allows one to conclude something like $K << |V|$.
+
+Or, a better bound:
+
+$H[X] \geq  - (1-\epsilon) \log \left[ (1-\epsilon)  \left(\frac{|V|-2K+1}{|V|-K}\right) \right] + \epsilon \log \frac{1}{\epsilon}$
+
+So If $K << |V|$, then $H[X] \geq ... \approx -(1-\epsilon) \log (1-\epsilon)  + \epsilon \log \frac{1}{\epsilon}$ .
+
+
+\end{proof}
+
+
+%Then
+%$$H[X] \leq (1-\epsilon) \log \frac{K}{1-\epsilon} + \epsilon \log \frac{|V|-K}{\epsilon}$$
+%So
+%$$H[X] \leq (1-\epsilon) \log \frac{K}{1-\epsilon} + \epsilon \log \frac{|V|}{\epsilon}$$
+%So
+%$$H[X] - \epsilon \log \frac{|V|}{\epsilon} \leq (1-\epsilon) \log \frac{K}{1-\epsilon}$$
+%So
+%$$\exp\left(\frac{H[X] - \epsilon \log \frac{|V|}{\epsilon}}{1-\epsilon}\right) (1-\epsilon) \leq K$$
+%Taking the contrapositive, if
+%$$\exp\left(\frac{H[X] - \epsilon \log \frac{|V|}{\epsilon}}{1-\epsilon}\right) (1-\epsilon) > K$$
+%then $$\sum_{i=1}^K p_i > 1-\epsilon$$
+
+
+To get intuition, if $I_t = \alpha \cdot t^{-3}$, then excess entropy $I=\alpha \pi^2/6$, and (bounds are a bit crude here)
+\begin{align}
+& H_0 \sum_{t=1}^\infty t \alpha t^{-3}/\epsilon + \sum_{t=1}^{\sum_{t=1}^\infty t \alpha t^{-3}/\epsilon} t \alpha \cdot t^{-3} \\
+= & H_0 \alpha/\epsilon \cdot \sum_{t=1}^\infty  t^{1-3} + \sum_{t=1}^{\sum_{t=1}^\infty t \alpha t^{-3}/\epsilon} t \alpha \cdot t^{-3} \\
+\leq & H_0 \alpha/\epsilon \cdot \pi^2/6 + \sum_{t=1}^{\alpha/\epsilon \cdot \pi^2/6} t \alpha \cdot t^{-3} \\
+= & \frac{H_0 \alpha \pi^2}{6 \epsilon} + \alpha \sum_{t=1}^{\alpha/\epsilon \cdot \pi^2/6}  t^{-2} \leq  \frac{H_0 \alpha \pi^2}{6 \epsilon} + \alpha \pi^2/6  \leq  \left(\frac{H_0}{\epsilon} + 1\right) \frac{\alpha \pi^2}{6} \\
+\end{align}
+
+
+Question: Can there be meaningful lower bounds in terms of locality?
+
+Question: Can we give a lower bound by considering that learning sequences itself requires short-term memory?
+
+try to derive something for Trading Value and Information paper
+
+
+\subsection{Optimization}
+Area under $t - H_t$ curve up to $T$: $\sum_{t=1}^T H_t = T H + \sum_{t=1}^T t I_t$
+
+We cannot optimize for AUC using the method of (CITE), because we cannot construct an unbiased gradient estimator
+$AUC \propto \sum_{t} (\sum_{s \leq t} I_s) tI_t = \sum_{s \leq t}  tI_t I_s = I_1^2 + 2 I_1 I_2 + 2 I_2^2 + \dots$
+
+
+
+As a surrogate, we propose to maximize $I_1$.
+This corresponds
+
+It provides an accurate approximation to the AUC if $I_s$ is small for $s > 1$, which holds for the n-gram based estimator.
+
+If $I_s < \epsilon$ for $s > 1$, then 
+\begin{equation}
+	I_1^2 \leq \sum_{1\leq s \leq t \leq T}  tI_t I_s \leq I_1^2 + I_1 \epsilon T^2 + \epsilon^2 T^2
+\end{equation}
+That means, $I_t^2$ is an accurate approximation of the AUC when $\epsilon T^2$ is small.
+
+
+Softmax gradient update corresponds to adding $\alpha$ to the target logit and removing $\alpha$ from all other logits.
+Equivalently, add a certain dynamic amount to the logcount of the target and the total logcount.
+
+
+
+Counting corresponds to adding $1$ to the target probability. 
+

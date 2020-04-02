@@ -69,7 +69,6 @@
 
 \title{Supplementary Information for: Crosslinguistic Word Orders Enable an Efficient Tradeoff between Memory and Surprisal}
 \author{Michael Hahn, Judith Degen, Richard Futrell}
-\date{2018}
 
 \begin{document}
 
@@ -603,8 +602,19 @@ In total, $H[m_t] = H_2[1/4k]$ and $H[r_t] = 1/k$.
 Taking, in the theorem, $T=1$ and $S\rightarrow\infty$, we obtain $H[m_t] \geq H_2[1/4k]$ and $H[r_t] \geq 1/k$.
 Thus, the bound is tight for both working memory and retrieval costs.
 
+\subsection{Example IV: Low memory requirements do not imply decay of unconditional mutual information}
 
-\section{Corpus Size per Language}
+Consider the constant process where with probability 1/2 all $w_t = 0$, and with probability 1/2 all $w_t = 1$. %%$w_t = c$, where $c$ is random but independent of $t$ for each specific draw from the process.
+The unconditional mutual information is 1 at all distances, so does not decay at all, but the process only requires 1 bit of memory.
+Conversely, one can construct processes where the unconditional mutual informations are 0 for all $t$, but where $P > 0$ and this predictive information is actually spread out over arbitrarily large distances (that is, the ratio of memory $M$ and predictability $P$ can be made arbitrarrily large).
+
+First, consider the process (called X by REF) consisting of 2 random bits and their XOR. This one has bounded nonzero $J$, but zero unconditional MI. To get unbounded $J$, consider the following process for any $N \in \mathbb{N}_{>2}$: Every $w_t$ is equal to the XOR of $w_{t-1}$ and $w_{t-N}$, such that each $w_t$ has $Bernoulli(1/2)$ as its marginal. The unconditional mutual information between any two timesteps is zero, but modeling the process requires $N$ bits of memory.
+
+
+
+\section{Experiments 2 and 3}
+
+\subsection{Corpus Size per Language}
 
 \begin{center}
 \begin{longtable}{l|ll||l|llllllllllllll}
@@ -614,7 +624,7 @@ Thus, the bound is tight for both working memory and retrieval costs.
 	\captionof{table}{Languages, with the number of training and held-out sentences available.}\label{tab:corpora}
 \end{center}
 
-\section{Samples Drawn per Language}
+\subsection{Samples Drawn per Language}
 
 \begin{center}
 \begin{longtable}{l|ll||l|llllllllllllll}
@@ -631,11 +641,11 @@ Thus, the bound is tight for both working memory and retrieval costs.
 	Language & Mean & Lower & Upper & Language & Mean & Lower & Upper \\ \hline
 \input{tables/boot_g_REAL.tex}
 \end{longtable}
-	\captionof{figure}{Bootstrapped estimates for $G$.}\label{tab:boot-g}
+	\captionof{figure}{Bootstrapped estimates for the precision-dependent stopping criterion $G$.}\label{tab:boot-g}
 \end{center}
 
 
-\section{Detailed Results per Language}
+\subsection{Detailed Results per Language}
 
 %\subsection{Median Surprisal per Memory Budget}
 %
@@ -780,10 +790,112 @@ Thus, the bound is tight for both working memory and retrieval costs.
 
 
 
-\section{Details for Neural Network Models}
+\subsection{Details for Neural Network Models}
+
+The network is parameterized by a vector $\theta$ of weights determining how the activations of neurons propagate through the network~\citep{hochreiter-long-1997}.
+Given a corpus, the numeral parameters of the LSTM are chosen so as to minimize the average surprisal across the training corpus.
+%We can think of the LSTM parameters as forming one large vector $\theta$.
+At the beginning of training, the parameters $\theta$ are randomly initialized to some setting $\theta_0$.
+
+The training corpus is chopped into word sequences $w_1 ... w_{T_{max}}$ of length ${T_{max}}$, where ${T_{max}}$ is the highest $T$ for which we estimate $I_T$. %  (${T_{max}} = 20$ in our experiments).
+We use Stochastic Gradient Descent to optimize the parameters $\theta$ so as to minimize the surprisal
+\begin{equation}\label{eq:train}
+	\frac{1}{T_{max}} \sum_{i=1}^{T_{max}} \log p_\theta(w_i|w_1...w_{i-1})
+\end{equation}
+When calculating the parameter update, we use three standard methods of regularization that have been shown to improve neural language modeling: dropout~\citep{srivastava-dropout:-2014}, word dropout, and word noising~\citep{xie2017data}.
+
+Once all sequences have been processed, we start another pass through the training data.
+Before each pass through the training data, the order of sentences of the training data is shuffled, and the corpus is again chopped into sequences of length $T$.
+After each pass through the training data, the average surprisal~(\ref{eq:train}) at the current parameter setting $\theta$ is evaluated on the held-out partition.
+We terminate training once this held-out  surprisal does not improve over the one computed after the previous pass any more.
+
+In our experiments, we chose $T_{max} = 20$. Prior work has found that the probabilities $p(w_t|w_1...w_{t-1})$ are dominated by a small number of preceding words \citep{daniluk2017frustratingly}, suggesting that $I_t$ will be close to zero for $t$ greater than 20.
 
 
-\section{N-Gram Models}
+
+\subsubsection{Choice of Hyperparameters}
+
+The LSTM model has a set of numerical \emph{hyperparameters} that need to be specified before parameter estimation, such as the number of neurons and the learning rate.
+See SI for details.
+For each corpus, we used Bayesian optimization using the Expected Improvement acquisition function \citep{snoek-practical-2012} to find a good setting of the hyperparameters.
+We optimized the hyperparameters to minimize average surprisal~(\ref{eq:train}) on the held-out partition resulting at the end of parameter estimation, on languages generated from random word order grammars.
+This biases the hyperparameters towards modeling counterfactual grammars better, biasing them \emph{against} our hypothesis that real orders result in better memory-surprisal tradeoffs than counterfactual orders.
+
+Due to reasons of computational efficiency, neural language models can only process a bounded number of distinct words in a single language (CITE).
+For each corpus, we limited the number of distinct processed words to the $N=10,000$ most common words in the training corpus, a common choice for neural language models (CITE).
+Following (CITE), we represented other words by their part-of-speech tags as annotated in the corpora.
+This applied to 37 languages, affecting an average of 11~\% of words in these languages.
+We believe that this modeling limitation does not affect our results for the following reasons.
+First, this affects the same words in real and counterfactually ordered sentences.
+Second, all excluded words are extremely infrequent in the available data, occurring less than 10 times (except for Czech and Russian, the languages for which we have by far the largest datasets).
+Many of the excluded words occur only once in the dataset (78 \% on average across the affected languages).
+This means that any model would only be able to extract very limited information about these words from the available training data, likely \emph{less} than what is provided by the part-of-speech tag.
+Third, traditional N-gram models, which do not have this limitation, provide results in qualitative agreement with the neural network-based estimates (see SI).
+
+\subsubsection{Estimation of average surprisal}
+
+The mutual information $I_t$ can be estimated from neural Markov models as follows.
+After estimating the parameter vector $\theta$, we compute the following difference for each word $w_t$ ($t$ ranging from $T_{max}$ up to the length of the held-out partition) in the held-out partition:
+\begin{equation}
+	\frac{1}{|HeldOut|-t} \sum_{i=t}^{|HeldOut|} \log P_\theta[w_i | w_{i-t}, w_{i-t+1}, ..., w_{i-1}] - \log P_\theta[w_i | w_{i-t+1}, ..., w_{i-1}],
+\end{equation}
+and we take the average over these.
+We cut $T$ off at 20, as this is the length of the sequences processed by the model.
+
+%We then used linear interpolation to interpolate the surprisal value for memory values in between these values. (TODO make a figure).\mhahn{mention linear interpolation already when explaining how to get tradeoff from theorem}
+%This is justified theoretically (TODO maybe discuss when introducing the theorem).
+
+We estimate the unigram entropy $H[w_0]$ by averaging over all models.
+
+For each language, we collected data from the actual orderings and from several random grammars.
+We collect multiple samples for the actual orderings to control for variation due to the random initialization of the neural network.
+For each of the random grammars, we collect one sample.
+Data is collected according to a precision-based stopping criterion described in Section (REF).
+
+\subsubsection{Number of Samples, Precision-Based Stopping Criterion}
+Training neural language models is computationally costly.
+Therefore, we used a precision-based stopping criterion to adaptively choose a sample size for each language.
+Precision-based stopping criteria offer a way to adaptively choose sample size without biasing results for or against the hypothesis of interest (CITE).
+
+We propose a stopping criterion using a global measure of the degree of optimization of the real language.
+This is visualized in Figure~\ref{fig:quantile-global}.
+For each sample $x$ from real orderings, we look at the proportions $N_+(x)$ of samples from the baseline languages that are more optimal than $x$ throughout the entire range where both curves are defined, and the proportion $N_-(x)$ of baseline samples that are consistently less optimal.
+We estimate the quotient
+\begin{equation}\label{eq:g}
+	G :=	\frac{\E_{x \sim P_1}[W_+(x)]}{\E_{x \sim P_1}[W_+(x) + W_-(x)]}
+\end{equation}
+where $P_1$ is the distribution over values obtained for real orderings.
+We use a bootstrapped confidence interval for $\E[G]$ for quantifying the degree of optimization.
+For bootstrapping, we separately resample samples from the real language and from the baseline grammars.
+Due to the use of bootstrapping, the confidence intervals are not exact.
+
+\begin{figure}
+	\begin{center}
+\includegraphics[width=0.8\textwidth]{figures/quantile-global.png}
+\end{center}
+	\caption{Illustration for the global quantile estimate serving as the stopping criterion. For each sample for the real language, we compare the memory-surprisal curve to all baselines.}\label{fig:quantile-global}
+\end{figure}
+
+
+For each language, we first collected 10 data points for real orderings and 10 data points for baseline orderings.
+We continued obtaining new data points until the CI for $G$ had width $\leq 0.15$, or there were 100 samples from $P_1$ and 300 samples from $P_2$.
+Up to the end, we chose the next sample to be from $P_0$ with probability 2/3, and $P_1$ otherwise.\footnote{Due to a scripting error, a much higher number of samples was generated for Erzya.}
+
+This procedure was parallelized on several machines.
+In the case where the stopping criterion was reached for a language while several machines were still computing samples for this language, we did not discard those samples.
+Consequently, more samples were collected than necessary to reach the stopping criterion; however, in a way that does not bias our results towards or against our hypothesis.
+
+%Due to parallelization of this procedure, it often produced more samples than required, when the stopping criterion .
+%We chose these thresholds based on preliminary simulations which had suggested that these widths were achievable at acceptable computational cost.
+%For each language, we collected at least 5 data points for real orderings and at least 10 data points for baseline orderings.
+%We continued obtaining new data points until the CI for $G$ had width $\leq 0.15$, or there were 100 samples from $P_1$ and 300 samples from $P_2$.
+%Up to the end, we chose the next sample to be from $P_0$ with probability 2/3, and $P_1$ otherwise.
+
+
+
+
+
+\subsection{N-Gram Models}
 
 
 \input{control-ngrams.tex}
@@ -812,28 +924,30 @@ Thus, the bound is tight for both working memory and retrieval costs.
 %
 %-- Chinese treebank \citep{xue-chinese-2013}
 
-\section{Chart Parsing Control}
+\subsection{Chart Parsing Control}
 
 LSTMs and n-gram models are linear sequence models that might incorporate biases towards linear order as opposed to hierarchical structure.
+In particular, this might bias these models towards modeling relations between elements better when they are close in linear order.
 Here we use chart parsing to show that the results also hold when estimating $I_t$ using a model that is based on hierarchical structure and incorporates no bias towards linear closeness.
 
-We use PCFGs.
-PCFG surprisal is often computed in psycholinguistic research using approximate incremental parsers, but these might themselves incorporate some biases towards linear closeness.
-We instead opt for exact inference for PCFGs using exact chart parsing.
+We use probabilistic context-free grammars (PCFG), a common formalism for representing probability distributions based on syntactic structure.
+PCFG surprisal is often computed in psycholinguistic research using approximate incremental parsers (CITE Roark, ...), but these might themselves incorporate some biases towards linear closeness due to the use of techniques such as beam-search and pruning.
+We instead opt for exact inference for PCFGs using exact chart parsing, which computes exact probabilities and surprisals for a given PCFG (CITE).
 
-\subsection{Deriving PCFGs from Dependency Corpora}
+\subsubsection{Deriving PCFGs from Dependency Corpora}
 
+Here, we describe how we constructed a PCFG from the training section of a dependency corpus.
+There is no universally accepted standard methd of extracting PCFGs from dependency corpora; we chose the following procedure that tries to balance between preserving information about dependency structure while keeping the size of grammars computationally manageable.
 
+In a first step we convert the dependency trees into binary constituent trees. We binarize so that left children branch off before right children.
+We assign nonterminal labels to the resulting constituents as follows.
+Preterminals are labeled with (1) the POS of the head, and (2) its lexical identity.
+We assign nonterminal labels to constituents spanning more than one word based on (1) the POS of the head, (2) the lexical identity of the head, (3) the dependency label linking head and dependent.
+These choices are driven by the desire to preserve information about the dependency structure in the constituent trees.
 
-We binarize, and give assign nonterminal labels to intermediate nodes based on (1) the POS of the head, (2) the lexical identity of the head, (3) the dependency label linking head and dependent.
-We binarize so that left children branch off before right children.
-
-The preterminals are labeled by POS tag and lexical identity.
-
-It is necessary to reduce the number of preterminals and nonterminals, both to deal with data sparsity, and to make chart parsing tractable.
+In a second step, it is necessary to reduce the number of preterminals and nonterminals, both to deal with data sparsity, and to make chart parsing tractable.
 In our implementation for calculating $I_t$ (see below), we found that up to 700 nonterminals were compatible with efficient inference.
 (For comparison, the Berkeley parser uses X nonterminals for its English grammar, but employs a highly optimized coarse-to-fine strategy.)
-
 We reduced the number of nonterminals as follows:
 (1) For words with frequency below a threshold parameter, we did not record lexical identity in preterminals and nonterminals.
 (2) Nonterminals that only differ in the relation label were merged if their frequency fell below a threshold parameter,
@@ -841,21 +955,18 @@ We reduced the number of nonterminals as follows:
 
 Words occurring less than 3 times in the dataset were replaced by OOV.
 
-Alternative: merge-and-split, but that would have taken too long to run on all the corpora.
+An alternative method to reduce the number of nonterminals is to use merge-and-split (CITE), but that method would have taken too long to run on all the 54 corpora.
 
 We chose the threshold parameters for (1)-(3) separately for each language by sampling 15 configurations, and choosing the one that minimized estimated surprisal (see below) on a sampled baseline grammar, while resulting in at most 700 nonterminals and preterminals.
 
-mention approaches in the literature
-
-An alternative avoiding binarization would be to use the Earley parser, but that would have made it less feasible to parallelize processing on GPUs (see below).
+An alternative estimation method avoiding the binarization step would be to use the Earley parser, but that would have made it difficult to parallelize processing on GPUs (see below).
 
 \subsection{Estimating $I_t$ with Chart Parsing}
-algorithm, cite Goodman's thesis
 
 Calculating $I_t$ requires estimating entropies $H[X_1, \dots, X_t]$, and thus probabilities $P(X_1, \dots, X_t)$.
 This is challenging because it requires marginalization over possible positions in a sequence.
-
-There is a known extension of the CKY algorithm that calculates \emph{prefix} probabilities
+The standard parsing algorithm for binary PCFGs is the CKY algorithm (CITE); however, the standard form of this algorithm only computes the surprisal for entire sentences.
+There is a known extension of the CKY algorithm that calculates \emph{prefix} probabilities (CITE):
 \begin{equation}
 P[\#, X_1, \dots, X_t] := \sum_N \sum_{Y_{1\dots N}} P(\#, X_1, \dots, X_t, Y_{1\dots N}, \#)
 \end{equation}
@@ -870,26 +981,24 @@ and estimating
 \begin{equation}
     P(X_t|X_1\dots X_{t-1}) \approx \E_{Y_1\dots Y_N} P(X_t|\#, Y_1 \dots Y_N, X_1, \dots, X_{t-1})
 \end{equation}
-Under certain conditions on the PCFG, this approximation converges to the tru value for sufficiently large values of $N$.\footnote{TODO say something about Markov chain convergence: For each $t$, consider for each nonterminal $\tau$ the number $n_\tau$ of nodes with this nonterminal dominating $w_\tau$. This is a Markov chain.}
+Under certain conditions on the PCFG, this approximation converges to the true value for sufficiently large values of $N$.\footnote{TODO say something about Markov chain convergence: For each $t$, consider for each nonterminal $\tau$ the number $n_\tau$ of nodes with this nonterminal dominating $w_\tau$. This is a Markov chain.}
 Empirically, we found that the values already became essentially stationary at $N\geq 5$.
 
-The resulting algorithm is shown in X.
-
 For computational efficiency, we estimated $I_t$ for $t=1, \dots 5$, finding $I_t$ to be very close to zero for higher $t$.
-
 We ran the algorithm on all contiguous sequences of length $T=5$.
-Following (CITE), we took advantage of GPU parallelization for implementation, processing 1,000 sequences in parallel.
+Following (CITE), we took advantage of GPU parallelization for implementation of the CKY algorithm, processing 1,000 sequences in parallel.
 
 
-\subsection{Results}
+\subsubsection{Results}
 We computed $I_t$ for the MLE grammar and for five random baseline grammars.
+We did not run this on the observed orderings, as these may have crossing branches, making binarization difficult and thus rendering comparison with baselines less meaningful.
 
-We did not run this on the observed orderings, as these may have crossing branches, making binarization difficult and thus rendering comparison with baselines less straightforward.
+The resulting memory-surprisal tradeoff bounds are shown in Figure~\ref{fig:resu-pcfg}.
+In most languages, a more efficient tradeoff curve is estimated for the fitted grammars than for the baseline grammars.
 
-Figure~\ref{fig:resu-pcfg}
-
-Limitations: Absolute numbers aren't comparable with other models because there are many OOVs (they are necessary because the number of non- and preterminals has to be kept low).
-Also, the amount of exploited predictive information $\sum_t I_t$ is much lower than in the other models. Agrees with the observation that PCFG independence assumptions are inadequate, and that chart parsers have not historically reached good perplexities (parsers with good perplexities such as Roark Parser and RNNGs do not make these independence assumptions, but also do not allow efficient exact chart parsing).
+Note that absolute numbers aren not comparable with other models because there are many out-of-vocabulary tokens (they are necessary because the number of non- and preterminals has to be kept low).
+Also, we note that the amount of exploited predictive information is much lower than in the other models, that is, the difference between surprisal at zero memory and surprisal at maximal memory is low.
+This agrees with the observation that PCFG independence assumptions are inadequate, and that chart parsers have not historically reached good perplexities (parsers with good perplexities such as Roark Parser and RNNGs do not make these independence assumptions, but also do not allow efficient exact chart parsing).
 Nonetheless, the experiment confirms the finding with a model that is based on hierarchical syntactic structure while enabling exact inference.
 
 \begin{center}
@@ -900,13 +1009,11 @@ Nonetheless, the experiment confirms the finding with a model that is based on h
 
 
 
-\section{Morphology}
+\section{Experiment 4}
 
 \subsection{Japanese}
 
 Here, we describe how we determined the Japanese verb suffixes described in the main paper.
-
-%Japanese orthography does not indicate word boundaries, and there is no universally accepted segmentation.
 We determined a set of frequent morphemes as follows.
 We selected all morphemes occurring in the dataset at least 50 times and annotated their meaning/function.
 Among these, three morphemes are treated as independent words, not suffixes, by \cite{kaiser2013japanese} (\textit{dekiru} `be able to', \textit{naru} `become', \textit{yoo} `as if'); we excluded these.
@@ -1083,15 +1190,12 @@ mi     &       &    & e & mase       &           & n        &          & cannot 
 \subsection{Sesotho}
 
 Here, we describe how we determined the Sesotho verb prefixes and suffixes.
-
 Sesotho has composite forms consisting of an inflected auxiliary followed by an inflected verb.
 Both verbs carry subject agreement.
 While they are annotated as a unit in the Demuth corpus, they are treated as separate words in grammars \citep{doke1967textbook,guma1971outline}.
 We separated these, taking the main verb to start at its subject agreement prefix.
 We only considered main verbs for the experiments here.
-
 Forms in child utterances are annotated with well-formed adult forms; we took these here.
-
 In the Demuth corpus, each morpheme is annotated; a one- or two-letter key indicates the type of morpheme (e.g. subject agreement, TAM marker).
 We classified morphemes by this annotation.
 
@@ -1167,7 +1271,7 @@ As in Japanese, morphemes show different forms depending on their environment, a
     Object agreement and reflexive marking are mutually exclusive \cite[p. 165]{guma1971outline}.
 \end{enumerate}
 
-In addition to these morphemes used in finite verbs, there is an \textit{infinitive} prefix \textit{ho}- (labeled `if', 314 occurrences) \cite[\textsection\textsection 378-384]{doke1967textbook}, which is compatible with TAM markers \cite[\textsection 379]{doke1967textbook} and object agreement \cite[\textsection 382]{doke1967textbook}.
+%In addition to these morphemes used in finite verbs, there is an \textit{infinitive} prefix \textit{ho}- (labeled `if', 314 occurrences) \cite[\textsection\textsection 378-384]{doke1967textbook}, which is compatible with TAM markers \cite[\textsection 379]{doke1967textbook} and object agreement \cite[\textsection 382]{doke1967textbook}.
 %Additionally FINITENESS (?) Conditional morpheme (\emph{ho}, `if', 314), comes before object agreement.
 
 %In agreement with Bybee's hierarchy, subject agreement is encoded in a position further away than TAM features.
@@ -1247,7 +1351,7 @@ Again, we extracted morpheme types occurring at least 50 times.
     
     Some of these suffixes can be stacked, e.g., see \cite[\textsection 345]{doke1967textbook} for reversive+causative, and \cite[\textsection 314-315]{doke1967textbook} for applicative suffixes applied to other valence affixes.\footnote{Example of reciprocal+applicative from Demuth corpus: ba-arol-el-an-a sm2-t\^{}p\_divide-ap-rc-m\^{}in `Do they share?'}
     
-    Some other suffixes documented in the literature do not occur frequently or are not annotated in the corpus (e.g., the associative suffix \cite[textsection 343]{doke1967textbook}).
+    Some other suffixes documented in the literature do not occur frequently or are not annotated in the corpus (e.g., the associative suffix \cite[\textsection 343]{doke1967textbook}).
     
     \item VOICE: passive -\textit{w}- (labeled \textit{p}, 1K occurrences) \cite[\textsection 300]{doke1967textbook} 
     
@@ -1310,11 +1414,40 @@ o       &          &     &        & pheh & el      & w    &      & a & (Mpho) is
 
 
 
-\subsection{Results: Japanese}
+\subsection{Experiment}
+
+\paragraph{Identifying underlying morphemes in Japanese}
+In Japanese, we labeled suffixes for underlying morphemes with the aid of provided lemmatization.
+In most cases, underlying morphemes correspond to lemmas in the UD treebank.
+For the causative suffix, the treebank uses the lemmas \textit{saseru} and \textit{seru} depending on the verb stem.
+As passive and potential suffixes are formally identical for many verbs, they are not fully distinguished in the treebank annotation; we collapsed them into a single underlying morpheme labeled \textit{Passive/Potential}.
+It corresponds to the lemmas \textit{reru}, \textit{rareru}, \textit{eru}, \textit{keru} in the treebank annotation.
+
+\paragraph{Quantifying Prediction on the Phoneme Level}
+In the main paper, we quantified prediction on the level of morphemes.
+We also repeated the experiments with prediction quantified on the level of phonemes.
+
+For Japanese, we transliterated verb forms into syllabic Hiragana with the tagger Kytea (CITE), and then phonemized these syllabic representations.
 
 
+For Sesotho, we use the phonological transcription provided in the Demuth corpus.
+In the phoneme-based version, we order merged phonemes according to the position that a grammar assigns to its first morpheme.
 
+\paragraph{Estimating Predictability on Training Set}
+In the main paper, we used the heldout set to estimate the memory-surprisal tradeoff.
+We also repeated experiments using instead the training set.
+In this case, we did not apply smoothing; instead, we directly computed $I_t$ for the empirical distribution given by the training corpus.
 
+\paragraph{Results}
+Results for the memory-surprisal tradeoffs are shown in Figures~(\ref{fig:jap-phon}--\ref{fig:sesotho-morph}).
+We report results both when estimating and optimizing on the held-out set (as in the main paper), and when estimating the memory-surprisal tradeoff on the training set instead.
+Accuracies on predicting orderings are shown in Figures~(\ref{fig:acc-japanese}-\ref{fig:acc-sesotho}).
+In the main paper, we report accuracies computed over all forms occurring in the corpus, counting each form by the number of times it occurs. This corresponds to the `Tokens' results in Figures~(\ref{fig:acc-japanese}-\ref{fig:acc-sesotho}).
+Additionally, we also provide accuracies computed when counting each form only once, no matter how often it occurs; these are the `Types' results. This method downweights high-frequency forms and upweights low-frequency forms.
+Results largely agree between the two methods, showing that results are not driven specifically by high-frequency forms.
+Again, we provide results both for optimizing on the heldout set as in the main paper, and for optimizing for the training set (`Simple').
+Results largely agree between the two methods.
+Estimating on the training set results in estimated tradeoffs that achieve lower surprisal for sufficiently high memory entropies, and consequently result in lower AUC estimates. This is to be expected, as estimating entropies on the training set will generally result in  lower estimates compared to estimating cross-entropies on heldout data.
 
 \begin{figure}
 	\begin{center}
@@ -1326,7 +1459,7 @@ o       &          &     &        & pheh & el      & w    &      & a & (Mpho) is
 		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-memsurp-heldout.pdf}
 		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-auc-hist-heldout.pdf}
 \end{center}
-	\caption{Japanese verb suffixes, measuring prediction on the level of phonemes, for real (blue), random (green), and approximately optimized (red) orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff.}\label{fig:jap-phon}
+	\caption{Japanese verb suffixes, measuring prediction on the level of phonemes, for real (blue), and random (red) orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff.}\label{fig:jap-phon}
 \end{figure}
 
 \begin{figure}
@@ -1367,9 +1500,6 @@ o       &          &     &        & pheh & el      & w    &      & a & (Mpho) is
 
 
 
-\subsection{Results: Sesotho}
-
-
 
 \begin{figure}
 	\begin{center}
@@ -1381,7 +1511,7 @@ o       &          &     &        & pheh & el      & w    &      & a & (Mpho) is
 \includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-memsurp-heldout.pdf}
 \includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-auc-hist-heldout.pdf}
 \end{center}
-	\caption{Sesotho verb affixes, measuring prediction on the level of phonemes, for real (blue), random (green), and approximately optimized (red) orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff.}\label{fig:jap-phon}
+	\caption{Sesotho verb affixes, measuring prediction on the level of phonemes, for real (blue), random (green), and approximately optimized (red) orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff.}\label{fig:sesotho-phon}
 \end{figure}
 
 
@@ -1395,7 +1525,7 @@ o       &          &     &        & pheh & el      & w    &      & a & (Mpho) is
 \includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-memsurp-heldout.pdf}
 \includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-auc-hist-heldout.pdf}
 \end{center}
-	\caption{Sesotho verb affixes, measuring prediction on the level of morphemes, for real (blue), random (green), and approximately optimized (red) orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff.}\label{fig:jap-morph}
+	\caption{Sesotho verb affixes, measuring prediction on the level of morphemes, for real (blue), random (green), and approximately optimized (red) orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff.}\label{fig:sesotho-morph}
 \end{figure}
 
 
@@ -1429,156 +1559,6 @@ o       &          &     &        & pheh & el      & w    &      & a & (Mpho) is
 \end{figure}
 
 
-
-
-
-
-\section{Some theoretical thoughts (scratch area)}
-\subsection{Learnability bounds}
-
-\paragraph{Upper bounds via n-gram models:}
-Want to show that, if we know a process has stronger locality, there is a learning algorithm with lower sample complexity.
-
-\begin{thm}
-The class of processes with fixed bounds on $H_0$ on $EE$ can be learned up to KL loss $2\epsilon$ with ... samples with prob ...
-\end{thm}
-
-We want to learn a process to average KL distance $2\epsilon$.
-Assume excess entropy is $\leq I$, then only need to learn $N := I/\epsilon$-gram-model for KL loss $\epsilon$.
-
-(Or, to get a better bound, take $N$ so that $\sum_{t=N}^\infty I_t < \epsilon$.).
-
-So $N = \sum_{t=1}^\infty t I_t/\epsilon$.
-How many samples are needed to learn this up to $\epsilon$? Probably that will scale with the block entropy, which is $N H_0 + \sum_{t=1}^N t I_t$, with $H_0$ the unigram entropy.
-So the sample complexity would seem to scale with
-$$\exp\left(H_0 \sum_{t=1}^\infty t I_t/\epsilon + \sum_{t=1}^{\sum_{t=1}^\infty t I_t/\epsilon} t I_t\right)$$
-
-
-Want to learn $P(Y|X)$ up to $\mathbb{E}_x D_{KL}(P(y|x)||\hat P(y|x)) \leq \epsilon$.
-How many i.i.d. samples from $(X,Y)$ do we need?
-
-Assume the distribution of $Z$ has `low' entropy.
-How many i.i.d. samples do we need to get a good estimate of $P(Z)$?
-Something scaling with $\exp(H(Z))$?
-
-Convergence
-
-references:
-
-\url{https://arxiv.org/pdf/1904.02291.pdf} leads to:
-
-$$Pr(D_{KL}(\hat P(z)||P(z)) \geq \epsilon) \leq e^{-n\epsilon} \left(\frac{e\epsilon n}{|V|-1}\right)^{|V|-1}$$
-if $V$ is the set of values of $Z$, when $\epsilon > \frac{|V|-1}{n}$.
-
-
-Is it possible to get something similar but with $|V|$ replaced with $H[X]+|V_Y|$?
-
-\begin{thm}(must be something standard)
-Let $X$ be an RV. Then $1-\epsilon$ of its probability mass is concentrated on at most
-???
-values.
-\end{thm}
-
-\begin{proof}
-Assume no way of covering $1-\epsilon$ probability mass takes less than $K$ values.
-That is (ordering $p_i$ by magnitude downwards):
-$$\sum_{i=1}^K p_i \leq 1-\epsilon$$
-
-Want to show that $H[X]$ cannot be too small.
-
-First, note
-
-$(1-\epsilon) - (K-1) \frac{1-\epsilon}{|V|-K} \geq p_1 \geq \dots \geq p_K \geq \frac{1-\epsilon}{|V|-K}$
-
-or (reformulating slightly)
-
-$(1-\epsilon) (1 - (K-1) \frac{1}{|V|-K}) \geq p_1 \geq \dots \geq p_K \geq \frac{1-\epsilon}{|V|-K}$
-
-$H[X] \geq \sum_{i=1}^K \frac{1-\epsilon}{|V|-K} \log \frac{1}{(1-\epsilon) (1 -  \frac{K-1}{|V|-K})} = K \frac{1-\epsilon}{|V|-K} \log \frac{1}{(1-\epsilon) (1 -  \frac{K-1}{|V|-K})} = K \frac{1-\epsilon}{|V|-K} \log \frac{1}{(1-\epsilon) \frac{|V|-K-K+1}{|V|-K})} = K \frac{1-\epsilon}{|V|-K} \log \frac{{|V|-K}}{(1-\epsilon) (|V|-2K+1)}$
-
-
-And so
-
-
-$H[X] \geq  K \frac{1-\epsilon}{|V|-K} \log \frac{{|V|-K}}{(1-\epsilon) (|V|-2K+1)} =  (1-\epsilon) \frac{K}{|V|-K} \log \frac{{|V|-K}}{(1-\epsilon) (|V|-2K+1)} $
-If $K << |V|$, this is close to zero.
-
------
-
-So
-$H[X] \geq K \frac{1-\epsilon}{|V|-K} \log \frac{{|V|-K}}{(1-\epsilon) (|V|-K)} = \frac{K}{|V|-K} (1-\epsilon) \log \frac{1}{(1-\epsilon)}$
-
-So
-
-$\frac{K}{|V|-K} \leq H[X] \frac{1}{(1-\epsilon) \log \frac{1}{(1-\epsilon)}}$
-
-However, this bound does not seem very useful, as it never allows one to conclude something like $K << |V|$.
-
-Or, a better bound:
-
-$H[X] \geq  - (1-\epsilon) \log \left[ (1-\epsilon)  \left(\frac{|V|-2K+1}{|V|-K}\right) \right] + \epsilon \log \frac{1}{\epsilon}$
-
-So If $K << |V|$, then $H[X] \geq ... \approx -(1-\epsilon) \log (1-\epsilon)  + \epsilon \log \frac{1}{\epsilon}$ .
-
-
-\end{proof}
-
-
-%Then
-%$$H[X] \leq (1-\epsilon) \log \frac{K}{1-\epsilon} + \epsilon \log \frac{|V|-K}{\epsilon}$$
-%So
-%$$H[X] \leq (1-\epsilon) \log \frac{K}{1-\epsilon} + \epsilon \log \frac{|V|}{\epsilon}$$
-%So
-%$$H[X] - \epsilon \log \frac{|V|}{\epsilon} \leq (1-\epsilon) \log \frac{K}{1-\epsilon}$$
-%So
-%$$\exp\left(\frac{H[X] - \epsilon \log \frac{|V|}{\epsilon}}{1-\epsilon}\right) (1-\epsilon) \leq K$$
-%Taking the contrapositive, if
-%$$\exp\left(\frac{H[X] - \epsilon \log \frac{|V|}{\epsilon}}{1-\epsilon}\right) (1-\epsilon) > K$$
-%then $$\sum_{i=1}^K p_i > 1-\epsilon$$
-
-
-To get intuition, if $I_t = \alpha \cdot t^{-3}$, then excess entropy $I=\alpha \pi^2/6$, and (bounds are a bit crude here)
-\begin{align}
-& H_0 \sum_{t=1}^\infty t \alpha t^{-3}/\epsilon + \sum_{t=1}^{\sum_{t=1}^\infty t \alpha t^{-3}/\epsilon} t \alpha \cdot t^{-3} \\
-= & H_0 \alpha/\epsilon \cdot \sum_{t=1}^\infty  t^{1-3} + \sum_{t=1}^{\sum_{t=1}^\infty t \alpha t^{-3}/\epsilon} t \alpha \cdot t^{-3} \\
-\leq & H_0 \alpha/\epsilon \cdot \pi^2/6 + \sum_{t=1}^{\alpha/\epsilon \cdot \pi^2/6} t \alpha \cdot t^{-3} \\
-= & \frac{H_0 \alpha \pi^2}{6 \epsilon} + \alpha \sum_{t=1}^{\alpha/\epsilon \cdot \pi^2/6}  t^{-2} \leq  \frac{H_0 \alpha \pi^2}{6 \epsilon} + \alpha \pi^2/6  \leq  \left(\frac{H_0}{\epsilon} + 1\right) \frac{\alpha \pi^2}{6} \\
-\end{align}
-
-
-Question: Can there be meaningful lower bounds in terms of locality?
-
-Question: Can we give a lower bound by considering that learning sequences itself requires short-term memory?
-
-try to derive something for Trading Value and Information paper
-
-
-\subsection{Optimization}
-Area under $t - H_t$ curve up to $T$: $\sum_{t=1}^T H_t = T H + \sum_{t=1}^T t I_t$
-
-We cannot optimize for AUC using the method of (CITE), because we cannot construct an unbiased gradient estimator
-$AUC \propto \sum_{t} (\sum_{s \leq t} I_s) tI_t = \sum_{s \leq t}  tI_t I_s = I_1^2 + 2 I_1 I_2 + 2 I_2^2 + \dots$
-
-
-
-As a surrogate, we propose to maximize $I_1$.
-This corresponds
-
-It provides an accurate approximation to the AUC if $I_s$ is small for $s > 1$, which holds for the n-gram based estimator.
-
-If $I_s < \epsilon$ for $s > 1$, then 
-\begin{equation}
-	I_1^2 \leq \sum_{1\leq s \leq t \leq T}  tI_t I_s \leq I_1^2 + I_1 \epsilon T^2 + \epsilon^2 T^2
-\end{equation}
-That means, $I_t^2$ is an accurate approximation of the AUC when $\epsilon T^2$ is small.
-
-
-Softmax gradient update corresponds to adding $\alpha$ to the target logit and removing $\alpha$ from all other logits.
-Equivalently, add a certain dynamic amount to the logcount of the target and the total logcount.
-
-
-
-Counting corresponds to adding $1$ to the target probability. 
 
 
 
