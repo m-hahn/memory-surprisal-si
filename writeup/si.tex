@@ -980,7 +980,7 @@ An alternative estimation method avoiding the binarization step would be to use 
 Calculating $I_t$ requires estimating entropies $H[X_1, \dots, X_t]$, and thus probabilities $P(X_1, \dots, X_t)$.
 This is challenging because it requires marginalization over possible positions in a sequence.
 The standard parsing algorithm for binary PCFGs is the CKY algorithm; however, the standard form of this algorithm only computes the surprisal for entire sentences.
-There is a known extension of the CKY algorithm that calculates \emph{prefix} probabilities (CITE):
+There is a known extension of the CKY algorithm that calculates \emph{prefix} probabilities~\citep{DBLP:journals/coling/JelinekL91,DBLP:journals/coling/Stolcke95,DBLP:journals/coling/Goodman99}:
 \begin{equation}
 P[\#, X_1, \dots, X_t] := \sum_N \sum_{Y_{1\dots N}} P(\#, X_1, \dots, X_t, Y_{1\dots N}, \#)
 \end{equation}
@@ -1573,6 +1573,52 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 \end{figure}
 
 
+
+\begin{figure}
+    \centering
+    \begin{tabular}{llllllll}
+            &       Real & Optimized \\ \hline\hline
+            &    Stem & Stem \\ \hline
+	    1&suru & desiderative \\
+	    2&causative & future \\
+	    3&passive/potential & causative \\
+	    4&desiderative & suru \\
+	    5&politeness & passive/potential \\
+	    6&negation & politeness \\
+	    7&future & negation \\
+	    &past & past \\
+	    &nonfinite & nonfinite \\ \hline
+    \end{tabular}
+	\caption{Comparing order of Japanese affixes in the observed orders (left) and according to an approximatively optimized grammar (right), optimized for AUC on the \emph{training} set.}
+    \label{fig:grammar-table-jap}
+\end{figure}
+
+
+
+\begin{figure}
+    \centering
+    \begin{tabular}{llllllll}
+            &       Real & Optimized \\ \hline\hline
+	    1&Subject (relative) & Subject (relative) \\
+	    &Subject & Subject \\
+	    2&Negation & Negation \\
+	    3&Tense/aspect & Tense/aspect \\
+	    4&Object & Object \\ \hline
+	    &Stem & Stem \\ \hline
+	    1&	    Reversive & Reversive \\
+	    2&Causative & Reciprocal \\
+	    &Neuter & Causative \\
+	    &Applicative & Neuter \\
+	    &Reciprocal & Applicative \\
+	    3&Passive & Passive \\
+	    4&Tense/aspect & Tense/aspect \\
+	    5&Mood & Relative \\
+	    6&Interrogative & Interrogative \\
+	    7&Relative & Mood \\ \hline
+    \end{tabular}
+	\caption{Comparing order of Sesotho affixes in the observed orders (left) and according to an approximatively optimized grammar (right), optimized for AUC on the \emph{training} set. Note that order was separately optimized for prefixes and suffixes.}
+    \label{fig:grammar-table-sesotho}
+\end{figure}
 
 
 
