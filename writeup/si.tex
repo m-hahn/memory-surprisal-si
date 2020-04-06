@@ -945,7 +945,7 @@ In particular, this might bias these models towards modeling relations between e
 Here we use chart parsing to show that the results also hold when estimating $I_t$ using a model that is based on hierarchical structure and incorporates no bias towards linear closeness.
 
 We use probabilistic context-free grammars (PCFG), a common formalism for representing probability distributions based on syntactic structure.
-PCFG surprisal is often computed in psycholinguistic research using approximate incremental parsers \cite{DBLP:journals/coling/Roark01,DBLP:journals/coling/DembergKK13,DBLP:journals/topics/SchijndelES13}, but these might themselves incorporate some biases towards linear closeness due to the use of techniques such as beam-search and pruning.
+PCFG surprisal is often computed in psycholinguistic research using approximate incremental parsers \citep{DBLP:journals/coling/Roark01,DBLP:journals/coling/DembergKK13,DBLP:journals/topics/SchijndelES13}, but these might themselves incorporate some biases towards linear closeness due to the use of techniques such as beam-search and pruning.
 We instead opt for exact inference for PCFGs using exact chart parsing, which computes exact probabilities and surprisals for a given PCFG.
 
 \subsubsection{Deriving PCFGs from Dependency Corpora}
