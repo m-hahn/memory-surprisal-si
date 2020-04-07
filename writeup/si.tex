@@ -417,7 +417,7 @@ We show that results similar to our main theorem hold for the tradeoff between a
 
 
 
-\paragraph{Speaker aims to match language distribution}
+\subsubsection{Without Goals}
 First, we consider a setting in which a speaker produces sentences with bounded memory, and analyze the deviation of the produced distribution from the actual distribution of the language.
 
 We consider a speaker who maintains memory representations and incrementally produces based on these representations:
@@ -464,7 +464,7 @@ TODO limitations of this as a model of production
 
 
 
-\paragraph{Speaker aims to match, conditional on goal}
+\subsubsection{Conditional on goal}
 The first setting does not account for the fact that language is produced aiming for some communicative goal.
 We therefore now assume that the speaker has a communicative goal $G$ in mind.
 This goal $G$ stays constant during production process for a sentence, and we count how much memory is needed in addition to the goal $G$.
@@ -503,17 +503,14 @@ This is entirely analogous to the previous proof.
 
 are there conditions under which this is close to $I_t$?
 
-\paragraph{Pragmatic Speaker}
+%\paragraph{Pragmatic Speaker}
+%would need an assumption on the density of goals in the space of sequences.
+%Note 
+%\begin{equation}
+%	D_{KL}(P_{language}(x_{1\dots t})||P_{produced}(x_{1\dots t}))  := \sum_{x_{1\dots t}} p(x_t|X_{1\dots t}) \log \frac{p(x_t|X_{1\dots t})}{p_{speaker}(x_t|X_{1\dots t})} \geq t D_KL(x_t||...)
+%\end{equation}
 
-would need an assumption on the density of goals in the space of sequences.
-
-
-Note 
-\begin{equation}
-	D_{KL}(P_{language}(x_{1\dots t})||P_{produced}(x_{1\dots t}))  := \sum_{x_{1\dots t}} p(x_t|X_{1\dots t}) \log \frac{p(x_t|X_{1\dots t})}{p_{speaker}(x_t|X_{1\dots t})} \geq t D_KL(x_t||...)
-\end{equation}
-
-$H[G|Produced] - H[G|Language]$
+%$H[G|Produced] - H[G|Language]$
 
 
 
@@ -580,44 +577,87 @@ Since $y_{t+1} = v_{t-2k+1}$, this model achieves a surprisal reduction of $H[v_
 This result does not contradict our theorem because the theorem only provides \emph{bounds} across models, which are not necessarily achieved by a given window-based model.
 In fact, for the process described here, no memory encoding function $M$ can exactly achieve the theoretical bound described by the theorem.
 
+
+
 \subsection{Example III: Tight Bound for Retrieval Model}
 
 Here, we provide an example where our bound is tight for the retrieval-based model even though it is quite loose for the capacity model.
-That means, while no memory encoding function can exactly achieve the bound in the capacity-bounded setting, there are memory encoding functions that exactly achieve the bound in the retrieval-based setting.
+That means, while no memory encoding function can exactly achieve the bound in the \emph{capacity-bounded} setting for this particular stochastic process, there are \emph{retrieval-based} memory encoding functions that exactly achieve the bound in the retrieval-based setting.
 
 Let $k$ be a positive integer.
 Consider a process $x_{t+1} = (y_{t+1}, z_{t+1}, u_{t+1}, v_{t+1})$ where
 \begin{enumerate}
     \item $y_{t+1}$ consists of $2k$ random bits.
-    \item $z_{t+1}$ is a draw from $Bernoulli(\frac{1}{4k})$.
+    \item $z_{t+1}$ is a draw from $Bernoulli(\frac{1}{4k^2})$.
     \item $u_{t+1}$ consists of $2k$ random bits if $z_t = 0$ and is equal to $y_{t-2k+1}$ else.
     \item $v_{t+1} := z_t$ 
 \end{enumerate}
-Predicting observations $x_{t+1}$ optimally requires storing $y_{t-2k+1}, \dots, y_{t}$ and $z_t$.
-This amounts to $(2k+1)\cdot 2k + H_2[1/4k]$ bits of memory in the capacity-based model.
-However, $I[u_{t+1}, y_{t-2k+1}|z_{t+1}] \leq 1/k$ (TODO).
-Therefore, the theorem bounds the memory cost only by $HM \geq \sum_{t=1}^\infty t I_t = 1$.
-The bound provided by the theorem is therefore loose in this case.
+Informally, $z_t$ indicates whether $u_{t+1}$ is copied from the past or a fresh sample; large values of $k$ correspond to the setting where copying from the past only happens rarely.
 
-However, it is tight for the retrieval-based model:
-We use $s_t$ to store $y_{t-2k+1}, \dots, y_{t}$, and we use the working memory $m_{t+1}$ to store $z_t$.
-Then, if $z_t = 1$, we retrieve $r_t = g(x_{t-1}, m_{t-1}, s_{t-1}) := y_{t-2k+1}$.
-The cost of storing $z_t$ is $H_2[1/4k]$, and the cost of retrieving $r_t$ is $\frac{1}{4k} \cdot 2k$.
+We analyze the memory-surprisal tradeoff in the situation where prediction is optimal.
+Predicting observations $x_{t+1}, x_{t+2}, \dots$ optimally from the past requires storing $y_{t-2k+1}, \dots, y_{t}$ and $z_t$.
+This amounts to
+\begin{equation}
+    H_M = (2k+1)\cdot 2k + H_2[1/4k^2] \geq 4k^2
+\end{equation} 
+bits of memory in the capacity-based model, where $H_2[p] := -(p\log p + (1-p) \log (1-p))$.
+
+We now ealuate $I_t$. We have
+\begin{align}
+I_1 =& I[v_{t+1}, z_t] = H_2[1/4k^2] \\
+   I_{2k} =& I[x_{t+1}, x_{t-2k+1}|x_{t-2k+2}\dots x_t] = I[u_{t+1}, y_{t-2k+1}|z_{t+1}] = \frac{1}{4k^2} I[u_{t+1}, y_{t-2k+1}|z_{t+1}=1] = \frac{2k}{4k^2} = \frac{1}{2k} 
+\end{align}
+and all other values of $I_t$ are zero.
+
+Therefore, the theorem bounds the memory cost, in the limit of perfect prediction ($T\rightarrow \infty$), only by
+\begin{equation}
+    H_M \geq \sum_{t=1}^\infty t I_t = 2k I_{2k} = 1
+\end{equation}
+compared to a true cost $H_M \geq 4k^2$.
+The bound provided by the theorem is therefore loose in this case for the capacity-based model.
+
+However, it is tight for the retrieval-based model.
+Again, we show this in the setting of optimally precise prediction.
+We use
+\begin{align}
+    s_t & := \left(y_{t-2k+1}, \dots, y_{t}\right) \\
+    m_{t+1} & := z_t
+\end{align}
+Then, if $z_t = 1$, we retrieve
+\begin{equation}
+    r_t = g(x_{t-1}, m_{t-1}, s_{t-1}) := y_{t-2k+1}
+\end{equation}
+Otherwise, if $z_t=0$, we retrieve nothing.
+The cost of storing $z_t$ is $H_2[1/4k^2]$, and the cost of retrieving $r_t$ is $\frac{1}{4k^2} \cdot 2k = \frac{1}{2k}$.
 
 
 
-In total, $H[m_t] = H_2[1/4k]$ and $H[r_t] = 1/k$.
+In total, $H[m_t] = H_2[1/4k^2]$ and $H[r_t] = 1/2k$.
 
-Taking, in the theorem, $T=1$ and $S\rightarrow\infty$, we obtain $H[m_t] \geq H_2[1/4k]$ and $H[r_t] \geq 1/k$.
+Taking, in the theorem, $T=1$ and $S\rightarrow\infty$, we obtain 
+\begin{align}
+    H[m_t] &\geq I_1 = H_2[1/4k^2] \\
+    H[r_t] &\geq I_{2k} = 1/2k
+\end{align}
 Thus, the bound is tight for both working memory and retrieval costs.
+
+
+Furthermore, the bound provided by the theorem for the capacity-based model, while it can be loose for specific processes, is the tightest possible bound that only depends on the values of $I_t$.
+As the retrieval-based model is a generalization of the capacity-based model, it may be possible for the retrieval-based model to achieve the bound provided by the theorem even in cases when it is not possible for the capacity-based model.
+
 
 \subsection{Example IV: Low memory requirements do not imply decay of unconditional mutual information}
 
-Consider the constant process where with probability 1/2 all $w_t = 0$, and with probability 1/2 all $w_t = 1$. %%$w_t = c$, where $c$ is random but independent of $t$ for each specific draw from the process.
-The unconditional mutual information is 1 at all distances, so does not decay at all, but the process only requires 1 bit of memory.
-Conversely, one can construct processes where the unconditional mutual informations are 0 for all $t$, but where $P > 0$ and this predictive information is actually spread out over arbitrarily large distances (that is, the ratio of memory $M$ and predictability $P$ can be made arbitrarrily large).
+Our theoretical results link the memory-surprisal tradeoff to the values of conditional mutual information $I_t$, whereas prior work on the statistics of language has considered \emph{unconditional} mutual information $I[w_t, w_0]$.
+Here, we show that the decay of unconditional mutual information is not necessarily linked to memory demands.
 
-First, consider the process (called X by REF) consisting of 2 random bits and their XOR. This one has bounded nonzero $J$, but zero unconditional MI. To get unbounded $J$, consider the following process for any $N \in \mathbb{N}_{>2}$: Every $w_t$ is equal to the XOR of $w_{t-1}$ and $w_{t-N}$, such that each $w_t$ has $Bernoulli(1/2)$ as its marginal. The unconditional mutual information between any two timesteps is zero, but modeling the process requires $N$ bits of memory.
+
+Consider the constant process where with probability 1/2 all $w_t = 0$, and with probability 1/2 all $w_t = 1$.
+The unconditional mutual information is $I[w_t, w_0] = 1$ at all distances $t$, so does not decay at all, but predicting the process optimally only requires 1 bit of memory.
+
+Conversely, one can construct processes where the unconditional mutual informations are 0 for all $t$, but where $\sum_t I_t > 0$, and this predictive information is actually spread out over arbitrarily large distances: Consider the process (called X by REF) consisting of 2 random bits and their XOR. This one has nonzero $I_2$, but zero unconditional MI at all distances.
+
+%This example can be modified to get unboundedly large values of $\sum_t t I_t > 0$ at zero unconditional mutual information. Consider the following process for any $N \in \mathbb{N}_{>2}$: Every $w_t$ is equal to the XOR of $w_{t-1}$ and $w_{t-N}$, such that each $w_t$ has $Bernoulli(1/2)$ as its marginal. The unconditional mutual information between any two timesteps is zero, but modeling the process optimally requires $H_M = N$ bits of memory.
 
 
 
@@ -1036,7 +1076,7 @@ Furthermore, passive and potential markers are formally identical for many verbs
 We list the morphemes according to the order extracted according to the model.
 %While this ordering matches almost all observed forms, there are some orderings that do not fit into this pattern, see below.
 
-Note that there  is no universally accepted segmentation for Japanese suffixes; we follow the UD tokenization in choosing which suffixes to segment.\footnote{The biggest difference to some other treatments is that the ending -\textit{u}/-\textit{ru} is viewed as part of the preceding morpheme that appears in some environments due to allomorphic variation, while it is viewed as a nonpast suffix in some other treatments \citep[p.116]{hasegawa2014japanese}.}
+Note that there  is no universally accepted segmentation for Japanese suffixes; we follow the UD tokenization in choosing which suffixes to segment.\footnote{The biggest difference to some other treatments is that the ending -\textit{u}/-\textit{ru} is viewed as part of the preceding morpheme that appears in some environments due to allomorphic variation, while it is viewed as a nonpast suffix in some other treatments \citep[p.116]{hasegawa2014japanese}; if it were treated as a nonpast suffix, it would occupy a slot together with the past, future/hortative, and nonfiniteness affixes.}
 
 
 
