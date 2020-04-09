@@ -946,6 +946,120 @@ Consequently, more samples were collected than necessary to reach the stopping c
 %Up to the end, we chose the next sample to be from $P_0$ with probability 2/3, and $P_1$ otherwise.
 
 
+\subsubsection{Additional Analyses}
+
+
+
+\paragraph{Degree of Optimality}
+In order to quantify the \emph{degree} of optimality, we compute what \emph{fraction} of baseline languages provides better tradeoffs than the real language.
+At five evenly spaced memory values $\mu$ (chosen per language), we estimate what percentage $W_-(\mu)$ of baseline languages have lower (or equal) surprisal than the real language.
+We use the Binomial Test to derive a confidence lower bound for this quantile (CITE), and to test against the null hypothesis that
+\begin{equation}
+	W_-(\mu) = 0.5
+\end{equation}
+In this test, we approximate the surprisal value of the real language by the \emph{sample median}.
+Again, we take the real values to be estimated exactly by their medians.
+Results are shown in Figure~\ref{fig:quantile-table}.
+
+In all but the four exceptional languages, the real language had significantly lower surprisal than at least $50\%$ of the baseline languages for at least some values of $\mu$ at $p < 0.01$.
+Also, for those languages, there was no $\mu$ where this pattern of significance was reversed.
+
+
+\begin{figure}
+	\begin{center}
+\includegraphics[width=\textwidth]{quantiles-table.pdf}
+\end{center}
+	\caption{Quantiles: At each given memory budget, what fraction of baseline grammars leads to higher surprisal?}\label{fig:quantile-table}
+\end{figure}
+
+
+
+%\subsection{Statistical Analysis}
+
+%We now describe how we compared memory-surprisal tradeoffs between real and baseline languages.
+%We want to test whether languages' surprisal-memory tradeoffs better than those of most baseline languages.
+%We compare real and baseline languages by evaluating which languages result in lower surprisal at the same level of memory.
+%We now describe the statistics we use to quantifying the difference between real and baseline languages.
+%We do everything in a frequentist framework (null hypothesis testing \& confidence intervals), as we can do exact tests and confidence intervals without parametric assumptions.
+%\mhahn{Maybe we can explain how the tests \& CIs also have reasonable Bayesian interpretations (for the specific methods used here, rejection of the null should guarantee that the posterior of the null hypothesis is small under a wide range of priors.).}
+
+%\paragraph{Median Surprisal and Confidence Interval for Medians}
+
+
+
+%\paragraph{CI for Median Difference}
+%We create (nonparametric and nonasymptotic) confidence interval for the difference between real and baseline median surprisals at each memory value.
+%\mhahn{the resulting plots are not very intuitive, might scrap this}
+%
+%% yStudyTradeoff_Bootstrap_Parallel_OnlyWordForms_BoundedVocab_BinomialTest_Single_MedianDiffCI.py
+
+
+
+%This statistic also should have a reasonable Bayesian interpretation:
+% E.g., if the random samples are unimodal, and we do inference over only the median (location family), 
+
+
+
+%\begin{figure}
+%       \begin{center}
+%\includegraphics[width=0.45\textwidth]{figures/nhst.png}
+%\end{center}
+%       \caption{Illustration for the pointwise null-hypothesis significance test. At a given level of memory, we test against the null hypothesis that at least half of the baseline orders provide lower surprisal than the real language.}\label{fig:nhst-pointwise}
+%\end{figure}
+
+
+
+
+%For each memory value $\mu$, we do a significance test (nonparametric and nonasymptotic).
+%\begin{equation}
+%       W_+(\mu) \geq W_-(\mu)
+%\end{equation}
+%We use the empirical median for the real language.
+
+% yStudyTradeoff_Bootstrap_Parallel_OnlyWordForms_BoundedVocab_BinomialTest_Single.py
+
+%We take the REAL values to be estimated exactly by their medians.
+
+%TODO some aggregate visualization of the quantiles
+%\paragraph{AUC}
+%TODO some aggregate visualization
+
+%\begin{figure}
+%       \begin{center}
+%\includegraphics[width=0.45\textwidth]{figures/quantile.png}
+%\end{center}
+%       \caption{Illustration for the quantile estimate. At each level of memory, we provide an estimate of the percentage of baseline languages that have lower surprisal than the real language.}\label{fig:quantile-pointwise}
+%\end{figure}
+
+
+
+%Also the following does not assume unimodality, and ends up getting about the same intervals
+%% yStudyTradeoff_Bootstrap_Parallel_OnlyWordForms_BoundedVocab_BinomialTest_Single_UnimodalBoundOnQuantile_BothDirections_NoAssumption.py
+
+
+
+
+
+
+
+%In Figure~\ref{tab:slice-hists-real}, we show the distribution of surprisals achieved at the maximal memory value for real and random languages.
+
+%In Figure~\ref{fig:hist-real}, we show surprisals at maximum memory, after z-transforming for each individual language and then aggregating.
+
+%In Table \ref{tab:median_diffs}, we show the differences in median surprisal, as a function of memory.
+
+
+%In Table~\ref{tab:boot-g}, we report the bootstrap estimates and confidence intervals for G~(\ref{eq:g}).
+%$\E[G]$ was not estimated to be significantly above $>5$ for four languages: Latvian, North Sami, Polish, and Slovak.
+
+
+%In Table~\ref{tab:quantiles}, we show the quantiles.
+
+
+
+
+
+
 
 
 
@@ -1001,7 +1115,7 @@ These choices are driven by the desire to preserve information about the depende
 
 In a second step, it is necessary to reduce the number of preterminals and nonterminals, both to deal with data sparsity, and to make chart parsing tractable.
 In our implementation for calculating $I_t$ (see below), we found that up to 700 nonterminals were compatible with efficient inference.
-(For comparison, the Berkeley parser uses X nonterminals for its English grammar, but employs a highly optimized coarse-to-fine strategy.)
+(For comparison, the Berkeley parser as described by \citet{DBLP:conf/aaai/PetrovK07} uses 1,090 nonterminals for its English grammar, while employing a highly optimized coarse-to-fine strategy that includes pruning, and is thus not exact.)
 We reduced the number of nonterminals as follows:
 (1) For words with frequency below a threshold parameter, we did not record lexical identity in preterminals and nonterminals.
 (2) Nonterminals that only differ in the relation label were merged if their frequency fell below a threshold parameter,
