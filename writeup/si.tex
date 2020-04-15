@@ -1751,6 +1751,27 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 
 \begin{figure}
     \centering
+    \begin{tabular}{lllllllllllllll}
+            &       Real & Optimized \\ \hline\hline
+            &    Stem & Stem & Stem & Stem & Stem & Stem \\ \hline
+1&suru & suru & suru & suru & suru & suru & suru & suru \\
+2&causative & passive/pot. & passive/pot. & causative & passive/pot. & causative & politeness & future \\
+3&passive/pot. & causative & past & politeness & future & passive/pot. & causative & passive/pot. \\
+4&desiderative & desiderative & desiderative & future & nonfinite & desiderative & future & desiderative \\
+5&politeness & negation & causative & passive/pot. & past & negation & passive/pot. & politeness \\
+6&negation & past & nonfinite & negation & causative & past & negation & nonfinite \\
+7&future & nonfinite & negation & nonfinite & desiderative & politeness & nonfinite & negation \\
+& past & politeness & politeness & desiderative & negation & future & desiderative & past \\
+& nonfinite & future & future & past & politeness & nonfinite & past & causative \\ \hline
+    \end{tabular}
+	\caption{Comparing order of Japanese affixes in the observed orders (left) and according to an approximatively optimized grammar (right), optimized for AUC on the \emph{training} set, for six random splits into train/held-out sets}
+    \label{fig:grammar-table-jap-varyset}
+\end{figure}
+
+
+
+\begin{figure}
+    \centering
     \begin{tabular}{llllllll}
             &       Real & Optimized \\ \hline\hline
 	    1&Subject (relative) & Subject (relative) \\
