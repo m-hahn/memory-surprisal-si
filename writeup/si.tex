@@ -904,21 +904,36 @@ Third, traditional N-gram models, which do not have this limitation, provide res
 
 \subsubsection{Estimation of average surprisal}
 
-The mutual information $I_t$ can be estimated from neural Markov models as follows.
-After estimating the parameter vector $\theta$, we compute the following difference for each word $w_t$ ($t$ ranging from $T_{max}$ up to the length of the held-out partition) in the held-out partition:
+As described in the main paper, the mutual information $I_t$ is estimated from entropies obtained with Markov models:
+\begin{equation*}
+    S_t = H[w_t | w_0, \dots, w_{t-1}]
+\end{equation*}
+We estimate these entropies as follows.
+After estimating the parameter vector $\theta$, we compute the following ($T$ ranging from $T_{max}$ up to the length of the held-out partition) in the held-out partition:
 \begin{equation}
-	\frac{1}{|HeldOut|-t} \sum_{i=t}^{|HeldOut|} \log P_\theta[w_i | w_{i-t}, w_{i-t+1}, ..., w_{i-1}] - \log P_\theta[w_i | w_{i-t+1}, ..., w_{i-1}],
+\widehat{S_T} =	\frac{1}{|HeldOut|-T} \sum_{i=T}^{|HeldOut|} \log P_\theta[w_t | w_{t-T}, w_{t-T+1}, ..., w_{t-1}]
 \end{equation}
-and we take the average over these.
-We cut $T$ off at 20, as this is the length of the sequences processed by the model.
+where $|HeldOut|$ is the number of words in the held-out set.
 
+For larger values of $T$, the model may overfit, leading to estimates where $\widehat{S_T}$ may \emph{increase} as the context size increases.
+Such a situation is an artifact of overfitting, and cannot happen for the true entropies $S_t$.
+Directly estimating $I_t$ from $\widehat{S_T}$ would lead to negative estimates of $I_t$, again impossible for the true values of this quantity.
+We eliminate this pathological behavior by only estimating
+\begin{equation}
+S_t \approx \min_{s \leq t} \widehat{S_s},
+\end{equation}
+which amounts to only considering higher-order models $P_\theta[w_t | w_{t-T}, w_{t-T+1}, ..., w_{t-1}]$ when they improve over lower-order ones.
+This procedure ensures that $\hat{S}_t$ can only decrease as the context size $t$ increases.
 
-We estimate the unigram entropy $H[w_0]$ by averaging over all models.
 
 For each language, we collected data from the actual orderings and from several random grammars.
 We collect multiple samples for the actual orderings to control for variation due to the random initialization of the neural network.
 For each of the random grammars, we collect one sample.
 Data is collected according to a precision-based stopping criterion described in Section (REF).
+
+
+We estimate the unigram entropy $H[w_0]$ by averaging over all model runs on a given corpus.
+
 
 
 %We then used linear interpolation to interpolate the surprisal value for memory values in between these values. (TODO make a figure).\mhahn{mention linear interpolation already when explaining how to get tradeoff from theorem}
@@ -967,7 +982,7 @@ Consequently, more samples were collected than necessary to reach the stopping c
 %Up to the end, we chose the next sample to be from $P_0$ with probability 2/3, and $P_1$ otherwise.
 
 
-\subsubsection{Additional Analyses}
+%\subsubsection{Additional Analyses}
 
 
 
@@ -1171,7 +1186,7 @@ and estimating
     P(X_t|X_1\dots X_{t-1}) \approx \E_{Y_1\dots Y_N} P(X_t|\#, Y_1 \dots Y_N, X_1, \dots, X_{t-1})
 \end{equation}
 Under certain conditions on the PCFG, this approximation converges to the true value for sufficiently large values of $N$.
-%\footnote{TODO say something about Markov chain convergence: For each $t$, consider for each nonterminal $\tau$ the number $n_\tau$ of nodes with this nonterminal dominating $w_\tau$. This is a Markov chain.}
+%\footnote{Consider a pushdown-automaton for the PCFG. For each $t$, consider the automaton configuration $A_t$ after reading $t$ symbols.  $A_t$ is a Markov chain, and }%for each nonterminal $\tau$ the number $n_{\tau, t}$ of nodes with this nonterminal dominating $w_t$. This is a Markov chain.}
 Empirically, we found that the values already became essentially stationary at $N\geq 5$.
 
 For computational efficiency, we estimated $I_t$ for $t=1, \dots 5$, finding $I_t$ to be very close to zero for higher $t$.
@@ -1193,7 +1208,7 @@ Nonetheless, the experiment confirms the finding with a model that is based on h
 
 \begin{center}
 \includegraphics[width=\textwidth]{results-table-pcfg.pdf}
-\captionof{figure}{Memory-surprisal tradeoffs computed with the PCFG estimator, comparing fitted grammars (blue) with baselines (red). For the random baselines, we provide the sample median and 95\% conficen intervals obtained with the binomial test.}\label{fig:resu-pcfg}
+\captionof{figure}{Memory-surprisal tradeoffs computed with the PCFG estimator, comparing fitted grammars (blue) with baselines (red). For the random baselines, we provide the sample median and 95\% confidence intervals obtained with the binomial test.}\label{fig:resu-pcfg}
 \end{center}
 
 
@@ -1592,14 +1607,15 @@ Again, we extracted morpheme types occurring at least 50 times.
 
 Examples from \cite{demuth1992acquisition}:
 
+\begin{center}
 \begin{tabular}{lllllllll|lllllll}
-Sbj. & Obj. & V & Val. & Voice & Tense & Mood \\ \hline
+Sbj. & Obj. & V & Val. & Voice & T. & M. \\ \hline
 o           &        & pheh &         &       & il    & e  & (Thabo) cooked (food) (\cite{demuth1992acquisition} (15)) \\
 ke          & e      & f   &          & uw    &      & e   & (I) was given (the book) (\cite{demuth1992acquisition} (26c)) \\
 o           &        & pheh & el      &      &       & a & (Thabo) cooks (food for Mpho) (\cite{demuth1992acquisition} (41))\\
 o           &        & pheh & el      & w    &      & a & (Mpho) is being cooked (food) (\cite{demuth1992acquisition} (42))
 \end{tabular}
-
+\end{center}
 
 
 
