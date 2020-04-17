@@ -67,7 +67,7 @@
 %\emnlpfinalcopy
 %\def\emnlppaperid{496}
 
-\title{Supplementary Information for: Crosslinguistic Word Orders Enable an Efficient Tradeoff between Memory and Surprisal}
+\title{Supplementary Information for: Modeling word and morpheme order in natural language as an efficient tradeoff of memory and surprisal}
 \author{Michael Hahn, Judith Degen, Richard Futrell}
 
 \begin{document}
@@ -96,21 +96,36 @@ We first make explicit how we formalize language processing for proving the theo
 
 
 \paragraph{Ingredient 1: Language as a Stationary Stochastic Process}
-We represent language as a stochastic process of words $\dots w_{-2} w_{-1} w_0 w_{1} w_{2} \dots$, extending indefinitely both into the past and into the future.
-The symbols $w_i$ belong to a common set, representing the words of the language.\footnote{Could also be phonemes, sentences, or any other kind of unit.}
+We represent language as a stochastic process of words $\dots w_{-2} w_{-1} w_0 w_{1} w_{2} \dots$, extending indefinitely both into the past and into the future \citep{karlin2014first}.
+The symbols $w_i$ belong to a common set, representing the words or morphemes of the language.
+
+Formally, a stochastic process is a probability distribution over infinite sequences $\dots w_{-2} w_{-1} w_0 w_{1} w_{2} \dots$.
+This distribution gives rise to probability distributions over finite subsequences
+\begin{equation}
+	P(w_t, \dots, w_{t+T})
+\end{equation}
+for integers $t, T$, and to conditional probabilities
+\begin{equation}
+	P(w_t | w_{<t})
+\end{equation}
+where $w_{<t}$ stands for the semi-infinite sequence $\dots, w_{t-2}, w_{t-1}$.
 
 The assumption of infinite length is for mathematical convenience and does not affect the substance of our results:
 As we restrict our attention to the processing of individual sentences, which have finite length, we will actually not make use of long-range and infinite contexts.
 
 We make the assumption that this process is \emph{stationary}.
-Formally, this means that the conditional distribution $P(w_t|w_{<t})$ does not depend on $t$, it only depends on the (semi-infinite) context sequence $w_{<t}$.
+This means that the joint distribution of different words in this infinite sequence depends only on their \emph{relative positions in time}, not their absolute times.
+Formally, this means that, for any integers $t$, $\Delta$, and $T>0$:
+\begin{equation}
+	P(w_t, \dots, w_{t+T}) = 	P(w_{t+\Delta}, \dots, w_{t+T+\Delta})
+\end{equation}
 Informally, this says that the process has no `internal clock', and that the statistical rules of the language do not change at the timescale we are interested in.
 In reality, the statistical rules of language do change: They change as language changes over generations, and they also change between different situations -- e.g., depending on the interlocutor at a given point in time.
-However, we are interested in memory needs in the processing of \emph{individual sentences}, at a timescale of seconds or minutes.
+However, we are interested in memory needs in the processing of \emph{individual sentences} or \emph{individual words}, at a timescale of seconds or minutes.
 At this level, the statistical regularities of language do not change, making stationarity a reasonable modeling assumption.
 
 As we are interested in processing at the level of words or sentences, we do not model statistical dependencies between successive sentences.
-That is, we model the process $\dots w_{-2} w_{-1} w_0 w_{1} w_{2} \dots$ as consisting of a sequence of independent samples from the distribution over sentences, separated with a start-of-sentence symbol.
+That is, we model the process $\dots w_{-2} w_{-1} w_0 w_{1} w_{2} \dots$ as consisting of a sequence of independent samples from the distribution over sentences (or words), separated with a start-of-sentence (or start-of-word) symbol.
 
 \paragraph{Ingredient 2: Postulates about Processing}
 The second ingredient consists of the three postulates described in the main paper.
@@ -126,26 +141,42 @@ We repeat these here for reference:
 \end{enumerate}
 
 
-We add another mathematical assumption to take care of a technical subtlety: Since $(w_t)_{t \in \mathbb{Z}}$ extends infinitely into the past, our postulates permit situations where, while $(w_t)_{t \in \mathbb{Z}}$ has no `internal clock', the sequence of memory states $(m_t)_{t \in \mathbb{Z}}$ does.
+We add a fourth, more technical, postulate to take care of a technical subtlety:
+Since $(w_t)_{t \in \mathbb{Z}}$ extends infinitely into the past, our postulates permit situations where, while $(w_t)_{t \in \mathbb{Z}}$ has no `internal clock', the sequence of memory states $(m_t)_{t \in \mathbb{Z}}$ does.
 This would correspond to a setting where the listener's memory state keeps track of some absolute notion of time (e.g., counting whether $t$ is even or odd) even though the statistical regularities of the input $(w_t)_{t \in \mathbb{Z}}$ are independent of time.
 We avoid such situations by making the assumption that $(w_t, m_t)_{t \in \mathbb{Z}}$, viewed as a stochastic process, is stationary.
-
+Formally, this means that, for any integers $t$, $\Delta$, and $T>0$:
+\begin{equation}
+	P((w_t, m_t), \dots, (w_{t+T}, m_{t+T})) = 	P((w_{t+\Delta}, m_{t+\Delta}), \dots, (w_{t+T+\Delta}, m_{t+T+\Delta}))
+\end{equation}
 There are no further assumptions about the memory architecture and the nature of its computations.
 
 
 
 \subsection{Proof of the Theorem}\label{sec:proof}
 
+
+	Recall that $S_M$ and $S_\infty$ are given by
+	\begin{equation}\label{eq:sm-def}
+		    S_M \equiv \operatorname{H}[w_t|w_{<t}],
+	\end{equation}
+	\begin{equation}
+		S_\infty \equiv \operatorname{H}[w_t|w_{<t}] \equiv \lim_{t \rightarrow \infty} H[w_t | w_1, \dots, w_{t-1}].
+	\end{equation}
+We note that (\ref{eq:sm-def}) is well-defined because $(w_t, m_t)$ is assumed to be stationary.
+
 We restate the theorem:
 
 \begin{thm}\label{prop:suboptimal}
 	Let $T$ be any positive integer ($T \in \{1, 2, 3, ...\}$), and consider a listener using at most
 	\begin{equation}\label{eq:memory}
-		\sum_{t=1}^T t I_t
+H_M \leq \sum_{t=1}^T t I_t
 	\end{equation}
 bits of memory on average.
 Then this listener will incur surprisal at least
-	$$H[w_t|w_{<t}] + \sum_{t > T} I_t$$
+	\begin{equation}
+	S_M \geq S_\infty + \sum_{t > T} I_t
+	\end{equation}
 	on average.
 \end{thm}
 
@@ -169,8 +200,12 @@ Then this listener will incur surprisal at least
 %The average number of bits required to encode this state is $\operatorname{H}[m_t]$, which by assumption is at most $\sum_{t=1}^T t I_t$.
 %As the listener's predictions are made on the basis of her memory state, her average surprisal is at least $\operatorname{H}[w_t | m_t]$.
 \begin{proof}
-The difference between the listener's average surprisal $S_M$ and optimal surprisal $S_\infty$ is $S_M - S_\infty = \operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}]$.\footnote{A listener whose predictions are not optimal given $m_t$ can only incur even higher surprisal.}
-By the assumption of stationarity, we can, for any positive integer $T$, rewrite this expression as
+The difference between the listener's average surprisal $S_M$ and optimal surprisal $S_\infty$ is 
+	\begin{equation}
+		S_M - S_\infty = \operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}].
+	\end{equation}
+	(Note that a listener whose predictions are not optimal given $m_t$ can only incur even higher surprisal.)
+	Because the process $(w_t, m_t)_t$ is stationary, we can, for any positive integer $T$, rewrite this expression as
 \begin{equation}\label{eq:byStation}
 \operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}] =  \frac{1}{T} \sum_{t'=1}^{T} \left(\operatorname{H}[w_{t'} | m_{t'}] - \operatorname{H}[w_{t'} | w_{<t'}]\right) 
 \end{equation}
@@ -200,9 +235,9 @@ Plugging this inequality into Equation~\ref{eq:byStation} above:
 & = \frac{1}{T} \left(\operatorname{H}[w_{1\dots T} | m_1] - \operatorname{H}[w_{1\dots T} | w_{\leq 0}]\right)  \\
 & = \frac{1}{T} \left(I[w_{1\dots T}, w_{\leq 0}] - I[w_{1\dots T}, m_1]\right) 
 \end{align}
-The first term $I[w_{1\dots T}, w_{\leq 0}]$ can be rewritten in terms of $I_t$:
+	The first term $\operatorname{I}[w_{1\dots T}, w_{\leq 0}]$ can be rewritten in terms of $I_t$:
 \begin{align}\label{eq:i-expanded}
-I[w_{1\dots T}, w_{\leq 0}] &= \sum_{i=1}^T \sum_{j=-1}^{-\infty} I[w_i, w_j | w_{j+1}...w_{i-1}] = \sum_{t=1}^T t I_t + T \sum_{t > T} I_t
+	\operatorname{I}[w_{1\dots T}, w_{\leq 0}] &= \sum_{i=1}^T \sum_{j=-1}^{-\infty} I[w_i, w_j | w_{j+1}...w_{i-1}] = \sum_{t=1}^T t I_t + T \sum_{t > T} I_t
 \end{align}
 Therefore
 \begin{align}\label{eq:surp-diff-expanded}
@@ -278,28 +313,28 @@ This large memory store is accessed via \emph{cue-based retrieval}: a query is c
 
 \paragraph{Formal Model}
 We extend our information-theoretic analysis by considering a model that maintains both a small working memory $m_t$ -- corresponding to the buffers and the control state -- and an unlimited short-term memory $s_t$.
-When processing a word $x_t$, there is some amount of communication between $m_t$ and $s_t$, corresponding to retrieval operations.
+When processing a word $w_t$, there is some amount of communication between $m_t$ and $s_t$, corresponding to retrieval operations.
 We model this using a variable $r_t$ representing the information that is retrieved from $s_t$.
-In our formalization, $r_t$ reflects the totality of all retrieval operations that are made during the processing of $x_{t-1}$; they happen after $x_{t-1}$ has been observed but before $x_t$ has.
+In our formalization, $r_t$ reflects the totality of all retrieval operations that are made during the processing of $w_{t-1}$; they happen after $w_{t-1}$ has been observed but before $w_t$ has.
 
-The working memory state is determined not just by the input $x_t$ and the previous working memory state $m_{t-1}$, but also by the retrieved information:
+The working memory state is determined not just by the input $w_t$ and the previous working memory state $m_{t-1}$, but also by the retrieved information:
 \begin{equation}
-	m_t = f(x_t, m_{t-1}, r_t) 
+	m_t = f(w_t, m_{t-1}, r_t) 
 \end{equation}
 The retrieval operation is jointly determined by working memory, short-term memory, and the previous word:
 \begin{equation}\label{eq:rt}
-	r_t = g(x_{t-1}, m_{t-1}, s_{t-1}) 
+	r_t = g(w_{t-1}, m_{t-1}, s_{t-1}) 
 \end{equation}
 Finally, the short-term memory can incorporate any -- possibly all -- information from the last word and the working memory:
 \begin{equation}
-	s_t = h(x_{t}, m_{t}, s_{t-1}) 
+	s_t = h(w_{t}, m_{t}, s_{t-1}) 
 \end{equation}
 While $s_t$ is unconstrained, there are constraints on the capacity of working memory $\operatorname{H}[m_t]$ and the amount of retrieved information $\operatorname{H}[r_t]$.
 Placing a bound on $\operatorname{H}[m_t]$ reflects the fact that the buffers can only hold a small and fixed number of chunks \citep{lewis-activation-based-2005}.
 
 Predictions are made based on working memory $m_t$ and retrieved information $r_{t+1}$ (but not the short-term memory $s_t$), incurring average surprisal
 \begin{equation}
-    S := H[x_{t+1}|m_t, r_{t+1}]
+    S := H[w_{t+1}|m_t, r_{t+1}]
 \end{equation}
 
 
@@ -317,9 +352,9 @@ Our formalization thus more closely matches the direct-access model, though it m
 The ACT-R model of \cite{lewis-activation-based-2005} does not have an explicit surprisal cost.
 Instead, surprisal effects are interpreted as arising because, in less constraining contexts, the parser is more likely to make decisions that then turn out to be incorrect, leading to additional correcting steps.
 %We see this as an algorithmic-level implementation of the justification for surprisal theory provided by \citet{levy2008expectation}:
-We view this as an algorithmic-level implementation of a surprisal cost $H[x_t|m_{t-1}]$:
-If the word $x_t$ is unexpected given the current state of the working memory -- i.e., buffers and control states -- then their current state must provide insufficient information to constrain the actual syntactic state of the sentence, meaning that the parsing steps made to integrate $x_t$ are likely to include more backtracking and correction steps.
-Thus, we argue that cue-based retrieval models predict that the surprisal $- \log P(x_t|m_{t-1})$ will be part of the cost of processing word $x_t$.
+We view this as an algorithmic-level implementation of a surprisal cost $H[w_t|m_{t-1}]$:
+If the word $w_t$ is unexpected given the current state of the working memory -- i.e., buffers and control states -- then their current state must provide insufficient information to constrain the actual syntactic state of the sentence, meaning that the parsing steps made to integrate $w_t$ are likely to include more backtracking and correction steps.
+Thus, we argue that cue-based retrieval models predict that the surprisal $- \log P(w_t|m_{t-1})$ will be part of the cost of processing word $w_t$.
 
 
 %This is instantiated by ACT-R.
@@ -343,7 +378,7 @@ Let $0 < S \leq T$ be positive integers such that the average working memory cos
 	\end{equation} %(per word).
 	Then the surprisal cost is lower-bounded as
 	\begin{equation}
-		\operatorname{H}[w_t|m_{t-1}, r_t] \geq \operatorname{H}[w_t|x_{<t}] + \sum_{t>S} I_t
+		\operatorname{H}[w_t|m_{t-1}, r_t] \geq \operatorname{H}[w_t|w_{<t}] + \sum_{t>S} I_t
 	\end{equation}
 \end{thm}
 
@@ -362,13 +397,13 @@ The proof is a generalization of the proof in Section~\ref{sec:proof}.
 \end{align}
 	Now, using the calculation from (\ref{eq:i-expanded}), this can be rewritten as:
 	\begin{align*}
-\operatorname{H}[w_t | m_{t-1}, r_t] - \operatorname{H}[w_t | w_{<t}]= & \frac{1}{T}\left(\sum_{t=1}^T t I_t + T \sum_{t>T} I_t - I[x_1\dots x_T, (m_0, r_1, ..., r_T)]\right) \\
-		= & \frac{1}{T}\left(\sum_{t=1}^T t I_t + T \sum_{t>T} I_t - I[x_{1\dots T}, m_0] - \sum_{t=1}^T I[x_{1\dots T}, r_t|m_0, r_{1\dots t-1}]\right) \\
+\operatorname{H}[w_t | m_{t-1}, r_t] - \operatorname{H}[w_t | w_{<t}]= & \frac{1}{T}\left(\sum_{t=1}^T t I_t + T \sum_{t>T} I_t - I[w_1\dots w_T, (m_0, r_1, ..., r_T)]\right) \\
+		= & \frac{1}{T}\left(\sum_{t=1}^T t I_t + T \sum_{t>T} I_t - I[w_{1\dots T}, m_0] - \sum_{t=1}^T I[w_{1\dots T}, r_t|m_0, r_{1\dots t-1}]\right) \\
 	\end{align*}
 	Due to the inequalities
 	\begin{align}
-	    \operatorname{I}[x_{1\dots T}, m_0] &\leq \operatorname{H}[m_0] \leq \sum_{t=1}^T t I_t\\
-	    \operatorname{I}[x_{1\dots T}, r_t|m_0, r_{1\dots t-1}] &\leq \operatorname{H}[r_t] \leq \sum_{t=T+1}^S I_t
+	    \operatorname{I}[w_{1\dots T}, m_0] &\leq \operatorname{H}[m_0] \leq \sum_{t=1}^T t I_t\\
+	    \operatorname{I}[w_{1\dots T}, r_t|m_0, r_{1\dots t-1}] &\leq \operatorname{H}[r_t] \leq \sum_{t=T+1}^S I_t
 	\end{align}
 	this can be bounded as
 	\begin{align}
@@ -415,18 +450,19 @@ Given the nature of representations assumed in models~\citep{lewis-activation-ba
 Here we show results linking memory and locality in production.
 We show that results similar to our main theorem hold for the tradeoff between a speaker's memory and the accuracy with which they match the distribution of the language.
 
+We first analyze a setting where a speaker produces sentences with bounded memory without a production goal in mind.
+We then extend this analysis to a model where the speaker maintains a production goal.
 
-
-\subsubsection{Without Goals}
+\subsubsection{Without Production Goals}
 First, we consider a setting in which a speaker produces sentences with bounded memory, and analyze the deviation of the produced distribution from the actual distribution of the language.
 
 We consider a speaker who maintains memory representations and incrementally produces based on these representations:
 \begin{equation}
-	p_{speaker}(x_t|X_{<t}) = p(x_t|m_t) \\
+P_{produced}(w_t|w_{<t}) = P(w_t|m_t) \\
 \end{equation}
 We show a tradeoff between the memory capacity $\operatorname{H}[m_t]$ and the KL-divergence between the actual language statistics and the speaker's production distribution:
 \begin{equation}
-D_{KL}(P_{language}||P_{produced})  := \E_{X_{<t}} \sum_{x_t} p(x_t|X_{<t}) \log \frac{p(x_t|X_{<t})}{p_{speaker}(x_t|X_{<t})} \\
+D_{KL}(P_{language}||P_{produced})  := \E_{w_{<t}} \sum_{w_t} p(w_t|w_{<t}) \log \frac{p(w_t|w_{<t})}{p_{produced}(w_t|w_{<t})} \\
 \end{equation}
 \begin{thm}
 If a speaker maintains memory
@@ -441,26 +477,23 @@ If a speaker maintains memory
 
 While this bound only considers the production of a single word, it immediately entails a bound on the production accuracy for sequences:
 \begin{equation}
-	D_{KL}(P_{language}(X_1\dots X_t|X_{\leq 0})||P_{produced}(X_1\dots X_t|X_{\leq 0}))  = t \cdot D_{KL}(P_{language}(X_1|X_{\leq 0})||P_{produced}(X_1|X_{\leq 0}))
+	D_{KL}(P_{language}(w_1\dots w_t|w_{\leq 0})||P_{produced}(w_1\dots w_t|w_{\leq 0}))  = t \cdot D_{KL}(P_{language}(w_1|w_{\leq 0})||P_{produced}(w_1|w_{\leq 0}))
 \end{equation}
 
 
 
 \begin{proof}
-First note
+We rewrite the KL-Divergence so that we can reduce this result to Theorem 1.
+	First note
 \begin{align}
-D_{KL}(P_{language}||P_{produced}) & = \E_{X_{<t}} \sum_{x_t} p(x_t|X_{<t}) \log \frac{p(x_t|X_{<t})}{p_{speaker}(x_t|X_{<t})} \\
-& = \E_{X_{<t}} \sum_{x_t} p(x_t|X_{<t}) \log \frac{p(x_t|X_{<t})}{p(x_t|M(X_{<t}))} \\
-& = \E_{X_{<t}} \sum_{x_t} p(x_t|X_{<t}) \log p(x_t|X_{<t}) - \E_{X_{<t}} \sum_{x_t} p(x_t|X_{<t}) \log p(x_t|M(X_{<t})) \\
-	& = \E_{X_{<t}} \sum_{x_t} p(x_t|X_{<t}) \log p(x_t|X_{<t}) + S_M(x_t|X_{<t})
+	D_{KL}(P_{language}||P_{produced}) & = \E_{w_{<t}} \left[\sum_{w_t} p(w_t|w_{<t}) \log \frac{p(w_t|w_{<t})}{p_{produced}(w_t|w_{<t})} \right] \\
+	& = \E_{w_{<t}} \left[ \sum_{w_t} p(w_t|w_{<t}) \log \frac{p(w_t|w_{<t})}{p(w_t|M(w_{<t}))} \right] \\
+	& = \E_{w_{<t}} \left[ \sum_{w_t} p(w_t|w_{<t}) \log p(w_t|w_{<t})\right] - \E_{w_{<t}} \left[\sum_{w_t} p(w_t|w_{<t}) \log p(w_t|M(w_{<t})) \right] \\
+	& = \operatorname{H}[w_t|M(w_{<t})] - \operatorname{H}[w_t|w_{<t}] \\
+	& \geq \sum_{t=T+1}^\infty I_t
 \end{align}
-In the last line, the first term is a constant independent of $M$.
-
-Then the proof for the listener case transfers to this setting.
+where the last line follows by applying the proof of Theorem 1.
 \end{proof}
-
-TODO limitations of this as a model of production
-
 
 
 
@@ -501,19 +534,6 @@ This is entirely analogous to the previous proof.
 \end{proof}
 
 
-are there conditions under which this is close to $I_t$?
-
-%\paragraph{Pragmatic Speaker}
-%would need an assumption on the density of goals in the space of sequences.
-%Note 
-%\begin{equation}
-%	D_{KL}(P_{language}(x_{1\dots t})||P_{produced}(x_{1\dots t}))  := \sum_{x_{1\dots t}} p(x_t|X_{1\dots t}) \log \frac{p(x_t|X_{1\dots t})}{p_{speaker}(x_t|X_{1\dots t})} \geq t D_KL(x_t||...)
-%\end{equation}
-
-%$H[G|Produced] - H[G|Language]$
-
-
-
 \subsection{Proof of Left-Right Invariance}
 
 Here we show that the bound provided by our theorem is invariant under reversal of the process.
@@ -531,13 +551,13 @@ The first step follows from the definition of $Y$. The second step follows from 
 Here, we provide examples of the theorem in settings where analytical calculations are possible.
 
 
-\subsection{Example I: Tight Bounds in Artificial Language}
+%\subsection{Example I: Tight Bounds in Artificial Language}
+%
+%Here we provide explicit calculations for the artificial language simulation, showing that the bounds provided by the theorem are tight in this case.
+%
+%TODO
 
-Here we provide explicit calculations for the artificial language simulation, showing that the bounds provided by the theorem are tight in this case.
-
-TODO
-
-\subsection{Example II: Window-Based Model not Optimal}
+\subsection{Window-Based Model not Optimal}
 
 Here we provide an example of a stochastic process where a window-based memory encoding is not optimal, but the bound provided by our theorem still holds.
 This is an example where the bound provided by the theorem is loose: while it bounds the memory-surprisal tradeoff of all possible listeners, the bound is `optimistic', meaning that no mathematically possible memory encoding function $M$ can exactly achieve the bound.
@@ -579,11 +599,12 @@ In fact, for the process described here, no memory encoding function $M$ can exa
 
 
 
-\subsection{Example III: Tight Bound for Retrieval Model}
+\subsection{Tight Bound for Retrieval Model}
 
 Here, we provide an example where our bound is tight for the retrieval-based model even though it is quite loose for the capacity model.
 That means, while no memory encoding function can exactly achieve the bound in the \emph{capacity-bounded} setting for this particular stochastic process, there are \emph{retrieval-based} memory encoding functions that exactly achieve the bound in the retrieval-based setting.
 
+\paragraph{Defining the Process}
 Let $k$ be a positive integer.
 Consider a process $x_{t+1} = (y_{t+1}, z_{t+1}, u_{t+1}, v_{t+1})$ where
 \begin{enumerate}
@@ -594,6 +615,7 @@ Consider a process $x_{t+1} = (y_{t+1}, z_{t+1}, u_{t+1}, v_{t+1})$ where
 \end{enumerate}
 Informally, $z_t$ indicates whether $u_{t+1}$ is copied from the past or a fresh sample; large values of $k$ correspond to the setting where copying from the past only happens rarely.
 
+\paragraph{Capacity Model}
 We analyze the memory-surprisal tradeoff in the situation where prediction is optimal.
 Predicting observations $x_{t+1}, x_{t+2}, \dots$ optimally from the past requires storing $y_{t-2k+1}, \dots, y_{t}$ and $z_t$.
 This amounts to
@@ -616,6 +638,7 @@ Therefore, the theorem bounds the memory cost, in the limit of perfect predictio
 compared to a true cost $H_M \geq 4k^2$.
 The bound provided by the theorem is therefore loose in this case for the capacity-based model.
 
+\paragraph{Retrieval Model}
 However, it is tight for the retrieval-based model.
 Again, we show this in the setting of optimally precise prediction.
 We use
@@ -646,16 +669,16 @@ Furthermore, the bound provided by the theorem for the capacity-based model, whi
 As the retrieval-based model is a generalization of the capacity-based model, it may be possible for the retrieval-based model to achieve the bound provided by the theorem even in cases when it is not possible for the capacity-based model.
 
 
-\subsection{Example IV: Low memory requirements do not imply decay of unconditional mutual information}
+\subsection{Low memory requirements do not imply decay of unconditional mutual information}
 
-Our theoretical results link the memory-surprisal tradeoff to the values of conditional mutual information $I_t$, whereas prior work on the statistics of language has considered \emph{unconditional} mutual information $I[w_t, w_0]$.
+Our theoretical results link the memory-surprisal tradeoff to the values of \emph{conditional} mutual information $I_t$, whereas prior work on the statistics of language has considered \emph{unconditional} mutual information $I[w_t, w_0]$.
 Here, we show that the decay of unconditional mutual information is not necessarily linked to memory demands.
 
 
 Consider the constant process where with probability 1/2 all $w_t = 0$, and with probability 1/2 all $w_t = 1$.
 The unconditional mutual information is $I[w_t, w_0] = 1$ at all distances $t$, so does not decay at all, but predicting the process optimally only requires 1 bit of memory.
 
-Conversely, one can construct processes where the unconditional mutual informations are 0 for all $t$, but where $\sum_t I_t > 0$, and this predictive information is actually spread out over arbitrarily large distances: Consider the process (called X by REF) consisting of 2 random bits and their XOR. This one has nonzero $I_2$, but zero unconditional MI at all distances.
+Conversely, one can construct processes where the unconditional mutual informations are 0 for all $t$, but where $\sum_t I_t > 0$, and this predictive information is actually spread out over arbitrarily large distances: Consider the process (called X by REF) consisting of 2 random bits and their XOR. This one has nonzero $I_2$, but zero unconditional  mutual information $I[w_t, w_0]$ at all distances $t$.
 
 %This example can be modified to get unboundedly large values of $\sum_t t I_t > 0$ at zero unconditional mutual information. Consider the following process for any $N \in \mathbb{N}_{>2}$: Every $w_t$ is equal to the XOR of $w_{t-1}$ and $w_{t-N}$, such that each $w_t$ has $Bernoulli(1/2)$ as its marginal. The unconditional mutual information between any two timesteps is zero, but modeling the process optimally requires $H_M = N$ bits of memory.
 
@@ -948,27 +971,27 @@ Consequently, more samples were collected than necessary to reach the stopping c
 
 
 
-\paragraph{Degree of Optimality}
-In order to quantify the \emph{degree} of optimality, we compute what \emph{fraction} of baseline languages provides better tradeoffs than the real language.
-At five evenly spaced memory values $\mu$ (chosen per language), we estimate what percentage $W_-(\mu)$ of baseline languages have lower (or equal) surprisal than the real language.
-We use the Binomial Test to derive a confidence lower bound for this quantile (CITE), and to test against the null hypothesis that
-\begin{equation}
-	W_-(\mu) = 0.5
-\end{equation}
-In this test, we approximate the surprisal value of the real language by the \emph{sample median}.
-Again, we take the real values to be estimated exactly by their medians.
-Results are shown in Figure~\ref{fig:quantile-table}.
-
-In all but the four exceptional languages, the real language had significantly lower surprisal than at least $50\%$ of the baseline languages for at least some values of $\mu$ at $p < 0.01$.
-Also, for those languages, there was no $\mu$ where this pattern of significance was reversed.
-
-
-\begin{figure}
-	\begin{center}
-\includegraphics[width=\textwidth]{quantiles-table.pdf}
-\end{center}
-	\caption{Quantiles: At each given memory budget, what fraction of baseline grammars leads to higher surprisal?}\label{fig:quantile-table}
-\end{figure}
+%\paragraph{Degree of Optimality}
+%In order to quantify the \emph{degree} of optimality, we compute what \emph{fraction} of baseline languages provides better tradeoffs than the real language.
+%At five evenly spaced memory values $\mu$ (chosen per language), we estimate what percentage $W_-(\mu)$ of baseline languages have lower (or equal) surprisal than the real language.
+%We use the Binomial Test to derive a confidence lower bound for this quantile (CITE), and to test against the null hypothesis that
+%\begin{equation}
+%	W_-(\mu) = 0.5
+%\end{equation}
+%In this test, we approximate the surprisal value of the real language by the \emph{sample median}.
+%Again, we take the real values to be estimated exactly by their medians.
+%Results are shown in Figure~\ref{fig:quantile-table}.
+%
+%In all but the four exceptional languages, the real language had significantly lower surprisal than at least $50\%$ of the baseline languages for at least some values of $\mu$ at $p < 0.01$.
+%Also, for those languages, there was no $\mu$ where this pattern of significance was reversed.
+%
+%
+%\begin{figure}
+%	\begin{center}
+%\includegraphics[width=\textwidth]{quantiles-table.pdf}
+%\end{center}
+%	\caption{Quantiles: At each given memory budget, what fraction of baseline grammars leads to higher surprisal?}\label{fig:quantile-table}
+%\end{figure}
 
 
 
@@ -1138,7 +1161,7 @@ P[\#, X_1, \dots, X_t] := \sum_N \sum_{Y_{1\dots N}} P(\#, X_1, \dots, X_t, Y_{1
 \end{equation}
 (here, $\#$ denotes the beginning/end of a sentence), that is, the probability mass assigned to all sentences starting with the given prefix $X_1, \dots, X_t$.
 
-However, simultaneously summing over possible left \emph{and} right continuations is more challenging.\footnote{\citet{DBLP:conf/emnlp/NederhofS11} describe a method for calculating infix probabilities, but that method computes something subtly different from the quantity required here, and it is also computationally costly.}
+However, simultaneously summing over possible left \emph{and} right continuations is more challenging.\footnote{\citet{DBLP:conf/emnlp/NederhofS11} describe a method for calculating infix probabilities, but this method, besides being computationally costly due to construction of a large finite automaton, computes something subtly different from the quantity required here: It computes the probability mass of sentences containing a given string, not accounting for multipe occurrences of the same string in a longer sentence.}
 We approach this by restricting the summation on the left to prefixes of a fixed length:
 \begin{equation}
     \sum_{Y_1\dots Y_N} P(\#, Y_1 \dots Y_N, X_1, \dots, X_t)
@@ -1147,7 +1170,8 @@ and estimating
 \begin{equation}
     P(X_t|X_1\dots X_{t-1}) \approx \E_{Y_1\dots Y_N} P(X_t|\#, Y_1 \dots Y_N, X_1, \dots, X_{t-1})
 \end{equation}
-Under certain conditions on the PCFG, this approximation converges to the true value for sufficiently large values of $N$.\footnote{TODO say something about Markov chain convergence: For each $t$, consider for each nonterminal $\tau$ the number $n_\tau$ of nodes with this nonterminal dominating $w_\tau$. This is a Markov chain.}
+Under certain conditions on the PCFG, this approximation converges to the true value for sufficiently large values of $N$.
+%\footnote{TODO say something about Markov chain convergence: For each $t$, consider for each nonterminal $\tau$ the number $n_\tau$ of nodes with this nonterminal dominating $w_\tau$. This is a Markov chain.}
 Empirically, we found that the values already became essentially stationary at $N\geq 5$.
 
 For computational efficiency, we estimated $I_t$ for $t=1, \dots 5$, finding $I_t$ to be very close to zero for higher $t$.
@@ -1162,14 +1186,14 @@ We did not run this on the observed orderings, as these may have crossing branch
 The resulting memory-surprisal tradeoff bounds are shown in Figure~\ref{fig:resu-pcfg}.
 In most languages, a more efficient tradeoff curve is estimated for the fitted grammars than for the baseline grammars.
 
-Note that absolute numbers aren not comparable with other models because there are many out-of-vocabulary tokens (they are necessary because the number of non- and preterminals has to be kept low).
+Note that absolute numbers are not comparable with other models because there are many out-of-vocabulary tokens (they are necessary because the number of non- and preterminals has to be kept low).
 Also, we note that the amount of exploited predictive information is much lower than in the other models, that is, the difference between surprisal at zero memory and surprisal at maximal memory is low.
 This agrees with the observation that PCFG independence assumptions are inadequate, and that chart parsers have not historically reached good perplexities (parsers with good perplexities such as Roark Parser and RNNGs do not make these independence assumptions, but also do not allow efficient exact chart parsing).
 Nonetheless, the experiment confirms the finding with a model that is based on hierarchical syntactic structure while enabling exact inference.
 
 \begin{center}
 \includegraphics[width=\textwidth]{results-table-pcfg.pdf}
-\captionof{figure}{PCFG estimator, comparing fitted grammars (blue) with baselines (red)}\label{fig:resu-pcfg}
+\captionof{figure}{Memory-surprisal tradeoffs computed with the PCFG estimator, comparing fitted grammars (blue) with baselines (red). For the random baselines, we provide the sample median and 95\% conficen intervals obtained with the binomial test.}\label{fig:resu-pcfg}
 \end{center}
 
 
@@ -1193,12 +1217,12 @@ Note that there  is no universally accepted segmentation for Japanese suffixes; 
 
 
 \begin{enumerate}
-\item VALENCE: causative (-\textit{(s)ase}-). \cite[142]{hasegawa2014japanese} \cite[Chapter 13]{kaiser2013japanese}. In the UD data, this is lemmatized as \textit{saseru}, \textit{seru} (190 occurrences).
-\item VOICE: passive (-\textit{are}-, -\textit{rare}-) \cite[152]{hasegawa2014japanese} \cite[Chapter 12]{kaiser2013japanese}  In the UD data, this is lemmatized as \textit{rareru}, \textit{reru} ($\approx$ 2000 occurrences).
+	\item VALENCE: causative (-\textit{(s)ase}-) (\citet[142]{hasegawa2014japanese}, \citet[Chapter 13]{kaiser2013japanese}). In the UD data, this is lemmatized as \textit{saseru}, \textit{seru} (190 occurrences).
+	\item VOICE: passive (-\textit{are}-, -\textit{rare}-) (\citet[152]{hasegawa2014japanese}, \citet[Chapter 12]{kaiser2013japanese}).  In the UD data, this is lemmatized as \textit{rareru}, \textit{reru} ($\approx$ 2000 occurrences).
 \item MOOD, MODALITY:
 \begin{enumerate}
 \item potential (allomorphs -\textit{are}-, -\textit{rare}-, -\textit{e}-). In the UD data, this is lemmatized as \textit{rareru}, \textit{reru}, \textit{eru}, \textit{keru}.
-This is formally identical to the passive morpheme for many verbs (\cite[346]{vaccari1938complete}, \cite[398]{kaiser2013japanese}).
+This is formally identical to the passive morpheme for many verbs (\citet[346]{vaccari1938complete}, \citet[398]{kaiser2013japanese}).
 
 %atsuka-e-nai `can't handle' %扱えない GSD treebank
 %araso-e-nai `can't dispute' % 争えない GSD treebank
@@ -1230,26 +1254,26 @@ Lemmatized as \textit{nai} (630 occurrences).
 %EXAMPLES:
 
 We provide examples illustrating the relative ordering of different morphemes.
-Note that passive and potential markers do not co-occur.
+Note that passive and potential markers do not co-occur; we merge them here because they are not formally distinct for many verbs.
 We omit examples with -te; it always follows other suffixes that are compatible with it.
 
 
-
+	\begin{center}
 \begin{tabular}{lllllllll|lllllll}
 %     & VALENCE   & VOICE    & \multicolumn{3}{c}{MOOD/MODALITY} & NEGATION & TENSE \\
-Stem & Caus. & Pass. & Pot. & Polite. & Desid. & Neg. & TAM & \\ \hline
-mi &          &      & &            &          & naka     & tta    & did not see \cite[153]{vaccari1938complete}\\
-mi &          &      & &            & taku     & nai      &         & I do not wish to see \cite[98]{vaccari1938complete} \\
-mi &          &      & &            & taku     & naka    & tta       & I did not wish to see \cite[98]{vaccari1938complete} \\
-%oyog & ase    &      & &            &          &         & ta    &     & made swim \\
-tat & ase     & rare & &            &          &         & ta         & was made to stand up \cite[396]{kaiser2013japanese} \\
-waraw  &       & are & &            &           &         & ta        & was laughed at \cite[384]{kaiser2013japanese} \\
-mi     &       & rare& & mase       &          & n        &           & is not seen \cite[337]{vaccari1938complete} \\
-mi     &       & rare& & mash      &           &          & yoo      & will be seen \cite[337]{vaccari1938complete} \\
-de     &       &    & &            &           & naka     & roo      & will not go out \cite[170]{vaccari1938complete} \\
-mi     &       &    & e & mase       &           & n        &          & cannot see \cite[349]{vaccari1938complete} \\
+Stem & Caus. & Pass./Pot. & Polite. & Desid. & Neg. & TAM & \\ \hline
+mi &          &       &            &          & naka     & tta    & did not see \cite[153]{vaccari1938complete}\\
+mi &          &       &            & taku     & nai      &         & do not wish to see \cite[98]{vaccari1938complete} \\
+mi &          &       &            & taku     & naka    & tta       & did not wish to see \cite[98]{vaccari1938complete} \\
+tat & ase     & rare  &            &          &         & ta         & was made to stand up \cite[396]{kaiser2013japanese} \\
+waraw  &       & are  &            &           &         & ta        & was laughed at \cite[384]{kaiser2013japanese} \\
+mi     &       & rare & mase       &          & n        &           & is not seen \cite[337]{vaccari1938complete} \\
+mi     &       & rare & mash      &           &          & yoo      & will be seen \cite[337]{vaccari1938complete} \\
+de     &       &     &            &           & naka     & roo      & will not go out \cite[170]{vaccari1938complete} \\
+mi     &       &     e & mase       &           & n        &          & cannot see \cite[349]{vaccari1938complete} \\
 %mi     &       &    & & mashi      & tai       &          &      &    & want to see
 \end{tabular}
+	\end{center}
 
 
 %Not all combinations are possible. 
@@ -1569,11 +1593,11 @@ Again, we extracted morpheme types occurring at least 50 times.
 Examples from \cite{demuth1992acquisition}:
 
 \begin{tabular}{lllllllll|lllllll}
-Sbj. & Ng. & TAM & Obj. & V & Val. & Voice & Tense & Mood \\ \hline
-o       &          &     &        & pheh &         &       & il    & e  & (Thabo) cooked (food) (\cite{demuth1992acquisition} (15)) \\
-ke      &          &     & e      & f   &          & uw    &      & e   & (I) was given (the book) (\cite{demuth1992acquisition} (26c)) \\
-o       &          &     &        & pheh & el      &      &       & a & (Thabo) cooks (food for Mpho) (\cite{demuth1992acquisition} (41))\\
-o       &          &     &        & pheh & el      & w    &      & a & (Mpho) is being cooked (food) (\cite{demuth1992acquisition} (42))
+Sbj. & Obj. & V & Val. & Voice & Tense & Mood \\ \hline
+o           &        & pheh &         &       & il    & e  & (Thabo) cooked (food) (\cite{demuth1992acquisition} (15)) \\
+ke          & e      & f   &          & uw    &      & e   & (I) was given (the book) (\cite{demuth1992acquisition} (26c)) \\
+o           &        & pheh & el      &      &       & a & (Thabo) cooks (food for Mpho) (\cite{demuth1992acquisition} (41))\\
+o           &        & pheh & el      & w    &      & a & (Mpho) is being cooked (food) (\cite{demuth1992acquisition} (42))
 \end{tabular}
 
 
@@ -1747,25 +1771,25 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 
 
 
-\begin{figure}
-    \centering
-    \begin{tabular}{lllllllllllllll}
-            &       Real & Optimized \\ \hline\hline
-            &    Stem & Stem & Stem & Stem & Stem & Stem \\ \hline
-1&suru & suru & suru & suru & suru & suru & suru & suru \\
-2&causative & passive/pot. & passive/pot. & causative & passive/pot. & causative & politeness & future \\
-3&passive/pot. & causative & past & politeness & future & passive/pot. & causative & passive/pot. \\
-4&desiderative & desiderative & desiderative & future & nonfinite & desiderative & future & desiderative \\
-5&politeness & negation & causative & passive/pot. & past & negation & passive/pot. & politeness \\
-6&negation & past & nonfinite & negation & causative & past & negation & nonfinite \\
-7&future & nonfinite & negation & nonfinite & desiderative & politeness & nonfinite & negation \\
-& past & politeness & politeness & desiderative & negation & future & desiderative & past \\
-& nonfinite & future & future & past & politeness & nonfinite & past & causative \\ \hline
-    \end{tabular}
-	\caption{Comparing order of Japanese affixes in the observed orders (left) and according to an approximatively optimized grammar (right), optimized for AUC on the \emph{training} set, for six random splits into train/held-out sets}
-    \label{fig:grammar-table-jap-varyset}
-\end{figure}
-
+%\begin{figure}
+%    \centering
+%    \begin{tabular}{lllllllllllllll}
+%            &       Real & Optimized \\ \hline\hline
+%            &    Stem & Stem & Stem & Stem & Stem & Stem \\ \hline
+%1&suru & suru & suru & suru & suru & suru & suru & suru \\
+%2&causative & passive/pot. & passive/pot. & causative & passive/pot. & causative & politeness & future \\
+%3&passive/pot. & causative & past & politeness & future & passive/pot. & causative & passive/pot. \\
+%4&desiderative & desiderative & desiderative & future & nonfinite & desiderative & future & desiderative \\
+%5&politeness & negation & causative & passive/pot. & past & negation & passive/pot. & politeness \\
+%6&negation & past & nonfinite & negation & causative & past & negation & nonfinite \\
+%7&future & nonfinite & negation & nonfinite & desiderative & politeness & nonfinite & negation \\
+%& past & politeness & politeness & desiderative & negation & future & desiderative & past \\
+%& nonfinite & future & future & past & politeness & nonfinite & past & causative \\ \hline
+%    \end{tabular}
+%	\caption{Comparing order of Japanese affixes in the observed orders (left) and according to an approximatively optimized grammar (right), optimized for AUC on the \emph{training} set, for six random splits into train/held-out sets}
+%    \label{fig:grammar-table-jap-varyset}
+%\end{figure}
+%
 
 
 \begin{figure}
