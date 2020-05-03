@@ -141,8 +141,10 @@ We repeat these here for reference:
 \end{equation}
 \end{enumerate}
 
+\paragraph{Ingredient 3: Two Technical Postulates}
 
-We add a fourth, more technical, postulate to take care of a technical subtlety:
+We add two more technical postulate to take care of a technical subtlety.
+
 Since $(w_t)_{t \in \mathbb{Z}}$ extends infinitely into the past, our postulates permit situations where, while $(w_t)_{t \in \mathbb{Z}}$ has no `internal clock', the sequence of memory states $(m_t)_{t \in \mathbb{Z}}$ does.
 This would correspond to a setting where the listener's memory state keeps track of some absolute notion of time (e.g., counting whether $t$ is even or odd) even though the statistical regularities of the input $(w_t)_{t \in \mathbb{Z}}$ are independent of time.
 We avoid such situations by making the assumption that $(w_t, m_t)_{t \in \mathbb{Z}}$, viewed as a stochastic process, is stationary.
@@ -150,8 +152,17 @@ Formally, this means that, for any integers $t$, $\Delta$, and $T>0$:
 \begin{equation}
 	P((w_t, m_t), \dots, (w_{t+T}, m_{t+T})) = 	P((w_{t+\Delta}, m_{t+\Delta}), \dots, (w_{t+T+\Delta}, m_{t+T+\Delta}))
 \end{equation}
-There are no further assumptions about the memory architecture and the nature of its computations.
 
+\mhahn{I have to figure out whether this one is really necessary}
+Second, the comprehension postulates permit situations where $m_t$ maintains some information that is not contained in the past inputs $w_{<t}$, but is informative about future input $w_{\geq t}$. 
+Such a situation would correspond to a listener `mindreading' the speaker's intentions.
+We exclude this by explicitly stating that the listener has no access to information about the future beyond what is contained in the past:
+\begin{equation}\label{eq:no-mindreading}
+    m_t \bot w_{\geq t} | w_{<t}
+\end{equation}
+
+
+There are no further assumptions about the memory architecture and the nature of its computations.
 
 
 \subsection{Proof of the Theorem}\label{sec:proof}
@@ -510,6 +521,7 @@ We rewrite the KL-Divergence so that we can reduce this result to Theorem 1.
 	& \geq \sum_{t=T+1}^\infty I_t
 \end{align}
 where the last line follows by applying the proof of Theorem 1.
+\mhahn{Note that \ref{eq:no-mindreading} plays no role in the proof}
 \end{proof}
 
 \mhahn{note that the Markov chain condition for MI as capacity constraint doesn't hold here.}
