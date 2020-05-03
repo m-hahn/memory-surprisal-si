@@ -481,6 +481,36 @@ We show that results similar to our main theorem hold for the tradeoff between a
 We first analyze a setting where a speaker produces sentences with bounded memory without a production goal in mind.
 We then extend this analysis to a model where the speaker maintains a production goal.
 
+\subsubsection{Postulates}
+
+
+We derive the existence of this trade-off from the following postulates about language production. Let the competence language be represented by a stationary stochastic process, parameterized by a probability distribution $p(w_t | w_{<t})$ giving the conditional probability of any word $w_t$ given an unbounded number of previous words. Our postulates describe a speaker who tries to find a performance language $q(w_t|m_t)$ to match the the competence language using incremental memory representations $m_t$:
+
+\begin{enumerate}
+    \item Production Postulate 1 (Incremental memory). At time $t$, the speaker has an incremental \key{memory state} $m_t$ that contains (1) her stored information about previous words that she has produced, and (2) information about her production target. The memory state is given by a \key{memory encoding function} $M$ such that $m_t = M(w_{t-1}, m_{t-1})$.
+    
+    \item Production Postulate 2 (Production policy). At time $t$, the speaker produces the next word $w_t$ conditional on her memory state by drawing from a probability distribution $q(w_t | m_t)$. We call $q$ the speaker's \key{production policy}.
+    
+    \item Production Postulate 3 (Minimizing divergence). The production policy $q$ is selected to minimize the KL divergence from the performance language to the target competence language $p(w_t|w_{<t})$. We call this divergence the \key{competence--performance divergence} under the memory encoding function $M$ and the production policy $q$:
+    \begin{align}
+    \label{eq:comp-perf-div}
+    d^q_M &\equiv D_{\text{KL}} [ p(w_t|w_{<t}) || q(w_t|m_t) ] \\
+        &= \sum_{w_{\le t}} p(w_{\le t}) \log \frac{p(w_t | w_{<t})}{q(w_t|m_t)}.
+    \end{align}
+    The production policy is then the solution to the functional minimization problem:
+    \begin{equation}
+        \mathop{\text{minimize }}_{q(w_t|m_t)} d^q_M.
+    \end{equation}
+\end{enumerate}
+
+Completing the link with the memory--surprisal trade-off in comprehension, we note that when the production policy $q(w_t|m_t)$ is selected to minimize the competence--performance divergence $d^q_M$, then this divergence becomes equal to the memory distortion $d_M$ discussed above in the context of comprehension costs. Therefore, under these postulates, the Information Locality Bound Theorem will apply in production as well as comprehension. This means that languages that exhibit information locality can be produced with greater accuracy given limited memory resources.
+
+In the case of language comprehension, the trade-off represented excess processing \emph{difficulty} arising due to memory constraints. In the case of language production, the trade-off represents \emph{production error} arising due to memory constraints. When memory is constrained, then the speaker's productions will diverge from her target language. And as memory is more and more constrained, this divergence will increase more and more. The degree of divergence is measured in the same units as surprisal, hence the formal equivalence between the listener's and speaker's memory--surprisal trade-offs. 
+
+Although the memory--surprisal trade-off is mathematically similar between comprehension and production, it is not necessarily identical. The comprehender's memory--surprisal trade-off has to do with the amount of predictive information $I_t$ stored in memory, where $I_t$ is defined in terms of a probability distribution on words given $t$ words of context. In the producer's memory--surprisal tradeoff, this probability distribution may be different, because the producer has knowledge of a production target (Production Postulate 1). Nevertheless, if the producer's probability distribution is similar to the comprehender's, then we predict the same trade-off for the producer as for the comprehender.
+
+
+
 \subsubsection{Without Production Goals}
 First, we consider a setting in which a speaker produces sentences with bounded memory, and analyze the deviation of the produced distribution from the actual distribution of the language.
 
