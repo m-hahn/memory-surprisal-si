@@ -90,7 +90,7 @@
 
 In this section, we prove Theorem 2 and related theoretical results referenced in the main paper.
 
-\subsection{Mathematical Assumptions}
+\subsection{Mathematical Assumptions}\label{sec:math-assumptions}
 
 We first make explicit how we formalize language processing for proving the theorem.
 This is a formally fully rigorous statement of the model described in Section 3.1 of the main paper.
@@ -107,15 +107,15 @@ This distribution gives rise to probability distributions over finite subsequenc
 \end{equation}
 for integers $t, T$, and to conditional probabilities
 \begin{equation}
-	P(w_t | w_{<t})
+	P(w_t | w_{t-T}, \dots, w_{t-1})
 \end{equation}
-where $w_{<t}$ stands for the semi-infinite sequence $\dots, w_{t-2}, w_{t-1}$.
+%where $w_{<t}$ stands for the semi-infinite sequence $\dots, w_{t-2}, w_{t-1}$.
 
 The assumption of infinite length is for mathematical convenience and does not affect the substance of our results:
-As we restrict our attention to the processing of individual sentences, which have finite length, we will actually not make use of long-range and infinite contexts.
+As we restrict our attention to the processing of individual sentences (Experiments 1 and 2) or individual words (Experiment 3), which have finite length, we do not actually make use of long-range and infinite contexts.
 
-We make the assumption that this process is \emph{stationary} \cite{doob1953stochastic}.
-This means that the joint distribution of different words in this infinite sequence depends only on their \emph{relative positions in time}, not their absolute times.
+We make the assumption that this process is \emph{stationary} \citep{doob1953stochastic}.
+This means that the joint distribution of different symbols depends only on their \emph{relative positions}, not their \emph{absolute positions}.
 Formally, this means that, for any integers $t$, $\Delta$, and $T>0$:
 \begin{equation}
 	P(w_t, \dots, w_{t+T}) = 	P(w_{t+\Delta}, \dots, w_{t+T+\Delta})
@@ -126,10 +126,10 @@ However, we are interested in memory needs in the processing of \emph{individual
 At this level, the statistical regularities of language do not change, making stationarity a reasonable modeling assumption.
 
 As we are interested in processing at the level of words or sentences, we do not model statistical dependencies between successive sentences.
-That is, we model the process $\dots w_{-2} w_{-1} w_0 w_{1} w_{2} \dots$ as consisting of a sequence of independent samples from the distribution over sentences (or words), separated with a start-of-sentence (or start-of-word) symbol. \mhahn{this could also go into the design of Experiments 2-3}.
+That is, we model the process $\dots w_{-2} w_{-1} w_0 w_{1} w_{2} \dots$ as consisting of a sequence of independent samples from the distribution over sentences (or words), separated with a start-of-sentence (or start-of-word) symbol. % \mhahn{this could also go into the design of Experiments 2-3}.
 
-\paragraph{Ingredient 2: Postulates about Processing}
-The second ingredient consists of the three postulates described in the main paper.
+\paragraph{Ingredient 2: Postulates about Memory and Processing}
+The second ingredient consists of the three postulates about memory and processing described in the main paper.
 We repeat these here for reference:
 \begin{enumerate}
     \item Comprehension Postulate 1 (Incremental memory). At time $t$, the listener has an incremental \key{memory state} $m_t$ that contains her stored information about previous words. The memory state is given by a \key{memory encoding function} $M$ such that $m_t = M(w_{t-1}, m_{t-1})$.
@@ -141,26 +141,36 @@ We repeat these here for reference:
 \end{equation}
 \end{enumerate}
 
-\paragraph{Ingredient 3: Two Technical Postulates}
-
-We add two more technical postulate to take care of a technical subtlety.
-
-Since $(w_t)_{t \in \mathbb{Z}}$ extends infinitely into the past, our postulates permit situations where, while $(w_t)_{t \in \mathbb{Z}}$ has no `internal clock', the sequence of memory states $(m_t)_{t \in \mathbb{Z}}$ does.
-This would correspond to a setting where the listener's memory state keeps track of some absolute notion of time (e.g., counting whether $t$ is even or odd) even though the statistical regularities of the input $(w_t)_{t \in \mathbb{Z}}$ are independent of time.
-We avoid such situations by making the assumption that $(w_t, m_t)_{t \in \mathbb{Z}}$, viewed as a stochastic process, is stationary.
+We extend the assumption of stationarity explained above to the memory state $m_t$, modeling the pair $(w_t, m_t)_{t \in \mathbb{Z}}$ as a stationary process.
 Formally, this means that, for any integers $t$, $\Delta$, and $T>0$:
 \begin{equation}
 	P((w_t, m_t), \dots, (w_{t+T}, m_{t+T})) = 	P((w_{t+\Delta}, m_{t+\Delta}), \dots, (w_{t+T+\Delta}, m_{t+T+\Delta}))
 \end{equation}
+This means that the listener's memory state only depends on the relative temporal position of past observed symbols, not on any absolute time scale.
+This prevents situations where the listener's memory state keeps track of some absolute notion of time (e.g., counting whether $t$ is even or odd) even though the statistical regularities of the input $(w_t)_{t \in \mathbb{Z}}$ are independent of time.
 
-\mhahn{I have to figure out whether this one is really necessary}
-Second, the comprehension postulates permit situations where $m_t$ maintains some information that is not contained in the past inputs $w_{<t}$, but is informative about future input $w_{\geq t}$. 
+\paragraph{Ingredient 3: No Mindreading}
+
+%We add two more technical postulates that take care of two technical subtleties.
+
+%First, since $(w_t)_{t \in \mathbb{Z}}$ extends infinitely into the past, our postulates so far permit situations where, while $(w_t)_{t \in \mathbb{Z}}$ has no `internal clock', the sequence of memory states $(m_t)_{t \in \mathbb{Z}}$ does.
+%This would correspond to a setting where 
+%We avoid such situations by making the assumption that $(w_t, m_t)_{t \in \mathbb{Z}}$, viewed as a stochastic process, is stationary.
+%Formally, this means that, for any integers $t$, $\Delta$, and $T>0$:
+%\begin{equation}
+%	P((w_t, m_t), \dots, (w_{t+T}, m_{t+T})) = 	P((w_{t+\Delta}, m_{t+\Delta}), \dots, (w_{t+T+\Delta}, m_{t+T+\Delta}))
+%\end{equation}
+
+Our postulates so far do not rule out that the listener has access to information that was never revealed during past interaction.
+That is, they permit situations where $m_t$ maintains some information that is not contained in the past inputs $w_{<t} = (\dots, w_{t-2}, w_{t-1})$, but is informative about future input $w_{\geq t} = (w_{t}, w_{t+1}, w_{t+2}, \dots)$. 
 Such a situation would correspond to a listener `mindreading' the speaker's intentions.
-We exclude this by explicitly stating that the listener has no access to information about the future beyond what is contained in the past:
+We exclude this by explicitly stating that the listener has no access to information about the future beyond what is contained in the past. We formalize this as saying that the memory state is independent of future observations, conditional on the past:
 \begin{equation}\label{eq:no-mindreading}
     m_t \bot w_{\geq t} | w_{<t}
 \end{equation}
-
+%Such an assumption is satisfied by any mechanistic model of memory that incrementally builds memory representations from input.
+Remarkably, the Information Locality Theorem can be proved even without this assumption.
+However, this assumption is necessary in order to prove that $S_M \geq S_\infty$ even for very large memory capacities, i.e., that imperfect memory can never lead to lower surprisal than the entropy rate. Such a situation could only be achieved if the listener somehow `read the speaker's mind'.
 
 There are no further assumptions about the memory architecture and the nature of its computations.
 
@@ -220,7 +230,7 @@ The difference between the listener's average surprisal $S_M$ and optimal surpri
 	\label{eq:surprisal-divergence}
 		d_M \equiv S_M - S_\infty = \operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}].
 	\end{equation}
-	Because the process $(w_t, m_t)_t$ is stationary, we can, for any positive integer $T$, rewrite this expression as
+	Because the process $(w_t, m_t)_{t\in\mathbb{Z}}$ is stationary, we can, for any positive integer $T$, rewrite this expression as
 \begin{equation}\label{eq:byStation}
 \operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}] =  \frac{1}{T} \sum_{t'=1}^{T} \left(\operatorname{H}[w_{t'} | m_{t'}] - \operatorname{H}[w_{t'} | w_{<t'}]\right) 
 \end{equation}
@@ -236,7 +246,7 @@ The difference between the listener's average surprisal $S_M$ and optimal surpri
 %\end{lemma}
 %
 %\begin{proof}[Proof of the Lemma]
-Because $m_t$ is determined by $(w_{1 \dots t-1}, m_1)$, we have
+Due to Processing Postulate 1, we have %Because $m_t$ is determined by $(w_{1 \dots t-1}, m_1)$, we have
 \begin{equation}
 	m_t = M(m_{t-1}, w_{t-1}) = M(M(m_{t-2}, w_{t-2}), w_{t-1}) = M(M(M(m_{t-3}, w_{t-3}), w_{t-2}), w_{t-1}) = \dots,
 \end{equation}
@@ -279,8 +289,9 @@ The reason is that, if there are memory encoding functions $M_1, M_2$, a listene
 
 
 \paragraph{Mutual Information as Memory Cost}
-Furthermore, note that theorem still holds if we were to define $H_M$ not as the entropy $\operatorname{H}[m]$, but instead as the mutual information between $m_t$ and the past, $\operatorname{I}[m_t, w_{<t}]$.
-The one step where the definition of $H_M$ plays a role is Equation~\ref{eq:bounding-by-mem}; this would still hold because $\operatorname{I}[w_{1\dots T}, m_1] \leq \operatorname{I}[m_1, w_{<1}]$ because $m_1 \rightarrow w_{<1} \rightarrow w_{1\dots T}$ is a Markov chain \mhahn{this would have to be added as an axiom, it doesn't currently follow from our postulates}:
+Note that theorem still holds if we were to define $H_M$ not as the entropy $\operatorname{H}[m]$, but instead as the mutual information between $m_t$ and the past, $\operatorname{I}[m_t : w_{<t}]$ \citep{still-information-2014}.
+The one step where the definition of $H_M$ plays a role is Equation~\ref{eq:bounding-by-mem}; this would still hold because $\operatorname{I}[w_{1\dots T} : m_1] \leq \operatorname{I}[m_1 : w_{<1}]$ due to the `No Mindreading' postulate.
+%because $m_1 \rightarrow w_{<1} \rightarrow w_{1\dots T}$ is a Markov chain \mhahn{this would have to be added as an axiom, it doesn't currently follow from our postulates}:
 %\begin{equation}
 %p(m_1|w_{<1}, w_{1\dots T}) = p(m_1|w_{\leq T}) =^{is\ this\ really\ warranted?} p(m_1|m_0, w_1) = p(m_1|m_0, w_0) = p(m_1|w_{<1})
 %\end{equation}
@@ -366,6 +377,7 @@ Predictions are made based on working memory $m_{t-1}$ and retrieved information
     S := H[w_t| m_{t-1}, r_t].
 \end{equation}
 
+%In line with the mathematical postulates in Section~\ref{sec:math-assumptions}, we assume that $(w_t, m_t, r_t, s_t)$ is stationary as a stochastic process, and that $(m_t, r_t, s_t)$ contain no information 
 
 \paragraph{Cost of Retrieval}
 %In ACT-R, each retrieval operation is initiated through a query constructed based on the current state of the buffers; it returns a chunk from short-term memory that is then placed into a buffer.
