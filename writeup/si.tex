@@ -116,7 +116,7 @@ As we restrict our attention to the processing of individual sentences (Experime
 
 We make the assumption that this process is \emph{stationary} \citep{doob1953stochastic}.
 This means that the joint distribution of different symbols depends only on their \emph{relative positions}, not their \emph{absolute positions}.
-Formally, this means that, for any integers $t$, $\Delta$, and $T>0$:
+Formally, this means that joint probabilities do not change when shifting all observations by a constant number $\Delta$ of time steps. That is, for any integers $t$, $\Delta$, and $T>0$:
 \begin{equation}
 	P(w_t, \dots, w_{t+T}) = 	P(w_{t+\Delta}, \dots, w_{t+T+\Delta})
 \end{equation}
@@ -164,13 +164,22 @@ This prevents situations where the listener's memory state keeps track of some a
 Our postulates so far do not rule out that the listener has access to information that was never revealed during past interaction.
 That is, they permit situations where $m_t$ maintains some information that is not contained in the past inputs $w_{<t} = (\dots, w_{t-2}, w_{t-1})$, but is informative about future input $w_{\geq t} = (w_{t}, w_{t+1}, w_{t+2}, \dots)$. 
 Such a situation would correspond to a listener `mindreading' the speaker's intentions.
-We exclude this by explicitly stating that the listener has no access to information about the future beyond what is contained in the past. We formalize this as saying that the memory state is independent of future observations, conditional on the past:
+We exclude this by explicitly stating that the listener has no access to information about the future beyond what is contained in the past.
+We formalize this as saying that the memory state is independent of future observations, conditional on the past:
 \begin{equation}\label{eq:no-mindreading}
     m_t \bot w_{\geq t} | w_{<t}
 \end{equation}
 %Such an assumption is satisfied by any mechanistic model of memory that incrementally builds memory representations from input.
 Remarkably, the Information Locality Theorem can be proved even without this assumption.
-However, this assumption is necessary in order to prove that $S_M \geq S_\infty$ even for very large memory capacities, i.e., that imperfect memory can never lead to lower surprisal than the entropy rate. Such a situation could only be achieved if the listener somehow `read the speaker's mind'.
+However, this assumption is necessary in order to prove that $S_M \geq S_\infty$ even for very large memory capacities, i.e., that imperfect memory can never lead to lower average surprisal than the entropy rate. Such a situation could only be achieved if the listener somehow `read the speaker's mind'.
+
+\mhahn{different way of stating this, if we go for the semi-infinite version}
+A simple way of stating this is as saying that, before the interaction starts, memory contains no information about what the speaker is going to say. Formally, this means that $m_0$ is statistically independent from $w_{1, 2, \dots}$:
+\begin{equation}\label{eq:no-mindreading}
+    m_0 \bot w_{1, 2, \dots}
+\end{equation}
+
+
 
 There are no further assumptions about the memory architecture and the nature of its computations.
 
@@ -752,7 +761,7 @@ Here, we show that the decay of unconditional mutual information is not necessar
 Consider the constant process where with probability 1/2 all $w_t = 0$, and with probability 1/2 all $w_t = 1$.
 The unconditional mutual information is $I[w_t, w_0] = 1$ at all distances $t$, so does not decay at all, but predicting the process optimally only requires 1 bit of memory.
 
-Conversely, one can construct processes where the unconditional mutual informations are 0 for all $t$, but where $\sum_t I_t > 0$, and this predictive information is actually spread out over arbitrarily large distances: Consider the process consisting of 2 random bits and their XOR. This one has nonzero $I_2$, but zero unconditional  mutual information $I[w_t, w_0]$ at all distances $t$.
+Conversely, one can construct processes where the unconditional mutual informations are 0 for all $t$, but where $\sum_t t I_t > 0$: Consider the process consisting of 2 random bits and their XOR. This one has nonzero $I_2$, but zero unconditional  mutual information $I[w_t, w_0]$ at all distances $t$.
 
 %This example can be modified to get unboundedly large values of $\sum_t t I_t > 0$ at zero unconditional mutual information. Consider the following process for any $N \in \mathbb{N}_{>2}$: Every $w_t$ is equal to the XOR of $w_{t-1}$ and $w_{t-N}$, such that each $w_t$ has $Bernoulli(1/2)$ as its marginal. The unconditional mutual information between any two timesteps is zero, but modeling the process optimally requires $H_M = N$ bits of memory.
 
