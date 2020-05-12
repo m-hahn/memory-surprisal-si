@@ -110,7 +110,8 @@ for integers $t, T$, and to conditional probabilities
 	P(w_t | w_{t-T}, \dots, w_{t-1})
 \end{equation}
 %where $w_{<t}$ stands for the semi-infinite sequence $\dots, w_{t-2}, w_{t-1}$.
-%\paragraph{Assumption of Infinite Length}
+
+\paragraph{Infinite Length}
 We assume that the process $W$ extends infinitely into both past and future, whereas real words, sentences, and conversations are finite.
 This is not a contradiction:
 In Studies 1--3, we model $W$ as a sequence of independent sentences or words, separated with a special ``end-of-sentence'' symbol.
@@ -135,8 +136,8 @@ In reality, the statistical rules of language do change: They change as language
 However, we are interested in memory needs in the processing of \emph{individual sentences} or \emph{individual words}, at a timescale of seconds or minutes.
 At this level, the statistical regularities of language do not change, making stationarity a reasonable modeling assumption.
 
-As we are interested in processing at the level of words or sentences, we do not model statistical dependencies between successive sentences.
-That is, we model the process $\dots w_{-2} w_{-1} w_0 w_{1} w_{2} \dots$ as consisting of a sequence of independent samples from the distribution over sentences (or words), separated with a start-of-sentence (or start-of-word) symbol. % \mhahn{this could also go into the design of Experiments 2-3}.
+%As we are interested in processing at the level of words or sentences, we do not model statistical dependencies between successive sentences.
+%That is, we model the process $\dots w_{-2} w_{-1} w_0 w_{1} w_{2} \dots$ as consisting of a sequence of independent samples from the distribution over sentences (or words), separated with a start-of-sentence (or start-of-word) symbol. % \mhahn{this could also go into the design of Experiments 2-3}.
 
 The choice to model language as a stationary stochastic process is common to information-theoretic studies of text, including studies of entropy rate \citep{shannon1951entropy,bentz2017entropy,takahashi2018cross}, excess entropy~\citep{debowski-excess-2011,hahn2019estimating}, and mutual information~\citep{ebeling-entropy-1994,lin-critical-2017}.
 
@@ -152,7 +153,6 @@ We repeat these here for reference:
     \text{Difficulty} \propto -\log P(w_t | m_t).
 \end{equation}
 \end{enumerate}
-
 We extend the assumption of stationarity explained above to the memory state $m_t$, modeling the pair $(w_t, m_t)_{t \in \mathbb{Z}}$ as a stationary process.
 Formally, this means that, for any integers $t$, $\Delta$, and $T>0$:
 \begin{equation}
@@ -198,7 +198,7 @@ There are no further assumptions about the memory architecture and the nature of
 
 \subsection{Proof of the Theorem}\label{sec:proof}
 
-Here, we prove Theorem 2 based on the assumptions described in the previous section.
+Here, we prove the Information Locality Theorem (Theorem 2 in the main paper) based on the assumptions described in the previous section.
 	Recall that $S_M$ and $S_\infty$ are given by
 	\begin{equation}\label{eq:sm-def}
 		    S_M \equiv \operatorname{H}[w_t|m_t],
@@ -249,7 +249,7 @@ Then this listener will incur surprisal at least
 The difference between the listener's average surprisal $S_M$ and optimal surprisal $S_\infty$ is 
 	\begin{equation}
 	\label{eq:surprisal-divergence}
-		d_M \equiv S_M - S_\infty = \operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}].
+		S_M - S_\infty = \operatorname{H}[w_t | m_t] - \operatorname{H}[w_t | w_{<t}].
 	\end{equation}
 	Because the process $(w_t, m_t)_{t\in\mathbb{Z}}$ is stationary, we can, for any positive integer $T$, rewrite this expression as
 \begin{equation}\label{eq:byStation}
@@ -300,66 +300,56 @@ Rearranging yields
 as claimed.
 \end{proof}
 
-\paragraph{Convexity of Tradeoff Curve}
-In order to derive smooth bounds on memory-surprisal tradeoff curves, we note that memory-surprisal tradeoff curves are convex.
-The reason is that, if there are memory encoding functions $M_1, M_2$, a listener can apply function $M_1$ some random fraction of times, and $M_2$ otherwise.
-\mhahn{not really clear to me now that this works, unless we take the cost to be mutual information, not entropy}
-
-
+%\paragraph{Convexity of Tradeoff Curve}
+%In order to derive smooth bounds on memory-surprisal tradeoff curves, we note that memory-surprisal tradeoff curves are convex.
+%The reason is that, if there are memory encoding functions $M_1, M_2$, a listener can apply function $M_1$ some random fraction of times, and $M_2$ otherwise.
 %Justifylinear interpolation: The curve is convex, which is shown by `time-sharing': Use one code $\lambda$ fraction of times, and the other code $1-\lambda$ fraction of times.
 
 
-\paragraph{Mutual Information as Memory Cost}
-Note that theorem still holds if we were to define $H_M$ not as the entropy $\operatorname{H}[m]$, but instead as the mutual information between $m_t$ and the past, $\operatorname{I}[m_t : w_{<t}]$ \citep{still-information-2014}.
-The one step where the definition of $H_M$ plays a role is Equation~\ref{eq:bounding-by-mem}; this would still hold because $\operatorname{I}[w_{1\dots T} : m_1] \leq \operatorname{I}[m_1 : w_{<1}]$ due to the `No Mindreading' postulate.
-%because $m_1 \rightarrow w_{<1} \rightarrow w_{1\dots T}$ is a Markov chain \mhahn{this would have to be added as an axiom, it doesn't currently follow from our postulates}:
-%\begin{equation}
-%p(m_1|w_{<1}, w_{1\dots T}) = p(m_1|w_{\leq T}) =^{is\ this\ really\ warranted?} p(m_1|m_0, w_1) = p(m_1|m_0, w_0) = p(m_1|w_{<1})
+%\paragraph{Mutual Information as Memory Cost}
+%Note that theorem still holds if we were to define $H_M$ not as the entropy $\operatorname{H}[m]$, but instead as the mutual information between $m_t$ and the past, $\operatorname{I}[m_t : w_{<t}]$ \citep{still-information-2014}.
+%The one step where the definition of $H_M$ plays a role is Equation~\ref{eq:bounding-by-mem}; this would still hold because $\operatorname{I}[w_{1\dots T} : m_1] \leq \operatorname{I}[m_1 : w_{<1}]$ due to the `No Mindreading' postulate.
+
+%\subsection{Nondeterministic Encoding Functions}
+%\mhahn{this doesn't seem important?}
+%We have been assuming that $m_t$ is a deterministic function of $x_t$ and $m_{t-1}$.
+%Here, we show that this assumption can be relaxed to stochastic encoding functions.
+%That is, we show that our result holds if
+%$m_t$ is not a deterministic function of $w_{t-1}$ and $m_{t-1}$, but includes randomness in processing.
+
+%To formalize that setting, we relax Comprehension Postulate 1 to the following requirement, for all values of $m_1, (w_{t})_{t \in \mathbb{Z}}, m_0$, and $T \in \mathbb{N}$:
+%\begin{equation}\label{eq:listener-markov-nondeterministic}
+%p(m_1| (w_{t})_{t = -T, \dots, +T}, m_0)   = p(m_1 | m_0, w_0).
 %\end{equation}
-%\mhahn{we probably should just add to the assumptions that these conditionals with infinite conditions are well-defined}
+%This says that $m_1$ contains no information about the utterances beyond what is contained in $m_0$ and $w_0$.	
 
+%The one place in the proof where Comprehension Postulate 1 plays a role is the proof of the inequality:
+%\begin{equation}
+%	H[w_t | m_t] \geq H[w_t|w_{1 \dots t-1}, m_1].
+%\end{equation}
 
-
-\subsection{Nondeterministic Encoding Functions}
-\mhahn{this doesn't seem important?}
-We have been assuming that $m_t$ is a deterministic function of $x_t$ and $m_{t-1}$.
-Here, we show that this assumption can be relaxed to stochastic encoding functions.
-That is, we show that our result holds if
-$m_t$ is not a deterministic function of $w_{t-1}$ and $m_{t-1}$, but includes randomness in processing.
-
-To formalize that setting, we relax Comprehension Postulate 1 to the following requirement, for all values of $m_1, (w_{t})_{t \in \mathbb{Z}}, m_0$, and $T \in \mathbb{N}$:
-\begin{equation}\label{eq:listener-markov-nondeterministic}
-p(m_1| (w_{t})_{t = -T, \dots, +T}, m_0)   = p(m_1 | m_0, w_0).
-\end{equation}
-This says that $m_1$ contains no information about the utterances beyond what is contained in $m_0$ and $w_0$.	
-
-The one place in the proof where Comprehension Postulate 1 plays a role is the proof of the inequality:
-\begin{equation}
-	H[w_t | m_t] \geq H[w_t|w_{1 \dots t-1}, m_1].
-\end{equation}
-
-We show that this inequality still holds under the relaxed condition (\ref{eq:listener-markov-nondeterministic}):
-\begin{proof}
-	By Bayes' Theorem,
-\begin{align*}
-	p(w_t|m_0, m_1, w_{0\dots t-1}) &= \frac{p(m_1|m_0, w_{0\dots t})}{p(m_1|m_0, w_{0\dots t-1})} \cdot p(w_t|m_0, w_{0\dots t-1}) \\
- &= \frac{p(m_1|m_0, w_{0})}{p(m_1|m_0, w_{0})} \cdot p(w_t|m_0, w_{0\dots t-1}) \\
- &= p(w_t|m_0, w_{0\dots t-1}). \\
-\end{align*}
-	where the second equation follows from (\ref{eq:listener-markov-nondeterministic}).
-So we have a Markov chain
-\begin{equation}
-(w_t) \rightarrow (m_0, w_{0 \dots t-1})   \rightarrow   (m_1, w_{1 \dots t-1}).
-\end{equation}
-Thus, by the Data Processing Inequality,
-\begin{equation}
-H[w_t| w_{1 \dots t-1}, m_{1}] \geq H[w_t|w_{0 \dots t-1}, m_0].
-\end{equation}
-Finally, iteratively applying this reasoning, we conclude:
-\begin{align*}
-H[w_t | m_t] \geq H[w_t| w_{t-1}, m_{t-1}] \geq H[w_t| w_{t-2, t-1}, m_{t-2}] \geq ... \geq H[w_t|w_{1 \dots t-1}, m_1].
-\end{align*}
-\end{proof}
+%We show that this inequality still holds under the relaxed condition (\ref{eq:listener-markov-nondeterministic}):
+%\begin{proof}
+%	By Bayes' Theorem,
+%\begin{align*}
+%	p(w_t|m_0, m_1, w_{0\dots t-1}) &= \frac{p(m_1|m_0, w_{0\dots t})}{p(m_1|m_0, w_{0\dots t-1})} \cdot p(w_t|m_0, w_{0\dots t-1}) \\
+% &= \frac{p(m_1|m_0, w_{0})}{p(m_1|m_0, w_{0})} \cdot p(w_t|m_0, w_{0\dots t-1}) \\
+% &= p(w_t|m_0, w_{0\dots t-1}). \\
+%\end{align*}
+%	where the second equation follows from (\ref{eq:listener-markov-nondeterministic}).
+%So we have a Markov chain
+%\begin{equation}
+%(w_t) \rightarrow (m_0, w_{0 \dots t-1})   \rightarrow   (m_1, w_{1 \dots t-1}).
+%\end{equation}
+%Thus, by the Data Processing Inequality,
+%\begin{equation}
+%H[w_t| w_{1 \dots t-1}, m_{1}] \geq H[w_t|w_{0 \dots t-1}, m_0].
+%\end{equation}
+%Finally, iteratively applying this reasoning, we conclude:
+%\begin{align*}
+%H[w_t | m_t] \geq H[w_t| w_{t-1}, m_{t-1}] \geq H[w_t| w_{t-2, t-1}, m_{t-2}] \geq ... \geq H[w_t|w_{1 \dots t-1}, m_1].
+%\end{align*}
+%\end{proof}
 
 
 
@@ -510,14 +500,13 @@ Given the nature of representations assumed in models~\citep{lewis-activation-ba
 Here we show results linking memory and locality in production.
 We show that results similar to our main theorem hold for the tradeoff between a speaker's memory and the accuracy with which they match the distribution of the language.
 
-We first analyze a setting where a speaker produces sentences with bounded memory without a production goal in mind.
-We then extend this analysis to a model where the speaker maintains a production goal.
-
-In the case of production, the memory--surprisal trade-off arises from the minimization of error in production of linguistic sequences. That is, given a \key{competence language} (a target distribution on words given contexts), a speaker tries to produce a \key{performance language} which is as close as possible to the competence language. The performance language operates under memory constraints, so the performance language will diverge from the competence language due to production errors. When a speaker has more incremental memory about what she has already produced, then she is able to produce linguistic sequences with less error, thus reducing the divergence between the performance language and the competence language. The reduction of this competence--performance divergence is formally equivalent to the minimization of average surprisal from Section~\ref{sec:listener-tradeoff}.
+In the case of production, the memory--surprisal trade-off arises from the minimization of error in production of linguistic sequences. That is, given a \key{competence language} (a target distribution on words given contexts), a speaker tries to produce a \key{performance language} which is as close as possible to the competence language. The performance language operates under memory constraints, so the performance language will diverge from the competence language due to production errors. When a speaker has more incremental memory about what she has already produced, then she is able to produce linguistic sequences with less error, thus reducing the divergence between the performance language and the competence language. The reduction of this competence--performance divergence is formally equivalent to the minimization of average surprisal from Section 3 in the main paper.
 
 
 Formally, we assign a speaker a production policy $q(w_t|m_t)$ that produces the next word conditional on the speaker's memory state $m_t$.
-We assume that speakers aim to minimize the KL divergence from the performance language $q(w_t|m_t)$ to the target competence language $p(w_t|w_{<t})$. We call this divergence the \key{competence--performance divergence} under the memory encoding function $M$ and the production policy $q$:
+%This can be viewed as a probabilistic formalization of production plans
+We assume that speakers aim to minimize the occurrence of production errors.
+We formalize this as minimizing the KL divergence from the performance language $q(w_t|m_t)$ to the target competence language $p(w_t|w_{<t})$. We call this divergence the \key{competence--performance divergence} under the memory encoding function $M$ and the production policy $q$:
     \begin{align}
     \label{eq:comp-perf-div}
     d^q_M &\equiv D_{\text{KL}} [ p(w_t|w_{<t}) || q(w_t|m_t) ] \\
@@ -542,13 +531,13 @@ We derive the existence of this trade-off from the following postulates about la
     d^q_M &\equiv D_{\text{KL}} [ p(w_t|w_{<t}) || q(w_t|m_t) ] \\
         &= \sum_{w_{\le t}} p(w_{\le t}) \log \frac{p(w_t | w_{<t})}{q(w_t|m_t)}.
     \end{align}
-    The production policy is then the solution to the functional minimization problem:
-    \begin{equation}
-        \mathop{\text{minimize }}_{q(w_t|m_t)} d^q_M.
-    \end{equation}
+%    The production policy is then the solution to the functional minimization problem:
+%    \begin{equation}
+%        \mathop{\text{minimize }}_{q(w_t|m_t)} d^q_M.
+%    \end{equation}
 \end{enumerate}
 
-Completing the link with the memory--surprisal trade-off in comprehension, we note that when the production policy $q(w_t|m_t)$ is selected to minimize the competence--performance divergence $d^q_M$, then this divergence becomes equal to the memory distortion $d_M$ discussed above in the context of comprehension costs. Therefore, under these postulates, the Information Locality Bound Theorem will apply in production as well as comprehension (see Section~\ref{sec:proof-prod} for formal statement and proof). This means that languages that exhibit information locality can be produced with greater accuracy given limited memory resources.
+Completing the link with the memory--surprisal trade-off in comprehension, we note that when the production policy $q(w_t|m_t)$ is selected to minimize the competence--performance divergence $d^q_M$, then this divergence becomes equal to the memory distortion $S_M-S_\infty$ discussed in the context of comprehension costs. Therefore, under these postulates, the Information Locality Bound Theorem will apply in production as well as comprehension (see Section~\ref{sec:proof-prod} for formal statement and proof). This means that languages that exhibit information locality can be produced with greater accuracy given limited memory resources.
 
 In the case of language comprehension, the trade-off represented excess processing \emph{difficulty} arising due to memory constraints. In the case of language production, the trade-off represents \emph{production error} arising due to memory constraints. When memory is constrained, then the speaker's productions will diverge from her target language. And as memory is more and more constrained, this divergence will increase more and more. The degree of divergence is measured in the same units as surprisal, hence the formal equivalence between the listener's and speaker's memory--surprisal trade-offs. 
 
@@ -558,18 +547,21 @@ It may be possible to use this asymmetry to distinguish whether word and morphem
 
 
 \subsubsection{Information Locality Theorem in Production}\label{sec:proof-prod}
-First, we consider a setting in which a speaker produces sentences with bounded memory, and analyze the deviation of the produced distribution from the actual distribution of the language.
 
+Here, we prove an Information Locality Theorem in production.
+We first analyze a setting where a speaker produces sentences with bounded memory without a production goal in mind.
+We then extend this analysis to a model where the speaker maintains a production goal.
+
+Following the Production Postulates 1--3, we consider a setting in which a speaker produces sentences with bounded memory, and analyze the deviation of the produced distribution from the actual distribution of the language.
 We consider a speaker who maintains memory representations and incrementally produces based on these representations:
 \begin{equation}
 P_\text{produced}(w_t|w_{<t}) = P(w_t|m_t) \\
 \end{equation}
-We show a tradeoff between the memory capacity $\operatorname{H}[m_t]$ and the KL-divergence between the actual language statistics and the speaker's production distribution:
+We show a tradeoff between the memory capacity $\operatorname{H}[m_t]$ and the KL-divergence between the actual language statistics and the speaker's production distribution, as defined in Production Postulate 3:
 \begin{equation}
-D_{KL}(P_\text{language}||P_\text{produced})  := \E_{w_{<t}} \sum_{w_t} p(w_t|w_{<t}) \log \frac{p(w_t|w_{<t})}{p_{produced}(w_t|w_{<t})} \\
+d^q_M = D_{KL}(P_\text{language}||P_\text{produced})  = \E_{w_{<t}} \sum_{w_t} p(w_t|w_{<t}) \log \frac{p(w_t|w_{<t})}{p_{produced}(w_t|w_{<t})} \\
 \end{equation}
-
-As in the case of comprehension, we assume that $(w_t, m_t)_{t\in \mathbb{Z}}$ is stationary; however, we do \emph{not} assume the `No Mindreading' condition~(\ref{eq:no-mindreading}).
+As in the case of comprehension, we model $(w_t, m_t)_{t\in \mathbb{Z}}$ as stationary; however, we do \emph{not} assume the `No Mindreading' condition~(\ref{eq:no-mindreading}).
 
 \begin{thm}
 If a speaker maintains memory
@@ -578,11 +570,11 @@ If a speaker maintains memory
 	\end{equation}
 	then 
 \begin{equation}
-	D_{\text{KL}}(P_\text{language}||P_\text{produced}) \geq \sum_{t=T+1}^\infty I_t.
+d^q_M = 	D_{\text{KL}}(P_\text{language}||P_\text{produced}) \geq \sum_{t=T+1}^\infty I_t.
 \end{equation}
 \end{thm}
 
-While this bound only considers the production of a single word, it immediately entails a bound on the production accuracy for sequences:
+While this bound only considers the production of a single word, it entails a bound on the production accuracy for sequences:
 \begin{equation}
 	D_{KL}(P_{language}(w_1\dots w_t|w_{\leq 0})||P_{produced}(w_1\dots w_t|w_{\leq 0}))  = t \cdot D_{KL}(P_{language}(w_1|w_{\leq 0})||P_{produced}(w_1|w_{\leq 0}))
 \end{equation}
@@ -590,19 +582,21 @@ While this bound only considers the production of a single word, it immediately 
 
 
 \begin{proof}
-We rewrite the KL-Divergence so that we can reduce this result to Theorem 1.
+We rewrite the KL-Divergence so that we can reduce this result to the proof in the comprehension setting (Section~\ref{sec:proof}).
 	First note
 \begin{align}
 	D_{KL}(P_{language}||P_{produced}) & = \E_{w_{<t}} \left[\sum_{w_t} p(w_t|w_{<t}) \log \frac{p(w_t|w_{<t})}{p_{produced}(w_t|w_{<t})} \right] \\
 	& = \E_{w_{<t}} \left[ \sum_{w_t} p(w_t|w_{<t}) \log \frac{p(w_t|w_{<t})}{p(w_t|M(w_{<t}))} \right] \\
 	& = \E_{w_{<t}} \left[ \sum_{w_t} p(w_t|w_{<t}) \log p(w_t|w_{<t})\right] - \E_{w_{<t}} \left[\sum_{w_t} p(w_t|w_{<t}) \log p(w_t|M(w_{<t})) \right] \\
-	& = \operatorname{H}[w_t|M(w_{<t})] - \operatorname{H}[w_t|w_{<t}] \\
-	& \geq \sum_{t=T+1}^\infty I_t
+	& = \operatorname{H}[w_t|M(w_{<t})] - \operatorname{H}[w_t|w_{<t}]
 \end{align}
-where the last line follows by applying the proof of Theorem 1.
+We now note that the proof in Section~\ref{sec:proof} can be used, without further modification, to show that
+\begin{equation}
+\operatorname{H}[w_t|M(w_{<t})] - \operatorname{H}[w_t|w_{<t}]   \geq \sum_{t=T+1}^\infty I_t
+\end{equation}
+completing the proof.
+The reason we can apply the proof from Section~\ref{sec:proof} is that Comprehension Postulate 1, where it is used in that proof, can be replaced by the analogous Production Postulate 1.
 \end{proof}
-
-%\mhahn{note that the Markov chain condition for MI as capacity constraint doesn't hold here.}
 
 We can refine this theoretical analysis by taking into account the fact that language is produced aiming for some communicative goal.
 We therefore now assume that the speaker has a communicative goal $G$ in mind.
@@ -618,9 +612,9 @@ and assume that the speaker aims to match this distribution
 We can analyze this model by adding conditioning w.r.t. $G$ throughout the analysis of the previous case.
 Specifically, we need
 \begin{equation}
-I_t^G := I[X_t, X_0|X_1, \dots, X_{t-1}, G]
+I_t^G := I[w_t, w_0|w_1, \dots, w_{t-1}, G]
 \end{equation}
-which measures the information between $X_t$ and $X_0$ only to the degree that it is not redundant with the goal.
+which measures the information between $w_t$ and $w_0$ only to the degree that it is not redundant with the goal.
 With this, we can prove by an entirely analogous argument:
 \begin{thm}
 If a speaker maintains memory
@@ -652,7 +646,7 @@ The first step follows from the definition of $Y$. The second step follows from 
 
 \section{Examples with Analytical Calculations}
 
-Here, we provide examples of the theorem in settings where analytical calculations are possible.
+Here, we provide examples of the Information Locality Theorem in settings where analytical calculations are possible.
 These examples are artificial and intended to demonstrate the mathematical possibility of certain phenomena; we do not intend these examples to model any linguistic phenomena.
 
 
@@ -779,11 +773,15 @@ As the retrieval-based model is a generalization of the capacity-based model, it
 Our theoretical results link the memory-surprisal tradeoff to the values of \emph{conditional} mutual information $I_t$, whereas prior work on the statistics of language has considered \emph{unconditional} mutual information $I[w_t, w_0]$.
 Here, we show that the decay of unconditional mutual information is not necessarily linked to memory demands.
 
-
+First, there are processes where unconditional mutual information does not decay with distance, even though memory load is small.
 Consider the constant process where with probability 1/2 all $w_t = 0$, and with probability 1/2 all $w_t = 1$.
-The unconditional mutual information is $I[w_t, w_0] = 1$ at all distances $t$, so does not decay at all, but predicting the process optimally only requires 1 bit of memory.
+The unconditional mutual information is $I[w_t, w_0] = 1$ at all distances $t$, so does not decay at all.
+However, predicting the process optimally only requires 1 bit of memory.
+This is correctly captured by the Information Locality Theorem, as $I_1 = 1$ and $I_t = 0$ for $t>1$, so $\lim_{T\rightarrow\infty} \sum_{t=1}^T tI_t = 1$.
 
-Conversely, one can construct processes where the unconditional mutual informations are 0 for all $t$, but where $\sum_t t I_t > 0$: Consider the process consisting of 2 random bits and their XOR. This one has nonzero $I_2$, but zero unconditional  mutual information $I[w_t, w_0]$ at all distances $t$.
+Second, one can construct processes where the unconditional mutual informations $I[w_t, w_0]$ are zero for all distances $t$, but where optimal prediction requires nonzero memory:
+Consider the process consisting of 2 random bits and their XOR \citep[called RRXOR by][]{crutchfield2003regularities}. This one has nonzero $I_2$, but zero unconditional mutual information $I[w_t, w_0]$ at all distances $t$.
+Conditional mutual information is not zero, however, and -- in accordance with the Information Locality Theorem -- optimal prediction requires at least $\lim_{T\rightarrow\infty} \sum_{t=1}^T tI_t > 0$ bits of memory \citep{crutchfield2003regularities}.
 
 %This example can be modified to get unboundedly large values of $\sum_t t I_t > 0$ at zero unconditional mutual information. Consider the following process for any $N \in \mathbb{N}_{>2}$: Every $w_t$ is equal to the XOR of $w_{t-1}$ and $w_{t-N}$, such that each $w_t$ has $Bernoulli(1/2)$ as its marginal. The unconditional mutual information between any two timesteps is zero, but modeling the process optimally requires $H_M = N$ bits of memory.
 
@@ -802,7 +800,7 @@ Conversely, one can construct processes where the unconditional mutual informati
 \end{center}
 
 
-\subsection{Detailed Results per Language}
+%\subsection{Detailed Results per Language}
 
 %\subsection{Median Surprisal per Memory Budget}
 %
@@ -1033,7 +1031,7 @@ Therefore, we used a precision-based stopping criterion to adaptively choose a s
 Precision-based stopping criteria offer a way to adaptively choose sample size without biasing results for or against the hypothesis of interest (CITE).
 
 We propose a stopping criterion using a global measure of the degree of optimization of the real language.
-This is visualized in Figure~\ref{fig:quantile-global}.
+%This is visualized in Figure~\ref{fig:quantile-global}.
 For each sample $x$ from real orderings, we look at the proportions $N_+(x)$ of samples from the baseline languages that are more optimal than $x$ throughout the entire range where both curves are defined, and the proportion $N_-(x)$ of baseline samples that are consistently less optimal.
 We estimate the quotient
 \begin{equation}\label{eq:g}
@@ -1044,12 +1042,12 @@ We use a bootstrapped confidence interval for $\E[G]$ for quantifying the degree
 For bootstrapping, we separately resample samples from the real language and from the baseline grammars.
 Due to the use of bootstrapping, the confidence intervals are not exact.
 
-\begin{figure}
-	\begin{center}
-\includegraphics[width=0.8\textwidth]{figures/quantile-global.png}
-\end{center}
-	\caption{Illustration for the global quantile estimate serving as the stopping criterion. For each sample for the real language, we compare the memory-surprisal curve to all baselines.}\label{fig:quantile-global}
-\end{figure}
+%\begin{figure}
+%	\begin{center}
+%\includegraphics[width=0.8\textwidth]{figures/quantile-global.png}
+%\end{center}
+%	\caption{Illustration for the global quantile estimate serving as the stopping criterion. For each sample for the real language, we compare the memory-surprisal curve to all baselines.}\label{fig:quantile-global}
+%\end{figure}
 
 
 For each language, we first collected 10 data points for real orderings and 10 data points for baseline orderings.
@@ -1235,18 +1233,18 @@ Consequently, more samples were collected than necessary to reach the stopping c
 
 \subsection{Chart Parsing Control}
 
-LSTMs and n-gram models are linear sequence models that might incorporate biases towards linear order as opposed to hierarchical structure.
+LSTMs and $n$-gram models are linear sequence models that might incorporate biases towards linear order as opposed to hierarchical structure.
 In particular, this might bias these models towards modeling relations between elements better when they are close in linear order.
 Here we use chart parsing to show that the results also hold when estimating $I_t$ using a model that is based on hierarchical structure and incorporates no bias towards linear closeness.
 
 We use probabilistic context-free grammars (PCFG), a common formalism for representing probability distributions based on syntactic structure.
 PCFG surprisal is often computed in psycholinguistic research using approximate incremental parsers \citep{DBLP:journals/coling/Roark01,DBLP:journals/coling/DembergKK13,DBLP:journals/topics/SchijndelES13}, but these might themselves incorporate some biases towards linear closeness due to the use of techniques such as beam-search and pruning.
-We instead opt for exact inference for PCFGs using exact chart parsing, which computes exact probabilities and surprisals for a given PCFG.
+We instead opt for exact inference for PCFGs using chart parsing, which computes exact probabilities and surprisals for a given PCFG.
 
 \subsubsection{Deriving PCFGs from Dependency Corpora}
 
 Here, we describe how we constructed a PCFG from the training section of a dependency corpus.
-There is no universally accepted standard methd of extracting PCFGs from dependency corpora; we chose the following procedure that tries to balance between preserving information about dependency structure while keeping the size of grammars computationally manageable.
+There is no universally accepted standard methd of extracting PCFGs from dependency corpora; we chose the following procedure that tries to balance between preserving information about dependency structure and keeping the size of grammars computationally manageable.
 
 In a first step we convert the dependency trees into binary constituent trees. We binarize so that left children branch off before right children.
 We assign nonterminal labels to the resulting constituents as follows.
@@ -1271,7 +1269,7 @@ An alternative estimation method avoiding the binarization step would be to use 
 
 \subsubsection{Estimating $I_t$ with Chart Parsing}
 
-Calculating $I_t$ requires estimating entropies $H[X_1, \dots, X_t]$, and thus probabilities $P(X_1, \dots, X_t)$.
+Calculating $I_t$ requires estimating entropies $H[w_1, \dots, w_t]$, and thus probabilities $P(w_1, \dots, w_t)$.
 This is challenging because it requires marginalization over possible positions in a sequence.
 The standard parsing algorithm for binary PCFGs is the CKY algorithm; however, the standard form of this algorithm only computes the surprisal for entire sentences.
 There is a known extension of the CKY algorithm that calculates \emph{prefix} probabilities~\citep{DBLP:journals/coling/JelinekL91,DBLP:journals/coling/Stolcke95,DBLP:journals/coling/Goodman99}:
@@ -1304,6 +1302,11 @@ We did not run this on the observed orderings, as these may have crossing branch
 
 The resulting memory-surprisal tradeoff bounds are shown in Figure~\ref{fig:resu-pcfg}.
 In most languages, a more efficient tradeoff curve is estimated for the fitted grammars than for the baseline grammars.
+In five languages (Finnish, Slovak, North Sami, Cantonese, Kurmanji), the fitted grammar numerically has higher AUC value than at least 50\% of baseline grammars.
+In all other 49 languages the fitted grammar numerically has lower AUC than more than 50\% of baseline grammars.
+In 37 languages, the fitted grammar has lower AUC than 100\% of sampled baselines.
+
+%\mhahn{make figure larger more readable, like the ngrams part or as in the main paper}
 
 Note that absolute numbers are not comparable with other models because there are many out-of-vocabulary tokens (they are necessary because the number of non- and preterminals has to be kept low).
 Also, we note that the amount of exploited predictive information is much lower than in the other models, that is, the difference between surprisal at zero memory and surprisal at maximal memory is low.
@@ -1334,6 +1337,7 @@ Note that there  is no universally accepted segmentation for Japanese suffixes; 
 
 
 \begin{enumerate}
+\item Derivation: -\textit{su}- (allomorphs -\textit{suru}-, -\textit{shi}-), derives verbs from Sino-Japanese words. This is lemmatized as \textit{suru}.
 	\item VALENCE: causative (-\textit{(s)ase}-) (\citet[142]{hasegawa2014japanese}, \citet[Chapter 13]{kaiser2013japanese}). In the UD data, this is lemmatized as \textit{saseru}, \textit{seru} (190 occurrences).
 	\item VOICE: passive (-\textit{are}-, -\textit{rare}-) (\citet[152]{hasegawa2014japanese}, \citet[Chapter 12]{kaiser2013japanese}).  In the UD data, this is lemmatized as \textit{rareru}, \textit{reru} ($\approx$ 2000 occurrences).
 \item MOOD, MODALITY:
@@ -1542,7 +1546,7 @@ As in Japanese, morphemes show different forms depending on their environment, a
 %    sa used in Negative Dependent Present (Paroz 1946, p.31) and Perfect (ibid p. 80). E.g. Sec 13.38 p.172 in Guma 1971. -sa- and -se- Lombard 1985 p. 108, appear in different moods.
     %What is the order of NEGATION and TENSE/ASPECT?
     
-    \item Tense/Aspect/Mood, annotated this t\^{} (13K occurrences) \cite[p. 165]{guma1971outline}
+    \item Tense/Aspect/Mood, annotated as t\^{} (13K occurrences) \cite[p. 165]{guma1971outline}
     
     Common TAM markers in this position in the corpus include, with the labels provided in the Demuth corpus:
     

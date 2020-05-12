@@ -38,6 +38,15 @@ Hyperparameters $\alpha, \gamma, \delta$ are tuned using the held-out set, with 
 
 \subsubsection{Results}
 
+Resulting tradeoff curves are shown in Figure~\ref{tab:medians_ngrams}, for real orders (blue), random baselines (green), and ordering grammars fitted to the observed orders (red).
+
+In five languages (Polish, Slovak, North Sami, Armenian, Latvian), AUC is numerically higher for the real orders than for at least 50\% of baseline grammars.
+Among the remaining 49 languages, AUC is significantly lower than for at least 50\% of baseline grammars in 46 languages at $p=0.01$, where we controlled for multiple comparisons using Hochberg's step-up procedure.
+In three languages (German, Faroese, Kurmanji), the difference is numerical but not significant in this analysis.
+In 44 languages, the real order has lower AUC than 100\% of sampled baseline grammars.
+
+The main divergence in these results from those of the neural network-based estimator in the main paper is that a few languages with small corpora (Armenian, Faroese, Kurmanji) and a language with flexible word order (German) do not show clear evidence for optimization for the simple $n$-gram estimator.
+In the other languages, results qualitatively agree with those of the neural network-based estimator.
 
 
 \begin{center}
