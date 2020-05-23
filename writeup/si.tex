@@ -985,7 +985,7 @@ For each corpus, we used Bayesian optimization using the Expected Improvement ac
 We optimized the hyperparameters to minimize average surprisal~(\ref{eq:train}) on the held-out partition resulting at the end of parameter estimation, on languages generated from random word order grammars.
 This biases the hyperparameters towards modeling counterfactual grammars better, biasing them \emph{against} our hypothesis that real orders result in better memory-surprisal tradeoffs than counterfactual orders.
 
-Due to reasons of computational efficiency, neural language models can only process a bounded number of distinct words in a single language \citep{Mikolov2010RecurrentNN}.
+Due to reasons of computational efficiency, neural language models can only process a bounded number of distinct words in a single language \citep{mikolov-recurrent-2010}.
 For each corpus, we limited the number of distinct processed words to the $N=10,000$ most common words in the training corpus, a common choice for neural language models.
 We represented other words by their part-of-speech tags as annotated in the corpora.
 This applied to 37 languages, affecting an average of 11~\% of words in these languages.
@@ -1023,7 +1023,7 @@ This procedure ensures that $\hat{S}_t$ can only decrease as the context size $t
 For each language, we collected data from the actual orderings and from several random grammars.
 We collect multiple samples for the actual orderings to control for variation due to the random initialization of the neural network.
 For each of the random grammars, we collect one sample.
-Data is collected according to a precision-based stopping criterion described in Section (REF).
+Data is collected according to a precision-based stopping criterion described in Section~\ref{ref:stopping-criterion}.
 
 
 We estimate the unigram entropy $H[w_0]$ by averaging over all model runs on a given corpus.
@@ -1036,7 +1036,7 @@ We estimate the unigram entropy $H[w_0]$ by averaging over all model runs on a g
 
 
 
-\subsubsection{Number of Samples, Precision-Based Stopping Criterion}
+\subsubsection{Number of Samples, Precision-Based Stopping Criterion}\label{ref:stopping-criterion}
 Training neural language models is computationally costly.
 Therefore, we used a precision-based stopping criterion to adaptively choose a sample size for each language.
 Precision-based stopping criteria offer a way to adaptively choose sample size without biasing results for or against the hypothesis of interest (CITE).
