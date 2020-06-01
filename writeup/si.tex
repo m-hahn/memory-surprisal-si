@@ -136,8 +136,6 @@ In reality, the statistical rules of language do change: They change as language
 However, we are interested in memory needs in the processing of \emph{individual sentences} or \emph{individual words}, at a timescale of seconds or minutes.
 At this level, the statistical regularities of language do not change, making stationarity a reasonable modeling assumption.
 
-%As we are interested in processing at the level of words or sentences, we do not model statistical dependencies between successive sentences.
-%That is, we model the process $\dots w_{-2} w_{-1} w_0 w_{1} w_{2} \dots$ as consisting of a sequence of independent samples from the distribution over sentences (or words), separated with a start-of-sentence (or start-of-word) symbol. % \mhahn{this could also go into the design of Experiments 2-3}.
 
 The choice to model language as a stationary stochastic process is common to information-theoretic studies of text, including studies of entropy rate \citep{shannon1951entropy,bentz2017entropy,takahashi2018cross}, excess entropy~\citep{debowski-excess-2011,hahn2019estimating}, and mutual information~\citep{ebeling-entropy-1994,lin-critical-2017}.
 
@@ -195,12 +193,6 @@ We formalize this as saying that the memory state is independent of future obser
 %Such an assumption is satisfied by any mechanistic model of memory that incrementally builds memory representations from input.
 Remarkably, the Information Locality Theorem can be proved even without this assumption.
 However, this assumption is necessary in order to prove that $S_M \geq S_\infty$ even for very large memory capacities, i.e., that imperfect memory can never lead to lower average surprisal than the entropy rate. Such a situation could only be achieved if the listener somehow `read the speaker's mind'.
-
-%\mhahn{different way of stating this, if we go for the semi-infinite version}
-%A simple way of stating this is as saying that, before the interaction starts, memory contains no information about what the speaker is going to say. Formally, this means that $m_0$ is statistically independent from $w_{1, 2, \dots}$:
-%\begin{equation}\label{eq:no-mindreading}
-%    m_0 \bot w_{1, 2, \dots}
-%\end{equation}
 
 
 
@@ -514,7 +506,7 @@ We show that results similar to our main theorem hold for the tradeoff between a
 In the case of production, the memory--surprisal trade-off arises from the minimization of error in production of linguistic sequences. That is, given a \key{competence language} (a target distribution on words given contexts), a speaker tries to produce a \key{performance language} which is as close as possible to the competence language. The performance language operates under memory constraints, so the performance language will diverge from the competence language due to production errors. When a speaker has more incremental memory about what she has already produced, then she is able to produce linguistic sequences with less error, thus reducing the divergence between the performance language and the competence language. The reduction of this competence--performance divergence is formally equivalent to the minimization of average surprisal from Section 3 in the main paper.
 
 
-Formally, we assign a speaker a production policy $q(w_t|m_t)$ that produces the next word conditional on the speaker's memory state $m_t$.\mhahn{can also introduce conditioning on goals right away}
+Formally, we assign a speaker a production policy $q(w_t|m_t)$ that produces the next word conditional on the speaker's memory state $m_t$.
 %This can be viewed as a probabilistic formalization of production plans
 We assume that speakers aim to minimize the occurrence of production errors.
 We formalize this as minimizing the KL divergence from the performance language $q(w_t|m_t)$ to the target competence language $p(w_t|w_{<t})$. We call this divergence the \key{competence--performance divergence} under the memory encoding function $M$ and the production policy $q$:
@@ -1760,7 +1752,7 @@ We also repeated experiments using instead the training set.
 In this case, we did not apply smoothing; instead, we directly computed $I_t$ for the empirical distribution given by the training corpus.
 
 \paragraph{Results}
-Results for the memory-surprisal tradeoffs are shown in Figures~(\ref{fig:jap-phon}--\ref{fig:sesotho-morph}).
+Results for the memory-surprisal tradeoffs are shown in Figures~(\ref{fig:jap-morph}--\ref{fig:sesotho-morph}).
 We report results both when estimating and optimizing on the held-out set (as in the main paper), and when estimating the memory-surprisal tradeoff on the training set instead.
 Accuracies on predicting orderings are shown in Figures~(\ref{fig:acc-japanese}-\ref{fig:acc-sesotho}).
 In the main paper, we report accuracies computed over all forms occurring in the corpus, counting each form by the number of times it occurs. This corresponds to the `Tokens' results in Figures~(\ref{fig:acc-japanese}-\ref{fig:acc-sesotho}).
@@ -1772,28 +1764,15 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-it.pdf}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-memsurp.pdf}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-auc-hist.pdf}
+		\includegraphics[width=0.25\textwidth]{figures/Japanese-suffixes-byMorphemes-it-heldout.pdf}
+		\includegraphics[width=0.25\textwidth]{figures/Japanese-suffixes-byMorphemes-memsurp-heldout.pdf}
+		\includegraphics[width=0.4\textwidth]{figures/Japanese-suffixes-byMorphemes-auc-hist-heldout.pdf}
 
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-it-heldout.pdf}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-memsurp-heldout.pdf}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-auc-hist-heldout.pdf}
+		\includegraphics[width=0.25\textwidth]{figures/Japanese-suffixes-byPhonemes-it-heldout.pdf}
+		\includegraphics[width=0.25\textwidth]{figures/Japanese-suffixes-byPhonemes-memsurp-heldout.pdf}
+		\includegraphics[width=0.4\textwidth]{figures/Japanese-suffixes-byPhonemes-auc-hist-heldout.pdf}
 \end{center}
-	\caption{Japanese verb suffixes, measuring prediction on the level of phonemes, for real (blue), and random (red) orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff.}\label{fig:jap-phon}
-\end{figure}
-
-\begin{figure}
-	\begin{center}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-it.pdf}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-memsurp.pdf}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-auc-hist.pdf}
-
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-it-heldout.pdf}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-memsurp-heldout.pdf}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-auc-hist-heldout.pdf}
-\end{center}
-	\caption{Japanese verb suffixes, measuring prediction on the level of morphemes, for real (blue), random (green), and approximately optimized (red) orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff. Top: Simple estimator, Bottom: Heldout estimator}\label{fig:jap-morph}
+	\caption{Japanese verb suffixes, measuring prediction on the level of morphemes (top) and phonemes (bottom), for real (blue), random (green), and approximately optimized (red) orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff. Top: Simple estimator, Bottom: Heldout estimator}\label{fig:jap-morph}
 \end{figure}
 
 
@@ -1821,32 +1800,17 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 
 
 
-
 \begin{figure}
 	\begin{center}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-it.pdf}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-memsurp.pdf}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-auc-hist.pdf}
+\includegraphics[width=0.25\textwidth]{figures/Sesotho-suffixes-byMorphemes-it-heldout.pdf}
+\includegraphics[width=0.25\textwidth]{figures/Sesotho-suffixes-byMorphemes-memsurp-heldout.pdf}
+\includegraphics[width=0.4\textwidth]{figures/Sesotho-suffixes-byMorphemes-auc-hist-heldout.pdf}
 
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-it-heldout.pdf}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-memsurp-heldout.pdf}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-auc-hist-heldout.pdf}
-\end{center}
-	\caption{Sesotho verb affixes, measuring prediction on the level of phonemes, for real (blue), random (green), and approximately optimized (red) orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff.}\label{fig:sesotho-phon}
-\end{figure}
-
-
-\begin{figure}
-	\begin{center}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-it.pdf}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-memsurp.pdf}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-auc-hist.pdf}
-
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-it-heldout.pdf}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-memsurp-heldout.pdf}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-auc-hist-heldout.pdf}
-\end{center}
-	\caption{Sesotho verb affixes, measuring prediction on the level of morphemes, for real (blue), random (green), and approximately optimized (red) orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff.}\label{fig:sesotho-morph}
+\includegraphics[width=0.25\textwidth]{figures/Sesotho-suffixes-byPhonemes-it-heldout.pdf}
+\includegraphics[width=0.25\textwidth]{figures/Sesotho-suffixes-byPhonemes-memsurp-heldout.pdf}
+\includegraphics[width=0.4\textwidth]{figures/Sesotho-suffixes-byPhonemes-auc-hist-heldout.pdf}
+	\end{center}
+	\caption{Sesotho verb affixes, measuring prediction on the level of morphemes (top) and phonemes (bottom), for real (blue), random (green), and approximately optimized (red) orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff.}\label{fig:sesotho-morph}
 \end{figure}
 
 
@@ -1859,22 +1823,22 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 \begin{tabular}{cccc||ll|ll}
 	&& &              & \multicolumn{2}{c}{Prefixes}    & \multicolumn{2}{|c}{Suffixes} \\
 	  &&   &              & Pairs & Full & Pairs & Full \\ \hline\hline
-	Tok. & Simple & Phon.   &   Opt.  &  0.987 (SD 0.004) & 0.983 (SD 0.006) & 0.914 (SD 0.131) & 0.906 (SD 0.14) \\
-	& &           &   Rand.  &  0.322 (SD 0.253) & 0.195 (SD 0.24) & 0.588 (SD 0.155) & 0.554 (SD 0.167) \\
-	& & Morph.  &   Opt.  &  0.997 (SD 0.0) & 0.995 (SD 0.0) & 0.804 (SD 0.0) & 0.721 (SD 0.0) \\
-	& &           &   Rand.  &  0.672 (SD 0.305) & 0.604 (SD 0.338) & 0.423 (SD 0.204) & 0.332 (SD 0.211) \\ \hline
-	&	Heldout & Phon.   &   Opt.  &  0.993 (SD 0.0) & 0.989 (SD 0.0) & 0.792 (SD 0.102) & 0.734 (SD 0.13) \\
-	 &&  &   Rand.  &  0.322 (SD 0.253) & 0.195 (SD 0.24) & 0.588 (SD 0.155) & 0.554 (SD 0.167) \\
-	&&Morph.  &   Opt.  &  0.988 (SD 0.0) & 0.989 (SD 0.0) & 0.756 (SD 0.014) & 0.676 (SD 0.017) \\
-	  && &   Rand.  &  0.672 (SD 0.305) & 0.604 (SD 0.338) & 0.423 (SD 0.204) & 0.332 (SD 0.211) \\ \hline\hline
-	Typ. & Simple & Phon.   &   Opt.  &  0.979 (SD 0.006) & 0.972 (SD 0.009) & 0.92 (SD 0.113) & 0.912 (SD 0.116) \\
-	& &           &   Rand.  &  0.338 (SD 0.248) & 0.205 (SD 0.219) & 0.592 (SD 0.137) & 0.55 (SD 0.149) \\
-	& & Morph.  &   Opt.  &  0.994 (SD 0.0) & 0.99 (SD 0.0) & 0.841 (SD 0.0) & 0.754 (SD 0.0) \\
-	& &           &   Rand.  &  0.666 (SD 0.302) & 0.588 (SD 0.329) & 0.438 (SD 0.213) & 0.329 (SD 0.22) \\ \hline
-	&Heldout&Phon.   &   Opt.  &  0.988 (SD 0.0) & 0.981 (SD 0.0) & 0.831 (SD 0.079) & 0.77 (SD 0.107) \\
-	&&           &   Rand.  &  0.338 (SD 0.248) & 0.205 (SD 0.219) & 0.592 (SD 0.137) & 0.55 (SD 0.149) \\
-	&&Morph.  &   Opt.  &  0.98 (SD 0.0) & 0.98 (SD 0.0) & 0.783 (SD 0.021) & 0.698 (SD 0.025) \\
-	&&           &   Rand.  &  0.666 (SD 0.302) & 0.588 (SD 0.329) & 0.438 (SD 0.213) & 0.329 (SD 0.22) \\
+Tok. & Naive & Phon. &   Opt.  &  0.985 (SD 0.0) & 0.979 (SD 0.0) & 0.989 (SD 0.0) & 0.987 (SD 0.0) \\
+     &       &       &   Rand. &  0.361 (SD 0.307) & 0.273 (SD 0.319) & 0.431 (SD 0.198) & 0.39 (SD 0.204) \\
+     &       & Morph.&   Opt.  &  0.999 (SD 0.0) & 0.998 (SD 0.0) & 0.806 (SD 0.0) & 0.723 (SD 0.0) \\
+     &       &       &   Rand.  &  0.398 (SD 0.313) & 0.303 (SD 0.319) & 0.569 (SD 0.208) & 0.511 (SD 0.228) \\ \hline
+     & Heldout & Phon.   &   Opt.  &  0.993 (SD 0.0) & 0.989 (SD 0.0) & 0.855 (SD 0.139) & 0.836 (SD 0.152) \\
+     &         &         &   Rand.  &  0.361 (SD 0.307) & 0.273 (SD 0.319) & 0.431 (SD 0.198) & 0.39 (SD 0.204) \\
+     &          & Morph. &   Opt.  &  0.99 (SD 0.0) & 0.992 (SD 0.0) & 0.756 (SD 0.012) & 0.675 (SD 0.014) \\
+     &          &        &   Rand.  &  0.398 (SD 0.313) & 0.303 (SD 0.319) & 0.569 (SD 0.208) & 0.511 (SD 0.228) \\ \hline \hline
+Typ. & Naive   & Phon. &   Opt.&  0.976 (SD 0.0) & 0.966 (SD 0.0) & 0.985 (SD 0.0) & 0.98 (SD 0.0) \\
+     &       &       &  Rand.  &  0.365 (SD 0.294) & 0.267 (SD 0.296) & 0.447 (SD 0.22) & 0.398 (SD 0.235) \\
+     &       & Morph.&   Opt.  &  0.997 (SD 0.0) & 0.996 (SD 0.0) & 0.844 (SD 0.0) & 0.758 (SD 0.0) \\
+     &       &       &   Rand.  &  0.405 (SD 0.308) & 0.303 (SD 0.305) & 0.546 (SD 0.197) & 0.464 (SD 0.22) \\ \hline
+     &Heldout  & Phon.   &   Opt.  &  0.988 (SD 0.0) & 0.982 (SD 0.0) & 0.871 (SD 0.118) & 0.852 (SD 0.125) \\
+     &         &         &   Rand.  &  0.365 (SD 0.294) & 0.267 (SD 0.296) & 0.447 (SD 0.22) & 0.398 (SD 0.235) \\
+     &         &Morph.  &   Opt.  &  0.983 (SD 0.0) & 0.986 (SD 0.0) & 0.782 (SD 0.018) & 0.697 (SD 0.02) \\
+     &         &           &   Rand.  &  0.405 (SD 0.308) & 0.303 (SD 0.305) & 0.546 (SD 0.197) & 0.464 (SD 0.22) \\
 \end{tabular}
 \caption{Accuracy of approximately optimized orderings, and of random baseline orderings, in predicting verb affix order in Sesotho. `Pairs' denotes the rate of pairs of morphemes that are ordered correctly, and `Full' denotes the rate of verb forms where order is predicted entirely correctly. We show means and standard deviations over different runs of the optimization algorithm (`Opt.'), and over different random orderings (`Random'). `Tokens' resultsare obtained by counting each form by the number of occurrences in the data set; `Types' results count each form only once. `Simple' models are optimized for in-sample AUC, `Heldout' models are optimized for heldout AUC.}\label{fig:acc-sesotho}
 \end{figure}
@@ -1902,47 +1866,30 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 
 
 
-%\begin{figure}
-%    \centering
-%    \begin{tabular}{lllllllllllllll}
-%            &       Real & Optimized \\ \hline\hline
-%            &    Stem & Stem & Stem & Stem & Stem & Stem \\ \hline
-%1&suru & suru & suru & suru & suru & suru & suru & suru \\
-%2&causative & passive/pot. & passive/pot. & causative & passive/pot. & causative & politeness & future \\
-%3&passive/pot. & causative & past & politeness & future & passive/pot. & causative & passive/pot. \\
-%4&desiderative & desiderative & desiderative & future & nonfinite & desiderative & future & desiderative \\
-%5&politeness & negation & causative & passive/pot. & past & negation & passive/pot. & politeness \\
-%6&negation & past & nonfinite & negation & causative & past & negation & nonfinite \\
-%7&future & nonfinite & negation & nonfinite & desiderative & politeness & nonfinite & negation \\
-%& past & politeness & politeness & desiderative & negation & future & desiderative & past \\
-%& nonfinite & future & future & past & politeness & nonfinite & past & causative \\ \hline
-%    \end{tabular}
-%	\caption{Comparing order of Japanese affixes in the observed orders (left) and according to an approximatively optimized grammar (right), optimized for AUC on the \emph{training} set, for six random splits into train/held-out sets}
-%    \label{fig:grammar-table-jap-varyset}
-%\end{figure}
-%
 
 
-\begin{figure}
+
+\begin{figure} % updated
     \centering
     \begin{tabular}{llllllll}
             &       Real & Optimized \\ \hline\hline
-	    1&Subject (relative) & Subject (relative) \\
-	    &Subject & Subject \\
-	    2&Negation & Negation \\
-	    3&Tense/aspect & Tense/aspect \\
-	    4&Object & Object \\ \hline
+1 & Subject (relative) & Subject \\
+ & Subject & Subject (relative) \\
+2 & Negation & Negation \\
+3 & Tense/aspect & Tense/aspect \\
+4 & Object & Object \\
+	    \hline
 	    &Stem & Stem \\ \hline
-	    1&	    Reversive & Reversive \\
-	    2&Causative & Reciprocal \\
-	    &Neuter & Causative \\
-	    &Applicative & Neuter \\
-	    &Reciprocal & Applicative \\
-	    3&Passive & Passive \\
-	    4&Tense/aspect & Tense/aspect \\
-	    5&Mood & Relative \\
-	    6&Interrogative & Interrogative \\
-	    7&Relative & Mood \\ \hline
+	    1 & Reversive & Reversive \\
+2 & Causative & Reciprocal \\
+ & Neuter & Causative \\
+ & Applicative & Neuter \\
+ & Reciprocal & Applicative \\
+3 & Passive & Passive \\
+4 & Tense/aspect & Tense/aspect \\
+5 & Mood & Interrogative \\
+6 & Interrogative & Relative \\
+ & Relative & Mood \\ \hline
     \end{tabular}
 	\caption{Comparing order of Sesotho affixes in the observed orders (left) and according to an approximatively optimized grammar (right), optimized for AUC on the \emph{training} set. Note that order was separately optimized for prefixes and suffixes.}
     \label{fig:grammar-table-sesotho}
