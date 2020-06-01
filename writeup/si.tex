@@ -797,7 +797,7 @@ Conditional mutual information is not zero, however, and -- in accordance with t
 
 
 
-\section{Experiment 2}
+\section{Study 2}
 
 \subsection{Corpus Size per Language}
 
@@ -979,7 +979,6 @@ In our experiments, we chose $T_{max} = 20$. Prior work has found that the proba
 \subsubsection{Choice of Hyperparameters}
 
 The LSTM model has a set of numerical \emph{hyperparameters} that need to be specified before parameter estimation, such as the number of neurons and the learning rate.
-See SI for details.
 For each corpus, we used Bayesian optimization using the Expected Improvement acquisition function \citep{snoek-practical-2012} to find a good setting of the hyperparameters.
 We optimized the hyperparameters to minimize average surprisal~(\ref{eq:train}) on the held-out partition resulting at the end of parameter estimation, on languages generated from random word order grammars.
 This biases the hyperparameters towards modeling counterfactual grammars better, biasing them \emph{against} our hypothesis that real orders result in better memory-surprisal tradeoffs than counterfactual orders.
@@ -993,7 +992,7 @@ First, this affects the same words in real and counterfactually ordered sentence
 Second, all excluded words are extremely infrequent in the available data, occurring less than 10 times (except for Czech and Russian, the languages for which we have by far the largest datasets).
 Many of the excluded words occur only once in the dataset (78 \% on average across the affected languages).
 This means that any model would only be able to extract very limited information about these words from the available training data, likely \emph{less} than what is provided by the part-of-speech tag.
-Third, traditional N-gram models, which do not have this limitation, provide results in qualitative agreement with the neural network-based estimates (see SI).
+Third, traditional N-gram models, which do not have this limitation, provide results in qualitative agreement with the neural network-based estimates.
 
 \subsubsection{Estimation of average surprisal}
 
@@ -1038,7 +1037,7 @@ We estimate the unigram entropy $H[w_0]$ by averaging over all model runs on a g
 \subsubsection{Number of Samples, Precision-Based Stopping Criterion}\label{ref:stopping-criterion}
 Training neural language models is computationally costly.
 Therefore, we used a precision-based stopping criterion to adaptively choose a sample size for each language.
-Precision-based stopping criteria offer a way to adaptively choose sample size without biasing results for or against the hypothesis of interest (CITE).
+Precision-based stopping criteria offer a way to adaptively choose sample size without biasing results for or against the hypothesis of interest.
 
 We propose a stopping criterion using a global measure of the degree of optimization of the real language.
 %This is visualized in Figure~\ref{fig:quantile-global}.
@@ -1331,7 +1330,7 @@ Nonetheless, the experiment confirms the finding with a model that is based on h
 
 
 
-\section{Experiment 3}
+\section{Study 3}
 
 \subsection{Determining Japanese Verb Suffixes}
 
