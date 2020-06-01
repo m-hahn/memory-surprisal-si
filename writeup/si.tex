@@ -88,7 +88,7 @@
 
 \section{Formal Analysis and Proofs}
 
-In this section, we prove Theorem 2 and related theoretical results referenced in the main paper.
+In this section, we prove the Information Locality Bound Theorem and related theoretical results referenced in the main paper.
 
 \subsection{Mathematical Assumptions}\label{sec:math-assumptions}
 
@@ -201,15 +201,17 @@ There are no further assumptions about the memory architecture and the nature of
 
 \subsection{Proof of the Theorem}\label{sec:proof}
 
-Here, we prove the Information Locality Theorem (Theorem 2 in the main paper) based on the assumptions described in the previous section.
+Here, we prove the Information Locality Bound Theorem (Theorem 2 in the main paper) based on the assumptions described in the previous section.
 	Recall that $S_M$ and $S_\infty$ are given by
-	\begin{equation}\label{eq:sm-def}
-		    S_M \equiv \operatorname{H}[w_t|m_t],
-	\end{equation}
-	\begin{equation}
-		S_\infty \equiv \operatorname{H}[w_t|w_{<t}].
-	\end{equation}
-We note that (\ref{eq:sm-def}) is well-defined because $(w_t, m_t)$ is stationary.
+	\begin{align}\label{eq:sm-def}
+		    S_M &\equiv \operatorname{H}[w_t|m_t] \\ %\equiv \sum_{w_t,m_t}  P(m_t) P(w_t|m_t) \left( -\log P(w_t | m_t) \right),\\
+		S_\infty &\equiv \operatorname{H}[w_t|w_{<t}] %\equiv \sum_{\dots, w_{t-2}, w_{t-1}, w_t}  P(\dots, w_{t-2}, w_{t-1}) P(w_t|\dots, w_{t-2}, w_{t-1}) \left( -\log P(w_t | \dots, w_{t-2}, w_{t-1}) \right).
+	\end{align}
+
+
+	
+
+%We note that (\ref{eq:sm-def}) is well-defined because $(w_t, m_t)$ is stationary.
 
 We restate the theorem:
 
@@ -248,6 +250,7 @@ Then this listener will incur surprisal at least
 \begin{proof}
 %We first note that a listener whose predictions $P(w_t|m_t)$ are not optimal given $m_t$ can only incur even higher average surprisal than Eq.~\ref{eq:surprisal-divergence}, by Gibbs' Inequality. \mhahn{harmonize with main paper}
 
+%\mhahn{strictly speaking, the subjective surprisal might be higher than $H_M$}
 
 The difference between the listener's average surprisal $S_M$ and optimal surprisal $S_\infty$ is 
 	\begin{equation}
@@ -506,7 +509,11 @@ We show that results similar to our main theorem hold for the tradeoff between a
 In the case of production, the memory--surprisal trade-off arises from the minimization of error in production of linguistic sequences. That is, given a \key{competence language} (a target distribution on words given contexts), a speaker tries to produce a \key{performance language} which is as close as possible to the competence language. The performance language operates under memory constraints, so the performance language will diverge from the competence language due to production errors. When a speaker has more incremental memory about what she has already produced, then she is able to produce linguistic sequences with less error, thus reducing the divergence between the performance language and the competence language. The reduction of this competence--performance divergence is formally equivalent to the minimization of average surprisal from Section 3 in the main paper.
 
 
+<<<<<<< HEAD
 Formally, we assign a speaker a production policy $q(w_t|m_t)$ that produces the next word conditional on the speaker's memory state $m_t$.
+=======
+Formally, we assign a speaker a production policy $q(w_t|m_t)$ that produces the next word conditional on the speaker's memory state $m_t$. %\mhahn{can also introduce conditioning on goals right away}
+>>>>>>> 8e39ea28156f1bf2c4f8d598198f1b0227ca6f8c
 %This can be viewed as a probabilistic formalization of production plans
 We assume that speakers aim to minimize the occurrence of production errors.
 We formalize this as minimizing the KL divergence from the performance language $q(w_t|m_t)$ to the target competence language $p(w_t|w_{<t})$. We call this divergence the \key{competence--performance divergence} under the memory encoding function $M$ and the production policy $q$:
@@ -1777,25 +1784,23 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 
 
 
-
-
-\begin{figure}
+\begin{figure} % updated
 \begin{center}
 \begin{tabular}{ccc||llll}
 	& &              &       Pairs & Full \\ \hline\hline
-	Tokens &	Simple & Optimized for Phoneme Prediction   &   0.976 (SD 0.006) & 0.972 (SD 0.01) \\
-	&	& Optimized for Morpheme Prediction  &   0.93 (SD 0.01) & 0.919 (SD 0.008) \\ \hline
-	&	Heldout & Optimized for Phoneme Prediction   &   0.962 (SD 0.001) & 0.957 (SD 0.002) \\
-	&	& Optimized for Morpheme Prediction  &   0.954 (SD 0.009) & 0.945 (SD 0.012) \\ \hline
-	&	&	Random Baseline    &  0.504 (SD 0.0) & 0.414 (SD 0.0) \\ \hline \hline
-	Types & Simple & Optimized for Phoneme Prediction   &   0.968 (SD 0.006) & 0.961 (SD 0.011) \\
-	& & Optimized for Morpheme Prediction  &   0.903 (SD 0.014) & 0.883 (SD 0.011) \\ \hline
-	& Heldout & Optimized for Phoneme Prediction   &   0.946 (SD 0.002) & 0.937 (SD 0.002) \\
-	& & Optimized for Morpheme Prediction  &   0.938 (SD 0.011) & 0.922 (SD 0.014) \\ \hline
-	& & Random Baseline    &  0.482 (SD 0.0) & 0.379 (SD 0.0) \\
+Tokens & Naive   & Optimized for Phoneme Prediction   &   0.982 (SD 0.001) & 0.979 (SD 0.001) \\
+       &         & Optimized for Morpheme Prediction  &   0.93 (SD 0.011) & 0.919 (SD 0.009) \\ \hline
+       & Heldout & Optimized for Phoneme Prediction   &   0.963 (SD 0.006) & 0.958 (SD 0.006) \\
+       &         & Optimized for Morpheme Prediction  &   0.953 (SD 0.011) & 0.943 (SD 0.014) \\ \hline
+       &         &                 Random Baseline    &  0.496 (SD 0.269) & 0.415 (SD 0.271) \\ \hline\hline
+Types & Naive    & Optimized for Phoneme Prediction   &   0.974 (SD 0.002) & 0.969 (SD 0.002) \\
+      &          & Optimized for Morpheme Prediction  &   0.903 (SD 0.015) & 0.883 (SD 0.013) \\ \hline
+      & Heldout  & Optimized for Phoneme Prediction   &   0.948 (SD 0.009) & 0.938 (SD 0.009) \\
+      &          & Optimized for Morpheme Prediction  &   0.937 (SD 0.014) & 0.921 (SD 0.017) \\ \hline
+      &          & Random Baseline    &  0.496 (SD 0.269) & 0.415 (SD 0.271) \\
 \end{tabular}
 \end{center}
-\caption{Accuracy of approximately optimized orderings, and of random baseline orderings, in predicting verb suffix order in Japanese. `Pairs' denotes the rate of pairs of morphemes that are ordered correctly, and `Full' denotes the rate of verb forms where order is predicted entirely correctly. We show means and standard deviations over different runs of the optimization algorithm (`Optimized'), and over different random orderings (`Random'). `Tokens' resultsare obtained by counting each form by the number of occurrences in the data set; `Types' results count each form only once. `Simple' models are optimized for in-sample AUC, `Heldout' models are optimized for heldout AUC.}\label{fig:acc-japanese}
+\caption{Accuracy of approximately optimized orderings, and of random baseline orderings, in predicting verb suffix order in Japanese. `Pairs' denotes the rate of pairs of morphemes that are ordered correctly, and `Full' denotes the rate of verb forms where order is predicted entirely correctly. We show means and standard deviations over different runs of the optimization algorithm (`Optimized'), and over different random orderings (`Random'). `Tokens' results are obtained by counting each form by the number of occurrences in the data set; `Types' results count each form only once. `Naive' models are optimized for in-sample AUC, `Heldout' models are optimized for heldout AUC. The figures in the main paper correspond to the \emph{Heldout} + \emph{Optimized for Morpheme Prediction figures}.}\label{fig:acc-japanese}
 \end{figure}
 
 
@@ -1845,20 +1850,20 @@ Typ. & Naive   & Phon. &   Opt.&  0.976 (SD 0.0) & 0.966 (SD 0.0) & 0.985 (SD 0.
 
 
 
-\begin{figure}
+\begin{figure} % updated (forWords_Japanese_OptimizeOrder_MorphemeGrammar_Normalized_FullData/optimized_forWords_Japanese_OptimizeOrder_MorphemeGrammar_Normalized_FullData.py)
     \centering
     \begin{tabular}{llllllll}
             &       Real & Optimized \\ \hline\hline
             &    Stem & Stem \\ \hline
-	    1&suru & desiderative \\
-	    2&causative & future \\
-	    3&passive/potential & causative \\
-	    4&desiderative & suru \\
-	    5&politeness & passive/potential \\
-	    6&negation & politeness \\
-	    7&future & negation \\
-	    &past & past \\
-	    &nonfinite & nonfinite \\ \hline
+1 & suru & future \\
+2 & causative & desiderative \\
+3 & passive/potential & causative \\
+4 & desiderative & suru \\
+5 & politeness & passive/potential \\
+6 & negation & politeness \\
+7 & future & negation \\
+ & past & nonfinite \\
+ & nonfinite & past \\ \hline
     \end{tabular}
 	\caption{Comparing order of Japanese affixes in the observed orders (left) and according to an approximatively optimized grammar (right), optimized for AUC on the \emph{training} set.}
     \label{fig:grammar-table-jap}
