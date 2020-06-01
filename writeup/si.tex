@@ -1775,10 +1775,10 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-it.pdf}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-memsurp.pdf}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-auc-hist.pdf}
-
+%		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-it.pdf}
+%		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-memsurp.pdf}
+%		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-auc-hist.pdf}
+%
 		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-it-heldout.pdf}
 		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-memsurp-heldout.pdf}
 		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byPhonemes-auc-hist-heldout.pdf}
@@ -1788,10 +1788,10 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-it.pdf}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-memsurp.pdf}
-		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-auc-hist.pdf}
-
+		%\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-it.pdf}
+		%\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-memsurp.pdf}
+		%\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-auc-hist.pdf}
+%
 		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-it-heldout.pdf}
 		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-memsurp-heldout.pdf}
 		\includegraphics[width=0.3\textwidth]{figures/Japanese-suffixes-byMorphemes-auc-hist-heldout.pdf}
@@ -1803,23 +1803,23 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 
 
 
-\begin{figure}
+\begin{figure} % updated
 \begin{center}
 \begin{tabular}{ccc||llll}
 	& &              &       Pairs & Full \\ \hline\hline
-	Tokens &	Simple & Optimized for Phoneme Prediction   &   0.976 (SD 0.006) & 0.972 (SD 0.01) \\
-	&	& Optimized for Morpheme Prediction  &   0.93 (SD 0.01) & 0.919 (SD 0.008) \\ \hline
-	&	Heldout & Optimized for Phoneme Prediction   &   0.962 (SD 0.001) & 0.957 (SD 0.002) \\
-	&	& Optimized for Morpheme Prediction  &   0.954 (SD 0.009) & 0.945 (SD 0.012) \\ \hline
-	&	&	Random Baseline    &  0.504 (SD 0.0) & 0.414 (SD 0.0) \\ \hline \hline
-	Types & Simple & Optimized for Phoneme Prediction   &   0.968 (SD 0.006) & 0.961 (SD 0.011) \\
-	& & Optimized for Morpheme Prediction  &   0.903 (SD 0.014) & 0.883 (SD 0.011) \\ \hline
-	& Heldout & Optimized for Phoneme Prediction   &   0.946 (SD 0.002) & 0.937 (SD 0.002) \\
-	& & Optimized for Morpheme Prediction  &   0.938 (SD 0.011) & 0.922 (SD 0.014) \\ \hline
-	& & Random Baseline    &  0.482 (SD 0.0) & 0.379 (SD 0.0) \\
+Tokens & Naive   & Optimized for Phoneme Prediction   &   0.982 (SD 0.001) & 0.979 (SD 0.001) \\
+       &         & Optimized for Morpheme Prediction  &   0.93 (SD 0.011) & 0.919 (SD 0.009) \\ \hline
+       & Heldout & Optimized for Phoneme Prediction   &   0.963 (SD 0.006) & 0.958 (SD 0.006) \\
+       &         & Optimized for Morpheme Prediction  &   0.953 (SD 0.011) & 0.943 (SD 0.014) \\ \hline
+       &         &                 Random Baseline    &  0.496 (SD 0.269) & 0.415 (SD 0.271) \\ \hline\hline
+Types & Naive    & Optimized for Phoneme Prediction   &   0.974 (SD 0.002) & 0.969 (SD 0.002) \\
+      &          & Optimized for Morpheme Prediction  &   0.903 (SD 0.015) & 0.883 (SD 0.013) \\ \hline
+      & Heldout  & Optimized for Phoneme Prediction   &   0.948 (SD 0.009) & 0.938 (SD 0.009) \\
+      &          & Optimized for Morpheme Prediction  &   0.937 (SD 0.014) & 0.921 (SD 0.017) \\ \hline
+      &          & Random Baseline    &  0.496 (SD 0.269) & 0.415 (SD 0.271) \\
 \end{tabular}
 \end{center}
-\caption{Accuracy of approximately optimized orderings, and of random baseline orderings, in predicting verb suffix order in Japanese. `Pairs' denotes the rate of pairs of morphemes that are ordered correctly, and `Full' denotes the rate of verb forms where order is predicted entirely correctly. We show means and standard deviations over different runs of the optimization algorithm (`Optimized'), and over different random orderings (`Random'). `Tokens' resultsare obtained by counting each form by the number of occurrences in the data set; `Types' results count each form only once. `Simple' models are optimized for in-sample AUC, `Heldout' models are optimized for heldout AUC.}\label{fig:acc-japanese}
+\caption{Accuracy of approximately optimized orderings, and of random baseline orderings, in predicting verb suffix order in Japanese. `Pairs' denotes the rate of pairs of morphemes that are ordered correctly, and `Full' denotes the rate of verb forms where order is predicted entirely correctly. We show means and standard deviations over different runs of the optimization algorithm (`Optimized'), and over different random orderings (`Random'). `Tokens' results are obtained by counting each form by the number of occurrences in the data set; `Types' results count each form only once. `Naive' models are optimized for in-sample AUC, `Heldout' models are optimized for heldout AUC. The figures in the main paper correspond to the \emph{Heldout} + \emph{Optimized for Morpheme Prediction figures}.}\label{fig:acc-japanese}
 \end{figure}
 
 
@@ -1827,10 +1827,10 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 
 \begin{figure}
 	\begin{center}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-it.pdf}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-memsurp.pdf}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-auc-hist.pdf}
-
+%\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-it.pdf}
+%\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-memsurp.pdf}
+%\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-auc-hist.pdf}
+%
 \includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-it-heldout.pdf}
 \includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-memsurp-heldout.pdf}
 \includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byPhonemes-auc-hist-heldout.pdf}
@@ -1841,10 +1841,10 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 
 \begin{figure}
 	\begin{center}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-it.pdf}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-memsurp.pdf}
-\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-auc-hist.pdf}
-
+%\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-it.pdf}
+%\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-memsurp.pdf}
+%\includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-auc-hist.pdf}
+%
 \includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-it-heldout.pdf}
 \includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-memsurp-heldout.pdf}
 \includegraphics[width=0.3\textwidth]{figures/Sesotho-suffixes-byMorphemes-auc-hist-heldout.pdf}
@@ -1884,20 +1884,20 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 
 
 
-\begin{figure}
+\begin{figure} % updated (forWords_Japanese_OptimizeOrder_MorphemeGrammar_Normalized_FullData/optimized_forWords_Japanese_OptimizeOrder_MorphemeGrammar_Normalized_FullData.py)
     \centering
     \begin{tabular}{llllllll}
             &       Real & Optimized \\ \hline\hline
             &    Stem & Stem \\ \hline
-	    1&suru & desiderative \\
-	    2&causative & future \\
-	    3&passive/potential & causative \\
-	    4&desiderative & suru \\
-	    5&politeness & passive/potential \\
-	    6&negation & politeness \\
-	    7&future & negation \\
-	    &past & past \\
-	    &nonfinite & nonfinite \\ \hline
+1 & suru & future \\
+2 & causative & desiderative \\
+3 & passive/potential & causative \\
+4 & desiderative & suru \\
+5 & politeness & passive/potential \\
+6 & negation & politeness \\
+7 & future & negation \\
+ & past & nonfinite \\
+ & nonfinite & past \\ \hline
     \end{tabular}
 	\caption{Comparing order of Japanese affixes in the observed orders (left) and according to an approximatively optimized grammar (right), optimized for AUC on the \emph{training} set.}
     \label{fig:grammar-table-jap}
