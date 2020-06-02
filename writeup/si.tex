@@ -1214,7 +1214,86 @@ Consequently, more samples were collected than necessary to reach the stopping c
 \subsection{N-Gram Models}
 
 
-\input{control-ngrams.tex}
+Here we show that the results of Study 2 remain robust when estimating surprisal with a simple n-gram model instead of recurrent neural networks.
+
+\subsubsection{Method}
+We use a version of Kneser-Ney Smoothing \citep{kneser-improved-1995}.
+For a sequence $w_1\dots w_k$, let $N(w_{1\dots k})$ be the number of times $w_{1\dots k}$ occurs in the training set.
+The unigram probabilities are estimated as
+\begin{equation}
+	p_1(w_t) :=   \frac{N(w_t) + \delta}{|Train| + |V| \cdot \delta}
+\end{equation}
+where $\delta \in \mathbb{R}_+$ is a hyperparameter.
+Here $|Train|$ is the number of tokens in the training set, $|V|$ is the number of types occurring in train or held-out data.
+Higher-order probabilities $p_t(w_t|w_{0 \dots t-1})$ are estimated recursively as follows.
+Let $\gamma > 0$ be a hyperparameter.
+If $N(w_{0 \dots t-1}) < \gamma$, set
+\begin{equation}
+	p_t(w_t|w_{0 \dots t-1}) := p_{t-1}(w_t|w_{1\dots t-1})
+\end{equation}
+Otherwise, we interpolate between $t$-th order and lower-order estimates:
+\begin{equation}
+	p_t(w_t|w_{0 \dots t-1}) :=  \frac{\operatorname{max}(N(w_{0\dots t}) - \alpha, 0.0) + \alpha \cdot \#\{w : N(w_{0 \dots t-1}w) > 0\} \cdot p_{t-1}(w_t|w_{1\dots t-1})}{N(w_{0\dots t-1})}
+\end{equation}
+where $\alpha \in [0,1]$ is also a hyperparameter.
+\citet{kneser-improved-1995} show that this definition results in a well-defined probability distribution, i.e., $\sum_{w \in V} p_t(w|w_{0 \dots t-1}) = 1$.
+
+%Note that this definition guarantees $\sum_{w \in V} p_t(w|w_{0 \dots t-1}) = 1$, because
+%
+%$\sum_{w \in V} \operatorname{max}(N(w_{0\dots t-1}w) - \alpha, 0.0) + \alpha \cdot \#\{w' : N(w_{0 \dots t-1}w') > 0\} \cdot p_{t-1}(w|w_{1\dots t-1})$
+%
+%$\sum_{w \in V : N(w_{0\dots t-1} w) > 0} (N(w_{0\dots t}) - \alpha) + \alpha \cdot \sum_{w \in V} \#\{w' : N(w_{0 \dots t-1}w') > 0\} \cdot p_{t-1}(w|w_{1\dots t-1})$
+%
+%$\sum_{w \in V : N(w_{0\dots t-1} w) > 0} (N(w_{0\dots t}) - \alpha) + \alpha \cdot \#\{w' : N(w_{0 \dots t-1}w') > 0\}$
+%
+%$\sum_{w \in V} : N(w_{0\dots t-1} w) = N(w_{0\dots t-1})$
+
+
+Hyperparameters $\alpha, \gamma, \delta$ are tuned using the held-out set, with the same strategy as for the neural network models.
+
+
+\subsubsection{Results}
+
+Resulting tradeoff curves are shown in Figure~\ref{tab:medians_ngrams}, for real orders (blue), random baselines (red), and ordering grammars fitted to the observed orders (green).
+
+In five languages (Polish, Slovak, North Sami, Armenian, Latvian), AUC is numerically higher for the real orders than for at least 50\% of baseline grammars.
+Among the remaining 49 languages, AUC is significantly lower than for at least 50\% of baseline grammars in 46 languages at $p=0.01$, where we controlled for multiple comparisons using Hochberg's step-up procedure.
+In three languages (German, Faroese, Kurmanji), the difference is numerical but not significant in this analysis.
+In 44 languages, the real order has lower AUC than 100\% of sampled baseline grammars.
+
+The main divergence in these results from those of the neural network-based estimator in the main paper is that a few languages with small corpora (Armenian, Faroese, Kurmanji) and a language with flexible word order (German) do not show clear evidence for optimization for the simple $n$-gram estimator.
+In the other languages, results qualitatively agree with those of the neural network-based estimator.
+
+
+\begin{center}
+\begin{longtable}{ccccccccccccccclll}
+\input{tables/medians_ngrams_0.tex}
+\input{tables/medians_ngrams_1.tex}
+\input{tables/medians_ngrams_2.tex}
+\input{tables/medians_ngrams_3.tex}
+\end{longtable}
+	\captionof{figure}{Memory-surprisal tradeoff curves (estimated using n-gram models): For each memory budget, we provide the median surprisal for real and random languages. Solid lines indicate sample medians for ngrams, dashed lines indicate 95 \% confidence intervals for the population median. Green: Random baselines; blue: real language; red: maximum-likelihood grammars fit to real orderings.}\label{tab:medians_ngrams}
+\end{center}
+
+
+
+
+% ../../writeup/tables/quantiles_REAL_NGRAMS_0.tex
+%
+%\begin{center}
+%\begin{longtable}{cccccccccccccccccc}
+%\input{tables/quantiles_REAL_NGRAMS_0.tex}
+%\input{tables/quantiles_REAL_NGRAMS_1.tex}
+%\input{tables/quantiles_REAL_NGRAMS_2.tex}
+%\end{longtable}
+%	\captionof{figure}{Quantiles: At a given memory budget, what percentage of the baselines results in higher listener surprisal than the real language? Solid curves represent sample means, dashed lines represent 95 \% confidence bounds; dotted lines represent 99.9 \% confidence bounds. At five evenly spaced memory levels, we provide a p-value for the null hypothesis that the actual population mean is $0.5$ or less. Confidence bounds and p-values are obtained using an exact nonparametric method (see text).}\label{tab:quantiles}
+%\end{center}
+%
+%bounds.append(["alpha", float, 0.95, 1.0]) # + [x/20.0 for x in range(15, 21)])
+%bounds.append(["gamma", int, 1, 2, 3, 4, 5, 8, 10, 15, 20, 25, 30]) # , 200, 300
+%bounds.append(["delta", int, 0.1, 0.2, 0.5, 1.0 , 2.0, 3.0, 4.0, 5.0, 8.0, 10.0]) #, 1024]) #, 1024]) # 64, 128,
+%bounds.append(["cutoff", int, 2,3,4,5,6,7,8,9,10]) #,7,8,9,10]) #, 1024]) #, 1024]) # 64, 128,
+%
 
 
 
@@ -1778,7 +1857,7 @@ Estimating on the training set results in estimated tradeoffs that achieve lower
 		\includegraphics[width=0.25\textwidth]{figures/Japanese-suffixes-byPhonemes-memsurp-heldout.pdf}
 		\includegraphics[width=0.4\textwidth]{figures/Japanese-suffixes-byPhonemes-auc-hist-heldout.pdf}
 \end{center}
-	\caption{Japanese verb suffixes, measuring prediction on the level of morphemes (top) and phonemes (bottom), for real (blue), random (green), and approximately optimized (red) orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff. Top: Simple estimator, Bottom: Heldout estimator}\label{fig:jap-morph}
+	\caption{Japanese verb suffixes, measuring prediction on the level of morphemes (top) and phonemes (bottom), for real, random, approximately optimized, and reverse orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff. Top: Simple estimator, Bottom: Heldout estimator}\label{fig:jap-morph}
 \end{figure}
 
 
@@ -1814,7 +1893,7 @@ Types & Naive    & Optimized for Phoneme Prediction   &   0.974 (SD 0.002) & 0.9
 \includegraphics[width=0.25\textwidth]{figures/Sesotho-suffixes-byPhonemes-memsurp-heldout.pdf}
 \includegraphics[width=0.4\textwidth]{figures/Sesotho-suffixes-byPhonemes-auc-hist-heldout.pdf}
 	\end{center}
-	\caption{Sesotho verb affixes, measuring prediction on the level of morphemes (top) and phonemes (bottom), for real (blue), random (green), and approximately optimized (red) orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff.}\label{fig:sesotho-morph}
+	\caption{Sesotho verb affixes, measuring prediction on the level of morphemes (top) and phonemes (bottom), for real, random, approximately optimized, and reverse orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff.}\label{fig:sesotho-morph}
 \end{figure}
 
 
