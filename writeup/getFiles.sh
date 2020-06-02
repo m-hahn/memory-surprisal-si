@@ -1,7 +1,6 @@
 cp -r ~/memory-surprisal/writeup/tables .
 cp control-ngrams.tex ~/memory-surprisal/writeup/
 cp ~/memory-surprisal/writeup/../code/analyze_ngrams/visualize/figures/*MEDIANS_only* ../code/analyze_ngrams/visualize/figures/
-cp ~/memory-surprisal/writeup/literature.bib .
 cp ~/memory-surprisal/writeup/results-table-pcfg.pdf .
 
 
