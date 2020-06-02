@@ -554,9 +554,8 @@ It may be possible to use this asymmetry to distinguish whether word and morphem
 \subsubsection{Information Locality Theorem in Production}\label{sec:proof-prod}
 
 Here, we prove an Information Locality Theorem in production.
-We first analyze a setting where a speaker produces sentences with bounded memory without a production goal in mind.
-We then extend this analysis to a model where the speaker maintains a production goal.
-
+%We first analyze a setting where a speaker produces sentences with bounded memory without a production goal in mind.
+%We then extend this analysis to a model where the speaker maintains a production goal.
 Following the Production Postulates 1--3, we consider a setting in which a speaker produces sentences with bounded memory, and analyze the deviation of the produced distribution from the actual distribution of the language.
 We consider a speaker who maintains memory representations and incrementally produces based on these representations:
 \begin{equation}
@@ -603,38 +602,38 @@ completing the proof.
 The reason we can apply the proof from Section~\ref{sec:proof} is that Comprehension Postulate 1, where it is used in that proof, can be replaced by the analogous Production Postulate 1.
 \end{proof}
 
-We can refine this theoretical analysis by taking into account the fact that language is produced aiming for some communicative goal.
-We therefore now assume that the speaker has a communicative goal $G$ in mind.
-This goal $G$ stays constant during production process for a sentence, and we count how much memory is needed in addition to the goal $G$.
-We assume that there is a distribution of sentences expressing goals $G$:
-\begin{equation}
-	P(sentence|G)
-\end{equation}
-and assume that the speaker aims to match this distribution
-\begin{equation}
-\mathbb{E}_G[D_{KL}((language|G)||(produced|G))]
-\end{equation}
-We can analyze this model by adding conditioning w.r.t. $G$ throughout the analysis of the previous case.
-Specifically, we need
-\begin{equation}
-I_t^G := I[w_t, w_0|w_1, \dots, w_{t-1}, G]
-\end{equation}
-which measures the information between $w_t$ and $w_0$ only to the degree that it is not redundant with the goal.
-With this, we can prove by an entirely analogous argument:
-\begin{thm}
-If a speaker maintains memory
-	\begin{equation}
-		\operatorname{H}[m_t] \leq \sum_{i=1}^T tI_t^G
-	\end{equation}
-	then 
-\begin{equation}
-\E_G	D_{KL}(P_{language}(\cdot|G)||P_{produced}(\cdot|G)) \geq \sum_{t=T+1}^\infty I_t^G
-\end{equation}
-\end{thm}
-
-\begin{proof}
-This is entirely analogous to the previous proof.
-\end{proof}
+%We can refine this theoretical analysis by taking into account the fact that language is produced aiming for some communicative goal.
+%We therefore now assume that the speaker has a communicative goal $G$ in mind.
+%This goal $G$ stays constant during production process for a sentence, and we count how much memory is needed in addition to the goal $G$.
+%We assume that there is a distribution of sentences expressing goals $G$:
+%\begin{equation}
+%	P(sentence|G)
+%\end{equation}
+%and assume that the speaker aims to match this distribution
+%\begin{equation}
+%\mathbb{E}_G[D_{KL}((language|G)||(produced|G))]
+%\end{equation}
+%We can analyze this model by adding conditioning w.r.t. $G$ throughout the analysis of the previous case.
+%Specifically, we need
+%\begin{equation}
+%I_t^G := I[w_t, w_0|w_1, \dots, w_{t-1}, G]
+%\end{equation}
+%which measures the information between $w_t$ and $w_0$ only to the degree that it is not redundant with the goal.
+%With this, we can prove by an entirely analogous argument:
+%\begin{thm}
+%If a speaker maintains memory
+%	\begin{equation}
+%		\operatorname{H}[m_t] \leq \sum_{i=1}^T tI_t^G
+%	\end{equation}
+%	then 
+%\begin{equation}
+%\E_G	D_{KL}(P_{language}(\cdot|G)||P_{produced}(\cdot|G)) \geq \sum_{t=T+1}^\infty I_t^G
+%\end{equation}
+%\end{thm}
+%
+%\begin{proof}
+%This is entirely analogous to the previous proof.
+%\end{proof}
 
 
 \subsection{Proof of Left-Right Invariance}
@@ -1267,7 +1266,7 @@ In the other languages, results qualitatively agree with those of the neural net
 \input{tables/medians_ngrams_2.tex}
 \input{tables/medians_ngrams_3.tex}
 \end{longtable}
-	\captionof{figure}{Memory-surprisal tradeoff curves (estimated using n-gram models): For each memory budget, we provide the median surprisal for real and random languages. Solid lines indicate sample medians for ngrams, dashed lines indicate 95 \% confidence intervals for the population median. Green: Random baselines; blue: real language; red: maximum-likelihood grammars fit to real orderings.}\label{tab:medians_ngrams}
+	\captionof{figure}{Memory-surprisal tradeoff curves (estimated using n-gram models): For each memory budget, we provide the median surprisal for real and random languages. Solid lines indicate sample medians for ngrams, dashed lines indicate 95 \% confidence intervals for the population median. Red: Random baselines; blue: real language; green: maximum-likelihood grammars fit to real orderings.}\label{tab:medians_ngrams}
 \end{center}
 
 
@@ -1605,7 +1604,8 @@ According to \cite{demuth1992acquisition}, affixes in the Sesotho verb have the 
 \end{enumerate}
 We refined this description by considering all morpheme types occurring at least 50 times in the corpus.
 
-As in Japanese, morphemes show different forms depending on their environment, and the corpus contains some instances of fused neighboring morphemes that were not segmented further.
+As in Japanese, morphemes show different forms depending on their environment.
+The corpus contains some instances of fused neighboring morphemes that were not segmented further; we segmented these into their underlying morphemes for modeling prediction on the level of morphemes.
 
 
 \paragraph{Prefixes}
@@ -1824,7 +1824,8 @@ For Japanese, we transliterated verb forms into syllabic Hiragana with the tagge
 
 
 For Sesotho, we use the phonological transcription provided in the Demuth corpus.
-In the phoneme-based version, we order merged phonemes according to the position that a grammar assigns to its first morpheme.
+The Sesotho corpus has some cases of merged forms, where neighboring morphemes are merged and not segmented further.
+While we represented these as the corresponding sequence of underlying morphemes when modeling morpheme prediction, we ordered these merged phonemes according to the position that a grammar assigns to its first morpheme for modeling prediction on the phoneme level.
 
 \paragraph{Estimating Predictability on Training Set}
 In the main paper, we used the heldout set to estimate the memory-surprisal tradeoff.
@@ -1833,14 +1834,14 @@ In this case, we did not apply smoothing; instead, we directly computed $I_t$ fo
 
 \paragraph{Results}
 Results for the memory-surprisal tradeoffs are shown in Figures~(\ref{fig:jap-morph}--\ref{fig:sesotho-morph}).
-We report results both when estimating and optimizing on the held-out set (as in the main paper), and when estimating the memory-surprisal tradeoff on the training set instead.
+%We report results both when estimating and optimizing on the held-out set (as in the main paper), and when estimating the memory-surprisal tradeoff on the training set instead.
 Accuracies on predicting orderings are shown in Figures~(\ref{fig:acc-japanese}-\ref{fig:acc-sesotho}).
 In the main paper, we report accuracies computed over all forms occurring in the corpus, counting each form by the number of times it occurs. This corresponds to the `Tokens' results in Figures~(\ref{fig:acc-japanese}-\ref{fig:acc-sesotho}).
 Additionally, we also provide accuracies computed when counting each form only once, no matter how often it occurs; these are the `Types' results. This method downweights high-frequency forms and upweights low-frequency forms.
 Results largely agree between the two methods, showing that results are not driven specifically by high-frequency forms.
-Again, we provide results both for optimizing on the heldout set as in the main paper, and for optimizing for the training set (`Simple').
+In Figures~(\ref{fig:acc-japanese}-\ref{fig:acc-sesotho}), we provide results both for optimizing on the heldout set as in the main paper, and for optimizing for the training set (`Naive').
 Results largely agree between the two methods.
-Estimating on the training set results in estimated tradeoffs that achieve lower surprisal for sufficiently high memory entropies, and consequently result in lower AUC estimates. This is to be expected, as estimating entropies on the training set will generally result in  lower estimates compared to estimating cross-entropies on heldout data.
+%Estimating on the training set results in estimated tradeoffs that achieve lower surprisal for sufficiently high memory entropies, and consequently result in lower AUC estimates. This is to be expected, as estimating entropies on the training set will generally result in  lower estimates compared to estimating cross-entropies on heldout data.
 
 \begin{figure}
 	\begin{center}
