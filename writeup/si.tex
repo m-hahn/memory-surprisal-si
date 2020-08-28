@@ -93,7 +93,7 @@ In this section, we prove the Information Locality Bound Theorem and related the
 \subsection{Mathematical Assumptions}\label{sec:math-assumptions}
 
 We first make explicit how we formalize language processing for proving the theorem.
-This is a formally fully rigorous statement of the model described in Section 3.1 of the main paper.
+This is a formally fully rigorous statement of the model described in main paper (Section `An information-theoretic model of online language comprehension').
 
 
 \subsubsection{Ingredient 1: Language as a Stationary Stochastic Process}
@@ -312,9 +312,12 @@ as claimed.
 %Justifylinear interpolation: The curve is convex, which is shown by `time-sharing': Use one code $\lambda$ fraction of times, and the other code $1-\lambda$ fraction of times.
 
 
-%\paragraph{Mutual Information as Memory Cost}
-%Note that theorem still holds if we were to define $H_M$ not as the entropy $\operatorname{H}[m]$, but instead as the mutual information between $m_t$ and the past, $\operatorname{I}[m_t : w_{<t}]$ \citep{still-information-2014}.
-%The one step where the definition of $H_M$ plays a role is Equation~\ref{eq:bounding-by-mem}; this would still hold because $\operatorname{I}[w_{1\dots T} : m_1] \leq \operatorname{I}[m_1 : w_{<1}]$ due to the `No Mindreading' postulate.
+\paragraph{Mutual Information as Memory Cost}
+We model the cost of holding information memory by the entropy $H_M := \operatorname{H}[m]$.
+Another common choice is the mutual information between $m_t$ and the past, $I_M := \operatorname{I}[m_t : w_{<t}]$ \citep{still-information-2014}.
+Our results continue to hold for that choice: Theorem~\ref{prop:suboptimal} remains true when replacing $H_M$ by $I_M$.
+In the proof of the theorem, the definition of $H_M$ enters the argument in Equation~\ref{eq:bounding-by-mem} through the inequality $I[w_{1\dots T}:m_1] \leq \operatorname{H}[m_1] = H_M$.
+The analogous inequality for $I_M$ remains true: $I[w_{1\dots T}:m_1] \leq I[m_{1} : w_{<1}]$ holds due to the `No Mindreading' postulate and the stationarity of the process.
 
 %\subsection{Nondeterministic Encoding Functions}
 %\mhahn{this doesn't seem important?}
@@ -506,7 +509,7 @@ Given the nature of representations assumed in models~\citep{lewis-activation-ba
 Here we show results linking memory and locality in production.
 We show that results similar to our main theorem hold for the tradeoff between a speaker's memory and the accuracy with which they match the distribution of the language.
 
-In the case of production, the memory--surprisal trade-off arises from the minimization of error in production of linguistic sequences. That is, given a \key{competence language} (a target distribution on words given contexts), a speaker tries to produce a \key{performance language} which is as close as possible to the competence language. The performance language operates under memory constraints, so the performance language will diverge from the competence language due to production errors. When a speaker has more incremental memory about what she has already produced, then she is able to produce linguistic sequences with less error, thus reducing the divergence between the performance language and the competence language. The reduction of this competence--performance divergence is formally equivalent to the minimization of average surprisal from Section 3 in the main paper.
+In the case of production, the memory--surprisal trade-off arises from the minimization of error in production of linguistic sequences. That is, given a \key{competence language} (a target distribution on words given contexts), a speaker tries to produce a \key{performance language} which is as close as possible to the competence language. The performance language operates under memory constraints, so the performance language will diverge from the competence language due to production errors. When a speaker has more incremental memory about what she has already produced, then she is able to produce linguistic sequences with less error, thus reducing the divergence between the performance language and the competence language. The reduction of this competence--performance divergence for a speaker is formally equivalent to the minimization of average surprisal for a listener.
 
 
 Formally, we assign a speaker a production policy $q(w_t|m_t)$ that produces the next word conditional on the speaker's memory state $m_t$. 
@@ -559,7 +562,7 @@ Here, we prove an Information Locality Theorem in production.
 Following the Production Postulates 1--3, we consider a setting in which a speaker produces sentences with bounded memory, and analyze the deviation of the produced distribution from the actual distribution of the language.
 We consider a speaker who maintains memory representations and incrementally produces based on these representations:
 \begin{equation}
-P_\text{produced}(w_t|w_{<t}) = P(w_t|m_t) \\
+P_\text{produced}(w_t|w_{<t}) = q(w_t|m_t) \\
 \end{equation}
 We show a tradeoff between the memory capacity $\operatorname{H}[m_t]$ and the KL-divergence between the actual language statistics and the speaker's production distribution, as defined in Production Postulate 3:
 \begin{equation}
@@ -1828,9 +1831,10 @@ The Sesotho corpus has some cases of merged forms, where neighboring morphemes a
 While we represented these as the corresponding sequence of underlying morphemes when modeling morpheme prediction, we ordered these merged phonemes according to the position that a grammar assigns to its first morpheme for modeling prediction on the phoneme level.
 
 \paragraph{Estimating Predictability on Training Set}
-In the main paper, we used the heldout set to estimate the memory-surprisal tradeoff.
+In the main paper, we used the heldout set to estimate the memory-surprisal tradeoff when optimizing orders for AUC.
 We also repeated experiments using instead the training set.
 In this case, we did not apply smoothing; instead, we directly computed $I_t$ for the empirical distribution given by the training corpus.
+We refer to this estimation method as the `naive' estimator, because it directly applies the definition of $I_t$ to the distribution defined by the $n$-gram counts in the training set.
 
 \paragraph{Results}
 Results for the memory-surprisal tradeoffs are shown in Figures~(\ref{fig:jap-morph}--\ref{fig:sesotho-morph}).
@@ -1853,7 +1857,7 @@ Results largely agree between the two methods.
 		\includegraphics[width=0.25\textwidth]{figures/Japanese-suffixes-byPhonemes-memsurp-heldout.pdf}
 		\includegraphics[width=0.4\textwidth]{figures/Japanese-suffixes-byPhonemes-auc-hist-heldout.pdf}
 \end{center}
-	\caption{Japanese verb suffixes, measuring prediction on the level of morphemes (top) and phonemes (bottom), for real, random, approximately optimized, and reverse orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff. Top: Simple estimator, Bottom: Heldout estimator}\label{fig:jap-morph}
+	\caption{Japanese verb suffixes, measuring prediction on the level of morphemes (top) and phonemes (bottom), for real, random, approximately optimized, and reverse orderings. Left: $I_t$ as a function of $t$. Center: Memory-surprisal tradeoff. Right: Areas under the curve for the memory-surprisal tradeoff.}\label{fig:jap-morph}
 \end{figure}
 
 
@@ -1919,7 +1923,7 @@ Typ. & Naive   & Phon. &   Opt.&  0.976 (SD 0.0) & 0.966 (SD 0.0) & 0.985 (SD 0.
      &         &Morph.  &   Opt.  &  0.983 (SD 0.0) & 0.986 (SD 0.0) & 0.782 (SD 0.018) & 0.697 (SD 0.02) \\
      &         &           &   Rand.  &  0.405 (SD 0.308) & 0.303 (SD 0.305) & 0.546 (SD 0.197) & 0.464 (SD 0.22) \\
 \end{tabular}
-\caption{Accuracy of approximately optimized orderings, and of random baseline orderings, in predicting verb affix order in Sesotho. `Pairs' denotes the rate of pairs of morphemes that are ordered correctly, and `Full' denotes the rate of verb forms where order is predicted entirely correctly. We show means and standard deviations over different runs of the optimization algorithm (`Opt.'), and over different random orderings (`Random'). `Tokens' resultsare obtained by counting each form by the number of occurrences in the data set; `Types' results count each form only once. `Simple' models are optimized for in-sample AUC, `Heldout' models are optimized for heldout AUC.}\label{fig:acc-sesotho}
+\caption{Accuracy of approximately optimized orderings, and of random baseline orderings, in predicting verb affix order in Sesotho. `Pairs' denotes the rate of pairs of morphemes that are ordered correctly, and `Full' denotes the rate of verb forms where order is predicted entirely correctly. We show means and standard deviations over different runs of the optimization algorithm (`Opt.'), and over different random orderings (`Random'). `Tokens' resultsare obtained by counting each form by the number of occurrences in the data set; `Types' results count each form only once. `Naive' models are optimized for in-sample AUC on the training set, `Heldout' models are optimized for heldout AUC.}\label{fig:acc-sesotho}
 \end{figure}
 
 
