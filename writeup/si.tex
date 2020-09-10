@@ -40,6 +40,7 @@
 \newcommand\jd[1]{{\color{red}(#1)}}
 \newcommand\rljf[1]{{\color{red}(#1)}}
 \newcommand{\key}[1]{\textbf{#1}}
+\newcommand\revision[1]{{\color{blue}#1}}
 
 \usepackage{amsthm}
 
@@ -313,11 +314,11 @@ as claimed.
 
 
 \paragraph{Mutual Information as Memory Cost}
-We model the cost of holding information memory by the entropy $H_M := \operatorname{H}[m]$.
-Another common choice is the mutual information between $m_t$ and the past, $I_M := \operatorname{I}[m_t : w_{<t}]$ \citep{still-information-2014}.
+\revision{We model the cost of holding information memory by the entropy $H_M := \operatorname{H}[m]$.
+Another natural choice is the mutual information between $m_t$ and the past, $I_M := \operatorname{I}[m_t : w_{<t}]$ \citep{still-information-2014}.
 Our results continue to hold for that choice: Theorem~\ref{prop:suboptimal} remains true when replacing $H_M$ by $I_M$.
 In the proof of the theorem, the definition of $H_M$ enters the argument in Equation~\ref{eq:bounding-by-mem} through the inequality $I[w_{1\dots T}:m_1] \leq \operatorname{H}[m_1] = H_M$.
-The analogous inequality for $I_M$ remains true: $I[w_{1\dots T}:m_1] \leq I[m_{1} : w_{<1}]$ holds due to the `No Mindreading' postulate and the stationarity of the process.
+The analogous inequality for $I_M$ remains true: $I[w_{1\dots T}:m_1] \leq I[m_{1} : w_{<1}]$ holds due to the `No Mindreading' postulate and the stationarity of the process.}
 
 %\subsection{Nondeterministic Encoding Functions}
 %\mhahn{this doesn't seem important?}
@@ -1404,7 +1405,56 @@ Nonetheless, the experiment confirms the finding with a model that is based on h
 \end{center}
 
 
+\subsection{Dependence on Corpus Size}
 
+\definecolor{baseline}{HTML}{F8766D} % red
+\definecolor{real}{HTML}{00BFC4} % green-blue
+\definecolor{fitted}{HTML}{7CAE00} % red-green
+
+
+
+\begin{figure}
+	\begin{centering}
+	\begin{tabular}{ccc}
+		\multicolumn{3}{c}{\textbf{Czech}} \\ 500 Sentences & 2000 Sentences & 102,993 Sentences \\
+		\includegraphics[width=0.2\textwidth]{figures/Czech_500-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf} &
+		\includegraphics[width=0.2\textwidth]{figures/Czech_2000-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf} &
+\includegraphics[width=0.2\textwidth]{figures/Czech-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf}
+\\
+		\multicolumn{3}{c}{\textbf{English}} \\ 500 Sentences & 2000 Sentences & 17,062 Sentences \\
+		\includegraphics[width=0.2\textwidth]{figures/English_500-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf} &
+		\includegraphics[width=0.2\textwidth]{figures/English_2000-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf} &
+\includegraphics[width=0.2\textwidth]{figures/English-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf}
+\\
+		\multicolumn{3}{c}{\textbf{Spanish}} \\ 500 Sentences & 2000 Sentences & 28,492 Sentences \\
+		\includegraphics[width=0.2\textwidth]{figures/Spanish_500-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf} &
+		\includegraphics[width=0.2\textwidth]{figures/Spanish_2000-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf} &
+\includegraphics[width=0.2\textwidth]{figures/Spanish-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf}
+\\
+		\multicolumn{3}{c}{\textbf{Russian}} \\ 500 Sentences & 2000 Sentences & 52,664 Sentences \\
+		\includegraphics[width=0.2\textwidth]{figures/Russian_500-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf} &
+		\includegraphics[width=0.2\textwidth]{figures/Russian_2000-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf} &
+\includegraphics[width=0.2\textwidth]{figures/Russian-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf}
+	\end{tabular}
+
+		\begin{tabular}{llll}
+\textbf{\textcolor{fitted}{----}} Fitted&
+\textbf{\textcolor{real}{----}} Real&
+\textbf{\textcolor{baseline}{----}} Baselines&
+\end{tabular}
+
+	\end{centering}
+	\caption{\textcolor{blue}{Dependence of estimated tradeoff curves on corpus sizes: For four languages with particularly large available datasets, we show memory--surprisal tradeoff curves estimated from 500 training sentences (left), 2000 training sentences (middle), and the full corpus (right). The x-axes show memory (in bits), the y-axes show surprisal (in bits).}}\label{fig:size-dependence}
+\end{figure}
+
+
+\textcolor{blue}{Here, we examine the effect of corpus size on the estimated memory-susprisal tradeoff curves.
+%In the Discussion of the main paper, we argued that, while smaller data sets bias towards lower values of $I_t$, and therefore towards overall less efficient tradeoff curves
+For four languages with particularly large available datasets (Czech, English, Russian, Spanish), we repeated the estimation of the memory--surprisal tradeoff curve using 500 and 2,000 randomly selected sentences from their training sets, and using the same heldout sets as in the main experiment.
+These constructed datasets are smaller than available even for most languages in the main experiment: every dataset used in the main experiment has more than 500 sentences, and many languages have more than 2000 sentences available.
+The resulting estimates are shown in Figure~\ref{fig:size-dependence}.
+In each language, the absolute values of surprisal achievable at a given level of memory decrease as data increases, and the maximum level of memory at which surprisal can still be reduced further increases.
+Despite these differences, the relative order of the three types of orderings (fitted, real, baselines) is mostly the same across different data set sizes. For instance, in English, real orders have the most efficient curves, and baselines have the least efficient ones, across data set sizes. The only exception is the position of real orders in Czech, which are estimated to be less efficient at small training data.}
 
 \section{Study 3}
 

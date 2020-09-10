@@ -40,4 +40,12 @@ cp ~/memory-surprisal/code/study3/Sesotho/tradeoffs/figures/* figures/
 # Study 2
 cp ~/memory-surprisal/code/analysis/visualize_neural/figures/surprisal-branching-entropy-REAL*.pdf figures/
 cp ~/memory-surprisal/code/order-freedom/infostruc/analysis/medians/auc/figures/* figures/
+cp ~/memory-surprisal/code/create_models/fractions/results/tradeoff/figures/*_500-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf figures/
+cp ~/memory-surprisal/code/create_models/fractions/results/tradeoff/figures/*_2000-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf figures/
+
+
+cp ~/memory-surprisal/code/analysis/visualize_neural/figures/Czech-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf figures/
+cp ~/memory-surprisal/code/analysis/visualize_neural/figures/Spanish-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf figures/
+cp ~/memory-surprisal/code/analysis/visualize_neural/figures/English-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf figures/
+cp ~/memory-surprisal/code/analysis/visualize_neural/figures/Russian-listener-surprisal-memory-MEDIANS_onlyWordForms_boundedVocab.pdf figures/
 
